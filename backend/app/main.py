@@ -39,6 +39,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     for router in routers.ALL:
         app.include_router(router, prefix="/api")
+
+    @app.get("/api/health", tags=["health"])
+    def health() -> dict:
+        """Used by the host (Render) to know the app is up."""
+        return {"status": "ok"}
+
     if FRONTEND_DIR.is_dir():
         # Mounted last so /api and /docs keep priority; html=True serves index.html at "/".
         app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")

@@ -49,6 +49,16 @@ def test_login_success_and_errors(client, rafael):
     assert unknown.json()["detail"]["code"] == "unknown_email"
 
 
+def test_health_is_public(client):
+    assert client.get("/api/health").json() == {"status": "ok"}
+
+
+def test_frontend_is_served_at_root(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "Gym Duel" in response.text
+
+
 def test_routes_require_token(client):
     for path in ("/api/me", "/api/workouts", "/api/scoreboard", "/api/summary"):
         assert client.get(path).status_code == 401
