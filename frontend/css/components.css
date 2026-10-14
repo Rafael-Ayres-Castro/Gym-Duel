@@ -1,0 +1,142 @@
+/* Reusable UI pieces from the style guide: brand, buttons, fields, chips, avatars, bars, badges, toast. */
+
+/* ---- Brand ---- */
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand__logo {
+  --size: 44px;
+  width: var(--size); height: var(--size); border-radius: calc(var(--size) * .31);
+  background: var(--accent); color: var(--accent-ink);
+  display: grid; place-items: center; transform: rotate(-6deg);
+  box-shadow: 0 12px 30px -10px rgba(255, 225, 74, .6);
+}
+.brand__name { font-family: var(--font-display); font-size: 28px; letter-spacing: .5px; line-height: 1; }
+.brand__name em { font-style: normal; color: var(--accent); }
+
+/* ---- Buttons ---- */
+.btn {
+  height: 58px; border: 0; border-radius: var(--radius-btn);
+  font-size: 17px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+  transition: background .15s, filter .15s;
+}
+.btn--primary { background: var(--accent); color: var(--accent-ink); box-shadow: var(--shadow-accent); }
+.btn--primary:hover { background: var(--accent-hover); }
+.btn--primary:disabled { background: var(--accent-disabled); box-shadow: none; cursor: not-allowed; }
+.btn--secondary { background: var(--surface-2); color: var(--text); border: 1.5px solid var(--line); }
+.btn--secondary:hover { background: var(--line-strong); }
+.btn--block { width: 100%; }
+
+/* Big "Fiz check-in" call to action with the dark check bubble. */
+.btn-checkin { height: 58px; border-radius: 20px; font-size: 18px; box-shadow: var(--shadow-accent-strong); }
+.btn-checkin__bubble { width: 30px; height: 30px; border-radius: 50%; background: var(--accent-ink); color: var(--accent); display: grid; place-items: center; }
+.btn-checkin__key { margin-left: 6px; font-size: 12px; font-weight: 800; padding: 3px 8px; border-radius: 7px; background: rgba(20, 18, 10, .12); }
+
+.link-btn { border: 0; background: transparent; padding: 0; color: var(--accent); font-weight: 700; font-size: 14px; }
+.link-btn:hover { color: #FFF0A0; }
+.link-btn--strong { font-weight: 800; }
+
+.icon-btn {
+  width: 40px; height: 40px; border: 0; border-radius: 20px; background: var(--surface-2); color: var(--text);
+  display: grid; place-items: center; flex: none;
+}
+.icon-btn:hover { background: var(--line); }
+
+/* ---- Form fields ---- */
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field__label { font-size: 13px; font-weight: 700; color: var(--text-3); }
+.field__control { position: relative; }
+.field__icon { position: absolute; left: 16px; top: 18px; color: var(--text-2); pointer-events: none; }
+.input {
+  width: 100%; height: 56px; border-radius: var(--radius-field);
+  background: var(--surface); border: 1.5px solid var(--line);
+  padding: 0 16px; color: var(--text); font-size: 16px; font-weight: 600; outline: none;
+  transition: border-color .15s, background .15s;
+}
+.input:focus { border-color: var(--accent); }
+.input--with-icon { padding-left: 48px; }
+.input--with-action { padding-right: 52px; }
+.field__action {
+  position: absolute; right: 8px; top: 8px; width: 40px; height: 40px; border: 0; border-radius: 12px;
+  background: transparent; color: var(--text-2); display: grid; place-items: center;
+}
+.field__action:hover { background: var(--surface-2); }
+.field.has-error .input { border-color: var(--error); }
+.field.has-error .input--tinted { background: var(--error-bg); }
+.field.has-error .field__icon { color: var(--error); }
+.textarea { height: auto; padding: 14px 16px; resize: none; font-size: 15px; line-height: 1.4; }
+
+.form-error { display: flex; align-items: flex-start; gap: 8px; color: var(--error-text); font-size: 13.5px; font-weight: 700; line-height: 1.4; }
+.form-error[hidden] { display: none; }
+
+/* ---- Chips (pill options) and choice boxes ---- */
+.chip {
+  height: 44px; padding: 0 16px; border-radius: 22px;
+  border: 1.5px solid var(--line); background: var(--surface-2); color: var(--text);
+  font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;
+}
+.chip__check { display: none; margin-left: -4px; }
+.chip.is-on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 800; padding-left: 12px; }
+.chip.is-on .chip__check { display: block; }
+.chip:hover, .choice:hover { filter: brightness(1.15); }
+
+.choice {
+  height: 56px; border-radius: var(--radius-field);
+  border: 1.5px solid var(--line); background: var(--surface-2); color: var(--text);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  font-size: 15px; font-weight: 700;
+}
+.choice__num { font-family: var(--font-display); font-size: 22px; line-height: 1.1; font-weight: 400; }
+.choice__sub { font-size: 11px; font-weight: 700; color: var(--text-2); }
+.choice.is-on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 800; }
+.choice.is-on .choice__sub { color: inherit; }
+
+/* ---- Segmented control (filters) ---- */
+.segmented { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; padding: 4px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line-soft); }
+.segmented__btn {
+  height: 34px; border: 0; border-radius: 10px; background: transparent; color: var(--text-2);
+  font-size: 13px; font-weight: 700; transition: background .15s; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 6px;
+}
+.segmented__btn.is-on { background: var(--text); color: var(--bg); font-weight: 800; }
+
+/* ---- Avatars ---- */
+.avatar {
+  --size: 40px;
+  position: relative; flex: none; width: var(--size); height: var(--size);
+}
+.avatar__circle {
+  width: 100%; height: 100%; border-radius: 50%;
+  background: var(--pc, var(--line)); color: var(--pc-ink, var(--text-2));
+  display: grid; place-items: center; font-weight: 800; font-size: calc(var(--size) * .4);
+}
+.avatar--ringed .avatar__circle { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--pc-ring); }
+.avatar--lead .avatar__circle { box-shadow: 0 0 0 3px #17181A, 0 0 0 5px var(--accent), 0 0 24px 4px rgba(255, 225, 74, .3); }
+.avatar--lead-thin .avatar__circle { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+.avatar__crown { position: absolute; color: var(--accent); width: calc(var(--size) * .46); height: calc(var(--size) * .46); top: calc(var(--size) * -.375); left: 50%; transform: translateX(-50%); }
+.avatar__badge {
+  position: absolute; bottom: -9px; left: 50%; transform: translateX(-50%);
+  background: var(--accent); color: var(--accent-ink); font-size: 9.5px; font-weight: 800; letter-spacing: .8px;
+  padding: 2px 7px; border-radius: 6px;
+}
+
+/* ---- Progress bar ---- */
+.bar { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.bar__fill { height: 100%; border-radius: inherit; background: var(--pc, var(--accent)); transition: width .7s cubic-bezier(.2, .8, .3, 1); }
+
+/* ---- Small pills ---- */
+.pill { display: inline-flex; align-items: center; gap: 3px; height: 26px; padding: 0 9px; border-radius: 13px; font-size: 12px; font-weight: 800; white-space: nowrap; }
+.pill--pts { background: var(--surface-2); }
+.pill--muted { color: var(--text-2); }
+.pill--fire { background: var(--fire-bg); color: var(--fire-text); padding-left: 6px; }
+.pill--fire svg { color: var(--fire); }
+
+/* ---- Cards ---- */
+.card { background: var(--surface); border: 1px solid var(--line-card); border-radius: var(--radius-card); }
+
+/* ---- Toast ---- */
+.toast {
+  position: fixed; left: 50%; bottom: calc(var(--bottom-nav-h) + 20px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 60;
+  display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-radius: 16px; max-width: calc(100vw - 32px);
+  background: var(--text); color: var(--bg); font-size: 14.5px; font-weight: 800;
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, .5); animation: gdIn .2s ease-out;
+}
+@media (min-width: 960px) { .toast { bottom: 28px; } }

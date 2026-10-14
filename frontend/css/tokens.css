@@ -1,0 +1,71 @@
+/* Design tokens from the Claude Design style guide (design/Gym Duel MVP.dc.html, section 06). */
+:root {
+  /* Neutrals */
+  --bg: #0B0C0F;
+  --surface: #14161B;
+  --surface-2: #1C1F26;
+  --surface-hover: #181A20;
+  --panel: #101216;          /* sidebar, bottom nav, modal, sticky footers */
+  --line: #2A2E37;
+  --line-soft: #22252C;
+  --line-card: #1F2229;
+  --line-strong: #23262E;
+
+  /* Text */
+  --text: #F3F4F6;
+  --text-2: #8D93A1;
+  --text-3: #B4B9C4;
+  --text-dim: #6B7180;
+  --text-muted-num: #4A4F5C; /* scores of a player with no workout this week */
+  --msg-text: #C9CDD5;
+  --msg-bg: #1A1D23;
+
+  /* Accent: actions and the week leader */
+  --accent: #FFE14A;
+  --accent-hover: #FFEA7A;
+  --accent-ink: #14120A;
+  --accent-soft: rgba(255, 225, 74, .12);
+  --accent-tint: rgba(255, 225, 74, .06);
+  --accent-line: rgba(255, 225, 74, .45);
+  --accent-disabled: #5C5530;
+
+  /* States */
+  --error: #FF5A4E;
+  --error-text: #FF7B70;
+  --error-bg: rgba(255, 90, 78, .07);
+  --fire: #FF8A1F;
+  --fire-text: #FFB067;
+  --fire-bg: rgba(255, 138, 31, .14);
+
+  /* Players */
+  --blue: #4C8DFF;
+  --blue-text: #7FB0FF;
+  --blue-ink: #071226;
+  --blue-ring: rgba(76, 141, 255, .45);
+  --pink: #FF5CA8;
+  --pink-text: #FF8CC2;
+  --pink-ink: #2A0716;
+  --pink-ring: rgba(255, 92, 168, .45);
+
+  /* Type */
+  --font-display: Anton, Impact, "Arial Narrow", sans-serif;
+  --font-body: Manrope, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Shape */
+  --radius-field: 16px;
+  --radius-btn: 18px;
+  --radius-card: 22px;
+  --radius-board: 28px;
+
+  --shadow-accent: 0 12px 30px -12px rgba(255, 225, 74, .6);
+  --shadow-accent-strong: 0 14px 34px -12px rgba(255, 225, 74, .7);
+
+  /* Layout */
+  --desktop: 960px;           /* documented here; media queries repeat the value */
+  --bottom-nav-h: 72px;
+  --sidebar-w: 248px;
+}
+
+/* Each player element sets --pc (color), --pc-text, --pc-ink and --pc-ring. */
+.player--blue { --pc: var(--blue); --pc-text: var(--blue-text); --pc-ink: var(--blue-ink); --pc-ring: var(--blue-ring); }
+.player--pink { --pc: var(--pink); --pc-text: var(--pink-text); --pc-ink: var(--pink-ink); --pc-ring: var(--pink-ring); }
