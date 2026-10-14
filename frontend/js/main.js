@@ -4,6 +4,7 @@ import { setSessionExpiredHandler } from './core/api.js';
 import { defineRoutes, startRouter } from './core/router.js';
 import { session } from './core/session.js';
 import { logout, showInShell } from './layout/app-shell.js';
+import * as history from './screens/history/history.js';
 import * as home from './screens/home/home.js';
 import * as login from './screens/auth/login.js';
 import * as signup from './screens/auth/signup.js';
@@ -18,6 +19,7 @@ defineRoutes(
     login: { guard: guestsOnly, mount: () => login.mount(root) },
     signup: { guard: guestsOnly, mount: () => signup.mount(root) },
     home: { guard: requireLogin, mount: () => showInShell(root, 'home', home.mount) },
+    history: { guard: requireLogin, mount: () => showInShell(root, 'history', history.mount) },
   },
   () => (session.isLoggedIn ? 'home' : 'login'),
 );
