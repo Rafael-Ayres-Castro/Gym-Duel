@@ -1,0 +1,17 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Local data and secrets
+.env
+*.db
+*.db-journal
+
+# Local tooling
+.claude/settings.local.json
+screenshots/
+
+# Windows download markers
+*:Zone.Identifier
