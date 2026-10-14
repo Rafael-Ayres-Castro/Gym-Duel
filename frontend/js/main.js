@@ -1,4 +1,5 @@
 // Entry point: wires routes, session expiry and starts the app.
+import { initCheckin } from './checkin/checkin-modal.js';
 import { setSessionExpiredHandler } from './core/api.js';
 import { defineRoutes, startRouter } from './core/router.js';
 import { session } from './core/session.js';
@@ -22,5 +23,6 @@ defineRoutes(
 );
 
 setSessionExpiredHandler(logout);
+initCheckin();
 
 startRouter();
