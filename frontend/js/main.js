@@ -1,8 +1,9 @@
 // Entry point: wires routes, session expiry and starts the app.
 import { setSessionExpiredHandler } from './core/api.js';
-import { defineRoutes, go, startRouter } from './core/router.js';
+import { defineRoutes, startRouter } from './core/router.js';
 import { session } from './core/session.js';
-import * as home from './screens/home.js';
+import { logout, showInShell } from './layout/app-shell.js';
+import * as home from './screens/home/home.js';
 import * as login from './screens/auth/login.js';
 import * as signup from './screens/auth/signup.js';
 
@@ -15,14 +16,11 @@ defineRoutes(
   {
     login: { guard: guestsOnly, mount: () => login.mount(root) },
     signup: { guard: guestsOnly, mount: () => signup.mount(root) },
-    home: { guard: requireLogin, mount: () => home.mount(root) },
+    home: { guard: requireLogin, mount: () => showInShell(root, 'home', home.mount) },
   },
   () => (session.isLoggedIn ? 'home' : 'login'),
 );
 
-setSessionExpiredHandler(() => {
-  session.clear();
-  go('login');
-});
+setSessionExpiredHandler(logout);
 
 startRouter();

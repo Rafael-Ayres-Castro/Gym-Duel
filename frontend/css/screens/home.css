@@ -1,0 +1,68 @@
+/* Home / placar. Mobile values from mockups 2a/2b. */
+.home { padding-top: 20px; }
+
+.home__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 20px 0; }
+.home__titles { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.home__week { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--text-2); }
+.home__greeting { font-size: 24px; font-weight: 800; letter-spacing: -.3px; }
+.home__me { border: 0; background: transparent; padding: 0; border-radius: 50%; }
+
+/* ---- Scoreboard card ---- */
+.board { margin: 10px 16px 0; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius-board); overflow: hidden; }
+.board__top { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px 0; }
+.board__label { font-size: 11px; font-weight: 800; letter-spacing: 1.4px; color: var(--text-2); }
+.board__days { font-size: 12px; font-weight: 700; color: var(--text-2); white-space: nowrap; }
+.board__duel { display: grid; grid-template-columns: minmax(0, 1fr) 26px minmax(0, 1fr); padding: 10px 10px 12px; }
+.board__vs { display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 17px; color: var(--text-muted-num); }
+.board__msg { display: flex; align-items: center; gap: 10px; padding: 11px 18px; background: var(--msg-bg); font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--msg-text); }
+.board__msg svg { color: var(--accent); }
+
+/* A player panel. Grid areas let the desktop rearrange the very same markup. */
+.panel {
+  min-width: 0; display: grid; grid-template-columns: 1fr 1fr; column-gap: 6px; justify-items: center;
+  grid-template-areas: "avatar avatar" "name name" "pct pct" "bar bar" "caption caption" "pts streak";
+  padding: 26px 8px 12px; border-radius: 22px; border: 1px solid transparent;
+  transition: background .3s, border-color .3s;
+}
+.panel .avatar { --size: 56px; }
+.panel__avatar { grid-area: avatar; }
+.panel__name { grid-area: name; margin-top: 14px; font-size: 15px; font-weight: 800; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.panel__pct { grid-area: pct; margin-top: 2px; font-family: var(--font-display); font-size: 42px; line-height: 1.1; }
+.panel__bar { grid-area: bar; width: 100%; margin-top: 8px; }
+.panel__caption { grid-area: caption; margin-top: 7px; font-size: 12px; font-weight: 600; color: var(--text-2); }
+.panel__pts { grid-area: pts; justify-self: end; margin-top: 10px; }
+.panel__streak { grid-area: streak; justify-self: start; margin-top: 10px; }
+.panel__waiting { grid-area: pct; margin-top: 12px; font-size: 12.5px; font-weight: 600; line-height: 1.4; color: var(--text-2); text-align: center; text-wrap: balance; }
+
+.panel--lead { border-color: var(--accent-line); background: var(--accent-tint); }
+.panel--lead .panel__pct { color: var(--accent); }
+.panel--empty, .panel--waiting { border: 1px dashed var(--line); }
+.panel--empty .panel__pct { color: var(--text-muted-num); }
+.panel--empty .pill--pts { color: var(--text-2); }
+
+.home__checkin { display: flex; width: calc(100% - 32px); margin: 12px 16px 0; }
+
+/* ---- Latest workouts ---- */
+.recent__head { display: flex; justify-content: space-between; align-items: baseline; padding: 16px 20px 8px; }
+.recent__head h2 { font-size: 16px; font-weight: 800; }
+.recent__link { font-size: 13px; }
+.recent__list { margin: 0 16px; background: var(--surface); border: 1px solid var(--line-card); border-radius: var(--radius-card); }
+
+.wrow { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 16px; }
+.wrow .avatar { --size: 34px; }
+.wrow__main { flex: 1; min-width: 0; }
+.wrow__type { font-size: 15px; font-weight: 700; }
+.wrow__meta { font-size: 12.5px; font-weight: 600; color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wrow__note { margin-top: 4px; font-size: 13px; font-weight: 600; font-style: italic; color: var(--text-3); overflow-wrap: anywhere; }
+.wrow__end { display: flex; flex-direction: column; align-items: flex-end; flex: none; }
+.wrow__pts { font-size: 15px; font-weight: 800; }
+.wrow__when { font-size: 11.5px; font-weight: 600; color: var(--text-2); }
+/* Inset divider between rows (the mockup's line stops 16px from each side). */
+.recent__list .wrow + .wrow {
+  background: linear-gradient(var(--line-soft), var(--line-soft)) top center / calc(100% - 32px) 1px no-repeat;
+}
+
+.recent__empty { margin: 0 16px; padding: 22px 20px; border-radius: var(--radius-card); border: 1.5px dashed var(--line); display: flex; align-items: center; gap: 16px; }
+.recent__empty-icon { width: 52px; height: 52px; flex: none; border-radius: 16px; background: var(--fire-bg); color: var(--fire); display: grid; place-items: center; }
+.recent__empty-title { font-size: 16px; font-weight: 800; }
+.recent__empty-text { margin-top: 4px; font-size: 13.5px; line-height: 1.45; font-weight: 600; color: var(--text-2); text-wrap: pretty; }
