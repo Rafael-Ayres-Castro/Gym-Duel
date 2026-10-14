@@ -31,3 +31,43 @@
 .day-group__list .wrow { padding: 12px 14px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line-card); }
 .day-group__list .wrow .avatar { --size: 36px; }
 .history__empty { padding: 40px 24px; border-radius: 24px; border: 1.5px dashed var(--line); text-align: center; font-size: 15px; font-weight: 600; color: var(--text-2); }
+
+/* ---- Desktop (prototype) ---- */
+@media (min-width: 960px) {
+  .history { display: flex; flex-direction: column; gap: 24px; }
+  .history__top {
+    position: static; padding: 0; background: none;
+    display: grid; grid-template-columns: auto auto; justify-content: space-between; align-items: end; gap: 24px;
+  }
+  .history__titles { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .history__period { font-size: 14px; }
+  .history__title { font-size: 48px; line-height: 1.05; }
+  .history__filters { margin-top: 0; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: flex-end; }
+  .history__seg--person { flex: none; grid-auto-columns: 84px; }
+  .history__seg--period { width: auto; grid-auto-columns: 88px; }
+  .history__seg .segmented__btn { height: 38px; font-size: 14px; font-weight: 800; }
+  .history__checkin { height: 46px; padding: 0 18px 0 12px; border-radius: 15px; font-size: 15px; gap: 8px; box-shadow: none; }
+
+  .history__summary { grid-column: 1 / -1; margin-top: 0; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .sum-card {
+    padding: 22px 24px; border-radius: 24px; column-gap: 0; row-gap: 8px;
+    grid-template-columns: 52px 20px minmax(0, 1fr) auto;
+    grid-template-areas: "avatar . name pts" "avatar . count count" "avatar . goal goal";
+  }
+  .sum-card .avatar { --size: 52px; }
+  .sum-card .avatar__circle { font-size: 20px; }
+  .sum-card__name { font-size: 16px; }
+  .sum-card__pts { font-size: 15px; }
+  .sum-card__count { margin-top: 0; gap: 8px; font-size: 14px; }
+  .sum-card__num { font-size: 40px; line-height: 1; }
+
+  .history__list { padding: 0; gap: 24px; }
+  .day-group__head { padding: 0 4px; font-size: 12px; }
+  .day-group__list { gap: 0; background: var(--surface); border: 1px solid var(--line-card); border-radius: var(--radius-card); overflow: hidden; }
+  .day-group__list .wrow { padding: 14px 20px; gap: 16px; border: 0; border-radius: 0; background: transparent; }
+  .day-group__list .wrow + .wrow { border-top: 1px solid var(--line-soft); }
+  .day-group__list .wrow:hover { background: var(--surface-hover); }
+  .day-group__list .wrow .avatar { --size: 40px; }
+  .day-group__list .wrow__meta { margin-top: 1px; }
+  .day-group__list .wrow__pts { font-size: 16px; }
+}

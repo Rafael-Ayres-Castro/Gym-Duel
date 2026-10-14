@@ -13,6 +13,7 @@ import { toggleAccountMenu } from '../../ui/account-menu.js';
 import { avatar } from '../../ui/avatar.js';
 import { recentWorkouts } from './recent-workouts.js';
 import { scoreboardCard } from './scoreboard-card.js';
+import { trainingDays } from './training-days.js';
 
 export const checkinButton = ({ withKey = false, cls = '' } = {}) => html`
   <button class="btn btn--primary btn-checkin ${cls}" type="button" data-action="open-checkin">
@@ -37,6 +38,7 @@ function homeView(board, recents, user) {
       ${checkinButton({ cls: 'home__checkin only-mobile' })}
       <div class="home__grid">
         ${recentWorkouts(recents, board.today)}
+        ${trainingDays(board, me)}
       </div>
     </div>`;
 }

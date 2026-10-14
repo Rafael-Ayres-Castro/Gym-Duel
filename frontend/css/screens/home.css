@@ -66,3 +66,83 @@
 .recent__empty-icon { width: 52px; height: 52px; flex: none; border-radius: 16px; background: var(--fire-bg); color: var(--fire); display: grid; place-items: center; }
 .recent__empty-title { font-size: 16px; font-weight: 800; }
 .recent__empty-text { margin-top: 4px; font-size: 13.5px; line-height: 1.45; font-weight: 600; color: var(--text-2); text-wrap: pretty; }
+
+/* ---- "Dias de treino" (desktop only) ---- */
+.days-card { background: var(--surface); border: 1px solid var(--line-card); border-radius: var(--radius-board); padding: 22px 24px; display: flex; flex-direction: column; gap: 18px; }
+.days-card h2 { font-size: 17px; font-weight: 800; }
+.days-grid {
+  display: grid; grid-template-columns: 96px repeat(7, minmax(0, 1fr)); gap: 8px 6px; align-items: center;
+  text-align: center; font-size: 11px; font-weight: 800; color: var(--text-2);
+}
+.days-grid__head.is-today { color: var(--accent); }
+.days-grid__who { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 14px; color: var(--text); text-align: left; }
+.days-grid__who .avatar__circle { font-size: 12px; }
+.days-grid__who > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.days-grid__cell { height: 30px; border-radius: 9px; background: var(--surface-2); border: 1.5px solid transparent; transition: background .3s; }
+.days-grid__cell.is-trained { background: var(--pc); }
+.days-grid__cell.is-today { border: 1.5px dashed var(--accent); }
+.days-card__msg { font-size: 13.5px; font-weight: 600; line-height: 1.5; color: var(--text-2); }
+
+/* ---- Desktop (prototype 1440×900) ---- */
+@media (min-width: 960px) {
+  .home { padding-top: 0; display: flex; flex-direction: column; gap: 26px; }
+  .home__header { align-items: flex-end; flex-wrap: wrap; gap: 24px; padding: 0; }
+  .home__titles { gap: 6px; }
+  .home__week { gap: 7px; font-size: 14px; }
+  .home__greeting { font-size: 34px; letter-spacing: -.5px; }
+  .home__header .btn-checkin { height: 60px; padding: 0 18px 0 16px; }
+  .home__header .btn-checkin__bubble { width: 32px; height: 32px; }
+
+  .board { margin: 0; border-radius: 32px; }
+  .board__top { padding: 20px 30px 0; }
+  .board__label { font-size: 12px; }
+  .board__days { font-size: 13px; }
+  .board__duel { display: flex; flex-wrap: wrap; align-items: stretch; padding: 16px 20px 20px; }
+  .board__vs { flex: none; width: 80px; padding: 12px 0; font-size: 28px; }
+  .board__msg { padding: 14px 30px; font-size: 14px; }
+
+  .panel {
+    flex: 1 1 320px; padding: 30px; border-radius: 26px; justify-items: stretch; align-items: center; column-gap: 0;
+    grid-template-columns: 88px 26px minmax(0, 1fr) auto;
+    grid-template-areas: "avatar . name pts" "avatar . pct pct" "avatar . bar bar" "avatar . caption streak";
+  }
+  .panel .avatar { --size: 88px; }
+  .panel .avatar__circle { font-size: 32px; }
+  .panel .avatar--ringed .avatar__circle { box-shadow: 0 0 0 4px var(--surface), 0 0 0 7px var(--pc-ring); }
+  .panel .avatar--lead .avatar__circle { box-shadow: 0 0 0 4px #17181A, 0 0 0 7px var(--accent), 0 0 34px 6px rgba(255, 225, 74, .3); }
+  .panel .avatar__crown { width: 36px; height: 36px; top: -31px; }
+  .panel .avatar__badge { bottom: -10px; font-size: 10.5px; padding: 3px 8px; border-radius: 7px; }
+  .panel__name { margin-top: 0; font-size: 18px; }
+  .panel__pct { margin-top: 0; font-size: 72px; line-height: 1.05; }
+  .panel__bar { height: 10px; border-radius: 5px; }
+  .panel__caption { margin-top: 12px; font-size: 13px; }
+  .panel__pts, .panel__streak { margin-top: 0; justify-self: end; }
+  .panel__caption, .panel__streak { margin-top: 12px; }
+  /* On desktop, points and streak are plain text instead of pills. */
+  .panel .pill { height: auto; padding: 0; background: transparent; }
+  .panel .pill--pts { font-size: 15px; }
+  .panel .pill--fire { gap: 4px; font-size: 13px; }
+  .panel .pill--fire svg { width: 15px; height: 15px; }
+  .panel--waiting { grid-template-areas: "avatar . name name" "avatar . waiting waiting"; }
+  .panel__waiting { grid-area: waiting; margin-top: 8px; text-align: left; font-size: 14px; }
+
+  .home__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; align-items: stretch; }
+
+  .recent { background: var(--surface); border: 1px solid var(--line-card); border-radius: var(--radius-board); padding: 22px 24px; display: flex; flex-direction: column; }
+  .recent__head { padding: 0; margin-bottom: 8px; }
+  .recent__head h2 { font-size: 17px; }
+  .recent__link { font-size: 14px; }
+  .recent__list { margin: 0; background: none; border: 0; border-radius: 0; }
+  .recent .wrow { min-height: 64px; padding: 0; gap: 14px; }
+  .recent__list .wrow + .wrow { background: none; border-top: 1px solid var(--line-soft); }
+  .wrow .avatar { --size: 40px; }
+  .wrow__type { font-size: 16px; }
+  .wrow__meta { font-size: 13px; }
+  .recent .wrow__end { flex-direction: row-reverse; align-items: center; }
+  .recent .wrow__when { min-width: 64px; font-size: 13px; }
+  .recent .wrow__pts { min-width: 68px; text-align: right; font-size: 16px; }
+  .recent__empty { margin: 8px 0 0; padding: 24px; border-radius: 20px; gap: 18px; }
+  .recent__empty-icon { width: 56px; height: 56px; border-radius: 18px; }
+  .recent__empty-title { font-size: 17px; }
+  .recent__empty-text { font-size: 14px; line-height: 1.5; }
+}

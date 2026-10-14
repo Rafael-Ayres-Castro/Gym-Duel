@@ -3,6 +3,7 @@ import { initCheckin } from './checkin/checkin-modal.js';
 import { setSessionExpiredHandler } from './core/api.js';
 import { defineRoutes, startRouter } from './core/router.js';
 import { session } from './core/session.js';
+import { initShortcuts } from './core/shortcuts.js';
 import { logout, showInShell } from './layout/app-shell.js';
 import * as history from './screens/history/history.js';
 import * as home from './screens/home/home.js';
@@ -26,5 +27,6 @@ defineRoutes(
 
 setSessionExpiredHandler(logout);
 initCheckin();
+initShortcuts();
 
 startRouter();
