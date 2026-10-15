@@ -2,7 +2,7 @@
 
 Web app mobile-first para um casal competir na academia. Cada check-in vira pontos, e o placar semanal compara **a % da meta pessoal** de cada um, para que níveis diferentes de treino tenham a mesma chance de ganhar.
 
-Este é o **MVP**: login e cadastro, home/placar, check-in com tela de sucesso e histórico, no celular e no computador. O documento de requisitos completo está em [docs/requisitos.md](docs/requisitos.md), e o design de referência (Claude Design) está em [design/](design/).
+Este é o **MVP**: login e cadastro, home/placar, check-in com tela de sucesso, histórico e uma tela de regras que explica a pontuação, no celular e no computador. O documento de requisitos completo está em [docs/requisitos.md](docs/requisitos.md), e o design de referência (Claude Design) está em [design/](design/).
 
 ## Stack
 
@@ -83,7 +83,7 @@ backend/
     security.py      bcrypt, JWT e o usuário logado
     scoring.py       REGRAS PURAS: pontos, semana, %, líder, sequência, mensagens
     services/        consultas ao banco que alimentam as regras (placar, check-in...)
-    routers/         rotas HTTP finas: auth, me, workouts, scoreboard
+    routers/         rotas HTTP finas: auth, me, workouts, scoreboard, rules
   tests/             pytest
 frontend/
   index.html
@@ -93,7 +93,7 @@ frontend/
     domain/          regras de exibição: fórmula da prévia, rótulos de data, textos
     ui/              componentes: avatar, linha de treino, toast, confete
     layout/          casca do app: barra inferior (mobile) e menu lateral (desktop)
-    screens/         login, cadastro, home, histórico
+    screens/         login, cadastro, home, histórico, regras
     checkin/         check-in em tela cheia/modal e tela de sucesso
 scripts/
   seed_demo.py       dados de demonstração
@@ -131,6 +131,7 @@ Todas as rotas ficam em `/api` e exigem `Authorization: Bearer <token>`, exceto 
 | DELETE | `/workouts/{id}` | Apaga um treino próprio (os pontos vão junto) |
 | GET | `/scoreboard` | Placar da semana: %, pontos, sequência, líder, mensagem e dias treinados |
 | GET | `/summary` | Totais de cada um no período, usados no topo do histórico |
+| GET | `/rules` | Regras em vigor (fórmula, limites, check-ins por dia) e exemplos calculados, usados na tela Regras |
 | GET | `/health` | Verificação de saúde (usada pelo Render) |
 
 Os erros seguem sempre o formato `{"detail": {"code": "...", "message": "..."}}`, com a mensagem pronta em português.

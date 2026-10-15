@@ -14,6 +14,7 @@ from datetime import date, timedelta
 INTENSITY_ADJUSTMENT = {"Leve": -5, "Moderada": 0, "Alta": 5}
 WORKOUT_TYPES = ("Musculação", "Corrida", "Funcional", "Aula", "Outro")
 MIN_POINTS = 5
+MINUTES_PER_POINT = 3
 MIN_DURATION_MIN = 5
 MAX_DURATION_MIN = 300
 MIN_WEEKLY_GOAL = 1
@@ -31,7 +32,7 @@ def _round_half_up(numerator: int, denominator: int) -> int:
 
 def calc_points(duration_min: int, intensity: str) -> int:
     """Points for one workout: 1 point per 3 minutes plus the intensity adjustment, minimum 5."""
-    return max(MIN_POINTS, _round_half_up(duration_min, 3) + INTENSITY_ADJUSTMENT[intensity])
+    return max(MIN_POINTS, _round_half_up(duration_min, MINUTES_PER_POINT) + INTENSITY_ADJUSTMENT[intensity])
 
 
 def week_bounds(day: date) -> tuple[date, date]:

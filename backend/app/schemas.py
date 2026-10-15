@@ -145,3 +145,24 @@ class SummaryOut(BaseModel):
     start: dt.date | None
     end: dt.date
     players: list[SummaryPlayerOut]
+
+
+# ---- Rules ----
+
+
+class PointsExampleOut(BaseModel):
+    duration_min: int
+    intensity: Intensity
+    points: int
+
+
+class RulesOut(BaseModel):
+    minutes_per_point: int
+    min_points: int
+    intensity_adjustment: dict[str, int]
+    min_duration_min: int
+    max_duration_min: int
+    min_weekly_goal: int
+    max_weekly_goal: int
+    max_workouts_per_day: int
+    examples: list[PointsExampleOut] = Field(description="Pontos calculados pela regra real, para exibir na tela")

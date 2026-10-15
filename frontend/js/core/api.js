@@ -50,4 +50,5 @@ export const api = {
   workouts: ({ person = 'all', period = 'week', limit } = {}) => request('GET', '/workouts', { query: { person, period, limit } }),
   checkin: (workout) => request('POST', '/workouts', { body: workout }),
   deleteWorkout: (id) => request('DELETE', `/workouts/${id}`),
+  rules: () => request('GET', '/rules'),
 };
