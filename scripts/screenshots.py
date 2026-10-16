@@ -1,4 +1,4 @@
-"""Screenshots of every MVP screen, to compare with the Claude Design files in design/.
+"""Screenshots of every screen, to compare with the Claude Design files in design/.
 
 Runs on its own: starts a temporary server with a throwaway database (your real
 data is never touched), seeds the demo duo and captures mobile (390×844) and
@@ -86,9 +86,9 @@ def open_page(browser: Browser, base: str, viewport: dict, token: str | None = N
     return page
 
 
-def shot(page, name: str) -> None:
+def shot(page, name: str, full: bool = False) -> None:
     page.wait_for_timeout(700)  # fonts, bar transitions and confetti
-    page.screenshot(path=str(OUT / f"{name}.png"))
+    page.screenshot(path=str(OUT / f"{name}.png"), full_page=full)
     print("  ", name)
 
 
@@ -111,6 +111,9 @@ def capture_week(browser: Browser, base: str) -> None:
         shot(page, f"{tag}-04-home")
         page.goto(base + "/#/history")
         shot(page, f"{tag}-07-historico")
+        for number, route, name in (("08", "challenges", "desafios"), ("09", "rewards", "premios"), ("10", "goals", "metas-e-regras")):
+            page.goto(base + f"/#/{route}")
+            shot(page, f"{tag}-{number}-{name}", full=True)
 
     # Check-in and success change the data, so they run once, on mobile, at the end.
     for viewport, tag in ((DESKTOP, "desktop"), (MOBILE, "mobile")):
