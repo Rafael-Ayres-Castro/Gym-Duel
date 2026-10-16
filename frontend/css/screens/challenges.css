@@ -1,0 +1,90 @@
+/* Desafios (prototype v2). */
+.challenges { padding: 26px 20px 8px; display: flex; flex-direction: column; gap: 22px; }
+.challenges__new { height: 52px; padding: 0 20px 0 14px; border-radius: 16px; font-size: 16px; gap: 8px; }
+.challenges__section { display: flex; flex-direction: column; gap: 12px; }
+.challenges__section .label-caps { font-size: 12px; }
+.challenges__section .challenges__invite-label { color: var(--pc-text); }
+.challenges__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); gap: 16px; }
+
+/* Received challenge, tinted with the challenger's color. */
+.challenge-invite {
+  display: flex; align-items: center; gap: 14px 20px; flex-wrap: wrap; padding: 20px;
+  background: var(--pc-tint); border: 1.5px solid var(--pc-line); border-radius: 26px;
+}
+.challenge-invite .avatar__circle { font-size: 20px; }
+.challenge-invite__text { flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.challenge-invite__text h3 { font-size: 18px; font-weight: 800; }
+.challenge-invite__text p { font-size: 14px; font-weight: 600; color: var(--text-3); }
+.challenge-invite__actions { flex: 1 1 100%; display: flex; gap: 10px; }
+.challenge-invite__actions .btn { flex: 1; height: 48px; border-radius: 15px; }
+
+/* Active challenge with both progress bars. */
+.challenge-card {
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius-board);
+  padding: 20px; display: flex; flex-direction: column; gap: 18px;
+}
+.challenge-card__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.challenge-card__head h3 { font-size: 18px; font-weight: 800; line-height: 1.3; }
+.challenge-card__head p { margin-top: 4px; font-size: 13.5px; font-weight: 600; color: var(--text-2); }
+.challenge-player { display: flex; align-items: center; gap: 14px; }
+.challenge-player .avatar__circle { font-size: 16px; }
+.challenge-player .avatar__crown { width: 18px; height: 18px; top: -13px; }
+.challenge-player__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.challenge-player__top { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; font-weight: 800; }
+.challenge-player__top .is-lead { color: var(--accent); }
+.challenge-card__foot {
+  display: flex; align-items: center; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line-soft);
+  font-size: 13.5px; font-weight: 700; color: var(--msg-text);
+}
+.challenge-card__foot svg { color: var(--accent); }
+.challenge-card__stake { flex: 1; min-width: 0; }
+.challenge-card__status { font-weight: 800; color: var(--text-2); white-space: nowrap; }
+.challenge-card__status.is-me { color: var(--accent); }
+.challenge-card__status.is-duo { color: var(--pc-text); }
+
+/* Sent, waiting for the duo. */
+.challenge-sent {
+  display: flex; align-items: center; gap: 12px 16px; flex-wrap: wrap; padding: 18px 20px;
+  background: var(--surface); border: 1px dashed var(--line); border-radius: var(--radius-card);
+}
+.challenge-sent__text { flex: 1 1 220px; min-width: 0; }
+.challenge-sent__text h3 { font-size: 16px; font-weight: 800; }
+.challenge-sent__text p { margin-top: 2px; font-size: 13px; font-weight: 600; color: var(--text-2); }
+
+/* Finished. */
+.challenges__done { background: var(--surface); border: 1px solid var(--line-card); border-radius: var(--radius-card); overflow: hidden; }
+.challenge-done { display: flex; align-items: center; gap: 10px 16px; padding: 16px 20px; flex-wrap: wrap; }
+.challenge-done + .challenge-done { border-top: 1px solid var(--line-soft); }
+.challenge-done .avatar__circle { font-size: 15px; }
+.challenge-done .avatar__crown { width: 16px; height: 16px; top: -11px; }
+.challenge-done__text { flex: 1 1 200px; min-width: 0; }
+.challenge-done__title { font-size: 15px; font-weight: 700; }
+.challenge-done__period { margin-top: 1px; font-size: 12.5px; font-weight: 600; color: var(--text-2); }
+.challenge-done__result { font-size: 14px; font-weight: 800; color: var(--text-2); }
+.challenge-done__result.is-me { color: var(--accent); }
+.challenge-done__result.is-duo { color: var(--pc-text); }
+
+/* New challenge dialog. */
+.sheet .chip.is-on { padding-left: 16px; }
+.stake-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.stake-grid .choice { height: 48px; padding: 0 4px; font-size: 13px; }
+@media (min-width: 960px) { .stake-grid .choice { font-size: 15px; } }
+.stake-text { height: 52px; font-size: 15px; }
+.challenge-preview {
+  display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 18px;
+  background: var(--surface); border: 1px solid var(--line-strong);
+}
+.challenge-preview svg { color: var(--accent); }
+.challenge-preview__title { font-size: 16px; font-weight: 800; }
+.challenge-preview__sub { margin-top: 2px; font-size: 13px; font-weight: 600; color: var(--text-2); }
+.sheet__foot--sticky { position: sticky; bottom: 0; background: var(--panel); border-top: 1px solid var(--line-soft); }
+
+@media (min-width: 960px) {
+  .challenges { padding: 0; gap: 28px; }
+  .challenge-invite { padding: 22px 24px; }
+  .challenge-invite__actions { flex: none; }
+  .challenge-invite__actions .btn { flex: none; }
+  .challenge-card { padding: 24px; }
+  .challenge-card__head h3 { font-size: 19px; }
+  .challenge-invite__text h3 { font-size: 19px; }
+}

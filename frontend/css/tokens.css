@@ -67,5 +67,5 @@
 }
 
 /* Each player element sets --pc (color), --pc-text, --pc-ink and --pc-ring. */
-.player--blue { --pc: var(--blue); --pc-text: var(--blue-text); --pc-ink: var(--blue-ink); --pc-ring: var(--blue-ring); }
-.player--pink { --pc: var(--pink); --pc-text: var(--pink-text); --pc-ink: var(--pink-ink); --pc-ring: var(--pink-ring); }
+.player--blue { --pc: var(--blue); --pc-text: var(--blue-text); --pc-ink: var(--blue-ink); --pc-ring: var(--blue-ring); --pc-tint: rgba(76, 141, 255, .06); --pc-line: rgba(76, 141, 255, .5); }
+.player--pink { --pc: var(--pink); --pc-text: var(--pink-text); --pc-ink: var(--pink-ink); --pc-ring: var(--pink-ring); --pc-tint: rgba(255, 92, 168, .06); --pc-line: rgba(255, 92, 168, .5); }

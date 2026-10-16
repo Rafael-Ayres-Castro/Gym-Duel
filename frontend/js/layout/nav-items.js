@@ -4,7 +4,7 @@
 export const NAV_ITEMS = [
   { id: 'home', label: 'Home', icon: 'home' },
   { id: 'history', label: 'Histórico', icon: 'history' },
-  { id: 'challenges', label: 'Desafios', icon: 'swords', soon: 'Desafios chegam na próxima etapa.' },
+  { id: 'challenges', label: 'Desafios', icon: 'swords', badge: 'challenges' },
   { id: 'rewards', label: 'Prêmios', icon: 'trophy', badge: 'rewards' },
   { id: 'goals', label: 'Metas e regras', short: 'Metas', icon: 'target' },
 ];

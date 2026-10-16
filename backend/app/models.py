@@ -191,3 +191,28 @@ class Redemption(Base):
     received_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
 
     reward: Mapped[Reward] = relationship()
+
+
+class Challenge(Base):
+    """A side bet between the two: pending → active (accepted) → done. Declined/cancelled ones are deleted.
+
+    Progress is never stored: it is always derived from the workouts inside the period.
+    """
+
+    __tablename__ = "challenges"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    challenged_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    kind: Mapped[str] = mapped_column(String(10))  # count | minutes | goal
+    workout_type: Mapped[str | None] = mapped_column(String(20))
+    period: Mapped[str] = mapped_column(String(10))  # week | weekend
+    starts_on: Mapped[dt.date] = mapped_column(Date)
+    ends_on: Mapped[dt.date] = mapped_column(Date, index=True)
+    stake_points: Mapped[int | None] = mapped_column(Integer)
+    stake_text: Mapped[str | None] = mapped_column(String(120))
+    status: Mapped[str] = mapped_column(String(10), default="pending", index=True)
+    winner_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    accepted_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+    closed_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))

@@ -284,3 +284,65 @@ class RedeemOut(BaseModel):
 class BadgesOut(BaseModel):
     challenges: int = Field(description="Desafios recebidos esperando sua resposta")
     rewards: int = Field(description="Resgates da dupla que você ainda precisa cumprir")
+
+
+# ---- Challenges ----
+
+StakeText = Annotated[str, StringConstraints(strip_whitespace=True, max_length=120)]
+
+
+class ChallengeIn(BaseModel):
+    kind: Literal["count", "minutes", "goal"] = Field(description="Mais treinos, mais minutos ou primeiro a bater a meta")
+    workout_type: WorkoutType | None = Field(default=None, description="Só conta este tipo de treino (opcional)")
+    period: Literal["week", "weekend"] = Field(description="Esta semana (seg a dom) ou fim de semana (sáb e dom)")
+    stake_points: int | None = Field(default=None, description="Bônus para quem vencer: 10, 20 ou 50")
+    stake_text: StakeText | None = Field(default=None, description="Combinado em texto livre, no lugar dos pontos")
+
+    @model_validator(mode="after")
+    def consistent(self) -> ChallengeIn:
+        if self.stake_text == "":
+            self.stake_text = None
+        if (self.stake_points is None) == (self.stake_text is None):
+            raise ValueError("Escolha pontos ou escreva o combinado.")
+        if self.stake_points is not None and self.stake_points not in (10, 20, 50):
+            raise ValueError("A aposta em pontos é 10, 20 ou 50.")
+        if self.kind == "goal" and (self.period != "week" or self.workout_type is not None):
+            raise ValueError("Primeiro a bater a meta vale só para a semana inteira, sem tipo de treino.")
+        return self
+
+
+class ChallengePlayerOut(BaseModel):
+    user_id: int
+    name: str
+    color: PlayerColor
+    is_me: bool
+    value: int = Field(description="Treinos, minutos ou % da meta, conforme o modelo")
+
+
+class ChallengeOut(BaseModel):
+    id: int
+    title: str
+    base_title: str
+    kind: Literal["count", "minutes", "goal"]
+    workout_type: str | None
+    period: Literal["week", "weekend"]
+    starts_on: dt.date
+    ends_on: dt.date
+    stake_points: int | None
+    stake_text: str | None
+    status: Literal["pending", "active", "done"]
+    created_by_me: bool
+    created_by_name: str
+    players: list[ChallengePlayerOut] = Field(description="Você primeiro")
+    leader_id: int | None
+    first_to_goal_id: int | None
+    winner_id: int | None
+    winner_name: str | None
+    winner_color: PlayerColor | None
+
+
+class ChallengeBoardOut(BaseModel):
+    incoming: list[ChallengeOut] = Field(description="Desafios que você recebeu e ainda não respondeu")
+    outgoing: list[ChallengeOut] = Field(description="Desafios que você enviou, aguardando aceite")
+    active: list[ChallengeOut]
+    done: list[ChallengeOut] = Field(description="Os 10 concluídos mais recentes")

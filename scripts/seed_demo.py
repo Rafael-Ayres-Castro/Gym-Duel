@@ -29,9 +29,10 @@ from app.clock import today_in_sao_paulo  # noqa: E402
 from app.config import get_settings  # noqa: E402
 from app.db import Base, make_engine, make_session_factory  # noqa: E402
 from app.migrate import upgrade_to_head  # noqa: E402
-from app.models import PointLedger, Redemption, Reward, User, Workout  # noqa: E402
+from app.models import Challenge, PointLedger, Redemption, Reward, User, Workout  # noqa: E402
 from app.scoring import calc_points, week_bounds  # noqa: E402
 from app.security import hash_password  # noqa: E402
+from app.services.challenges import winner_of  # noqa: E402
 from app.services.players import set_goal  # noqa: E402
 from app.storage import make_storage  # noqa: E402
 
@@ -75,6 +76,15 @@ REWARDS = [
 REDEMPTIONS = [
     ("R", "Escolher o filme da sexta", 3, "received"),
     ("A", "Massagem nos pés", 14, "pending"),
+]
+# Challenges of the prototype: (author, kind, workout type, period, week offset, points, text, status).
+# Stakes moved to the allowed 10/20/50; winners of finished ones are computed by the real rules.
+CHALLENGES = [
+    ("A", "minutes", "Corrida", "weekend", 0, 20, None, "pending"),
+    ("A", "count", "Musculação", "week", 0, 20, None, "active"),
+    ("R", "minutes", None, "week", 0, None, "quem perder lava a louça no domingo", "active"),
+    ("R", "goal", None, "week", -1, 20, None, "done"),
+    ("A", "count", "Corrida", "week", -2, 10, None, "done"),
 ]
 PHOTO_COLORS = {"R": ((76, 141, 255), (7, 18, 38)), "A": ((255, 92, 168), (42, 7, 22))}
 
@@ -193,6 +203,23 @@ def seed(reset: bool) -> None:
             db.add(redemption)
             db.flush()
             db.add(PointLedger(user_id=users[who].id, source="redemption", ref_id=redemption.id, amount=-reward.cost))
+
+        for author, kind, workout_type, period, week_offset, points, text_stake, status in CHALLENGES:
+            week_start = monday + dt.timedelta(weeks=week_offset)
+            starts_on = week_start + dt.timedelta(days=5) if period == "weekend" else week_start
+            other = "A" if author == "R" else "R"
+            challenge = Challenge(
+                created_by=users[author].id, challenged_id=users[other].id, kind=kind, workout_type=workout_type,
+                period=period, starts_on=starts_on, ends_on=week_start + dt.timedelta(days=6),
+                stake_points=points, stake_text=text_stake, status=status,
+            )
+            db.add(challenge)
+            db.flush()
+            if status == "done":
+                challenge.winner_id = winner_of(db, challenge)
+                challenge.closed_at = dt.datetime.combine(challenge.ends_on, dt.time(23, 0), tzinfo=dt.UTC)
+                if challenge.winner_id and points:
+                    db.add(PointLedger(user_id=challenge.winner_id, source="challenge", ref_id=challenge.id, amount=points))
         db.commit()
 
     print(f"Demonstração criada (hoje = {today:%d/%m/%Y}).")

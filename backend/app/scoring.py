@@ -220,3 +220,40 @@ def checkin_feedback(
     else:
         pill = "Treino extra · pontos contam no desempate"
     return CheckinFeedback(message, pill)
+
+
+# ---- Challenges ----
+
+CHALLENGE_KINDS = ("count", "minutes", "goal")  # mais treinos, mais minutos, primeiro a bater a meta
+CHALLENGE_STAKES = (10, 20, 50)
+
+
+def higher_value_winner(values: dict[int, int]) -> int | None:
+    """User with the strictly higher value. A tie (including 0 × 0) has no winner."""
+    (first, first_value), (second, second_value) = values.items()
+    if first_value == second_value:
+        return None
+    return first if first_value > second_value else second
+
+
+def goal_reached_at(workouts: list[tuple[date, object]], goal: int) -> tuple[date, object] | None:
+    """(date, check-in time) of the workout that reached the goal, or None if it was not reached.
+
+    `workouts` are (date, registered_at) pairs; the goal is reached by the goal-th workout
+    in training-date order (check-in time breaks same-day ties).
+    """
+    ordered = sorted(workouts)
+    return ordered[goal - 1] if len(ordered) >= goal else None
+
+
+def first_to_reach(reached_at: dict[int, tuple | None]) -> int | None:
+    """Who reached the goal first. Nobody reaching it, or the very same moment, has no winner."""
+    reached = {user_id: moment for user_id, moment in reached_at.items() if moment is not None}
+    if not reached:
+        return None
+    if len(reached) == 1:
+        return next(iter(reached))
+    (first, first_at), (second, second_at) = reached.items()
+    if first_at == second_at:
+        return None
+    return first if first_at < second_at else second

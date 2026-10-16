@@ -22,3 +22,16 @@ def week_range(week_start: dt.date) -> str:
     if week_start.month == end.month:
         return f"{week_start.day} a {day_month(end)}"
     return f"{day_month(week_start)} a {day_month(end)}"
+
+
+def challenge_title(kind: str, workout_type: str | None, period: str | None = None) -> str:
+    """'Mais treinos de musculação na semana', 'Mais minutos de treino no fim de semana', ..."""
+    sport = workout_type.lower() if workout_type else None
+    if kind == "count":
+        base = "Mais treinos" + (f" de {sport}" if sport else "")
+    elif kind == "minutes":
+        base = "Mais minutos" + (f" de {sport}" if sport else " de treino")
+    else:
+        base = "Primeiro a bater a meta"
+    suffix = {"week": " na semana", "weekend": " no fim de semana"}.get(period or "", "")
+    return base + suffix
