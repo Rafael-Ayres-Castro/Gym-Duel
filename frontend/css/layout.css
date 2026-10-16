@@ -83,3 +83,7 @@
   .app__body { flex: 1; min-width: 0; padding: 36px 48px 64px; }
   .app__content { max-width: 1180px; }
 }
+
+/* Pink counters on the navigation. */
+.sidebar__count { margin-left: auto; }
+.count-badge--tiny { position: absolute; top: -6px; left: calc(50% + 4px); min-width: 18px; height: 18px; padding: 0 5px; font-size: 10.5px; border: 2px solid var(--panel); }

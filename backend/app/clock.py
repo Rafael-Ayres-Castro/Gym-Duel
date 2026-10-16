@@ -20,5 +20,12 @@ def today_in_sao_paulo(settings: Settings) -> date:
     return datetime.now(ZoneInfo(TIMEZONE)).date()
 
 
+def local_date(moment: datetime) -> date:
+    """Calendar day in São Paulo of a stored timestamp (naive values from SQLite are UTC)."""
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=ZoneInfo("UTC"))
+    return moment.astimezone(ZoneInfo(TIMEZONE)).date()
+
+
 def get_today(settings: Settings = Depends(app_settings)) -> date:
     return today_in_sao_paulo(settings)

@@ -23,6 +23,7 @@ const bottomNav = () => html`
         ${icon(item.icon, 24)}
         <span>${item.short || item.label}</span>
         ${item.soon && html`<span class="soon-badge soon-badge--tiny">EM BREVE</span>`}
+        ${item.badge && html`<span class="count-badge count-badge--tiny" data-count="${item.badge}" hidden></span>`}
       </button>`)}
   </nav>`;
 
@@ -36,6 +37,7 @@ const sidebar = (user) => html`
       ${NAV_ITEMS.map((item) => html`
         <button class="sidebar__item${item.soon ? ' is-soon' : ''}" type="button" data-nav="${item.id}" ${soonAttrs(item)}>
           ${icon(item.icon, 22)}${item.label}${item.soon && html`<span class="soon-badge">EM BREVE</span>`}
+          ${item.badge && html`<span class="count-badge sidebar__count" data-count="${item.badge}" hidden></span>`}
         </button>`)}
     </nav>
     <div class="sidebar__user">
@@ -80,6 +82,16 @@ async function refreshUser() {
   if (balance) balance.textContent = `Saldo: ${user.balance} pts`;
 }
 
+/** Pink counters on the navigation (challenges waiting for an answer, rewards to fulfil). */
+async function refreshBadges() {
+  const counts = await api.badges();
+  shell?.element.querySelectorAll('[data-count]').forEach((badge) => {
+    const count = counts[badge.dataset.count] || 0;
+    badge.hidden = count === 0;
+    badge.textContent = count;
+  });
+}
+
 /** Unread notifications become toasts, once. */
 async function showNotifications() {
   const unread = await api.notifications();
@@ -98,7 +110,11 @@ function build(root, user) {
   });
   on(element, 'click', '[data-action="logout"]', logout);
   on(element, 'click', '[data-action="retry"]', reload);
-  const cleanup = [EVENTS.workoutSaved, EVENTS.accountChanged].map((name) => listen(name, () => refreshUser().catch(() => {})));
+  const refresh = () => {
+    refreshUser().catch(() => {});
+    refreshBadges().catch(() => {});
+  };
+  const cleanup = [EVENTS.workoutSaved, EVENTS.accountChanged].map((name) => listen(name, refresh));
   showNotifications().catch(() => {}); // a failure here must not block the app
   return { element, content: element.querySelector('#screen'), cleanup: () => cleanup.forEach((off) => off()) };
 }
@@ -131,6 +147,7 @@ export async function showInShell(root, screenId, mountScreen) {
   }
   closeAccountMenu();
   setActive(screenId);
+  refreshBadges().catch(() => {});
   window.scrollTo(0, 0);
   try {
     return await mountScreen(shell.content);

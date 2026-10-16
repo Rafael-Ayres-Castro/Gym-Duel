@@ -9,6 +9,7 @@ import { initPhotoViewer } from './ui/photo-viewer.js';
 import * as history from './screens/history/history.js';
 import * as home from './screens/home/home.js';
 import * as goals from './screens/goals/goals.js';
+import * as rewards from './screens/rewards/rewards.js';
 import * as login from './screens/auth/login.js';
 import * as signup from './screens/auth/signup.js';
 
@@ -23,6 +24,7 @@ defineRoutes(
     signup: { guard: guestsOnly, mount: () => signup.mount(root) },
     home: { guard: requireLogin, mount: () => showInShell(root, 'home', home.mount) },
     history: { guard: requireLogin, mount: () => showInShell(root, 'history', history.mount) },
+    rewards: { guard: requireLogin, mount: () => showInShell(root, 'rewards', rewards.mount) },
     goals: { guard: requireLogin, mount: () => showInShell(root, 'goals', goals.mount) },
   },
   () => (session.isLoggedIn ? 'home' : 'login'),

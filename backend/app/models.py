@@ -161,3 +161,33 @@ class Notification(Base):
     payload: Mapped[dict | None] = mapped_column(JSON)
     created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     read_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class Reward(Base):
+    """Something the creator offers; only the other member redeems it, paying with points."""
+
+    __tablename__ = "rewards"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    title: Mapped[str] = mapped_column(String(80))
+    cost: Mapped[int] = mapped_column(Integer)
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class Redemption(Base):
+    """A redeemed reward: pending → fulfilled (by the owner) → received (by who redeemed)."""
+
+    __tablename__ = "redemptions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    reward_id: Mapped[int] = mapped_column(ForeignKey("rewards.id"), index=True)
+    redeemed_by: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    cost: Mapped[int] = mapped_column(Integer)  # price at the moment of the redemption
+    status: Mapped[str] = mapped_column(String(10), default="pending")
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    fulfilled_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+    received_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+
+    reward: Mapped[Reward] = relationship()

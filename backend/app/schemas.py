@@ -235,3 +235,52 @@ class SummaryOut(BaseModel):
     start: dt.date | None
     end: dt.date
     players: list[SummaryPlayerOut]
+
+
+# ---- Rewards ----
+
+RewardTitle = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=80)]
+
+
+class RewardIn(BaseModel):
+    title: RewardTitle
+    cost: int = Field(description="50, 100, 150, 200 ou 300 pts")
+
+
+class RewardOut(BaseModel):
+    id: int
+    title: str
+    cost: int
+    created_by: int
+
+
+class StoreOut(BaseModel):
+    balance: int
+    opponent_balance: int | None
+    opponent_name: str | None
+    offered_to_me: list[RewardOut] = Field(description="Oferecidos pela dupla: você resgata")
+    offered_by_me: list[RewardOut] = Field(description="Oferecidos por você: a dupla resgata")
+    costs: list[int]
+
+
+class RedemptionOut(BaseModel):
+    id: int
+    title: str
+    cost: int
+    status: Literal["pending", "fulfilled", "received"]
+    created_at: dt.datetime
+    redeemed_on: dt.date = Field(description="Dia do resgate no fuso do casal")
+    owner_name: str
+    owner_color: PlayerColor
+    redeemer_name: str
+    redeemer_color: PlayerColor
+
+
+class RedeemOut(BaseModel):
+    redemption_id: int
+    balance: int
+
+
+class BadgesOut(BaseModel):
+    challenges: int = Field(description="Desafios recebidos esperando sua resposta")
+    rewards: int = Field(description="Resgates da dupla que você ainda precisa cumprir")

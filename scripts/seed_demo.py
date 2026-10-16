@@ -29,7 +29,7 @@ from app.clock import today_in_sao_paulo  # noqa: E402
 from app.config import get_settings  # noqa: E402
 from app.db import Base, make_engine, make_session_factory  # noqa: E402
 from app.migrate import upgrade_to_head  # noqa: E402
-from app.models import User, Workout  # noqa: E402
+from app.models import PointLedger, Redemption, Reward, User, Workout  # noqa: E402
 from app.scoring import calc_points, week_bounds  # noqa: E402
 from app.security import hash_password  # noqa: E402
 from app.services.players import set_goal  # noqa: E402
@@ -59,6 +59,22 @@ SEED = [
     ("A", "Musculação", 45, "Moderada", 4, "", False),
     ("R", "Musculação", 60, "Moderada", 2, "", False),
     ("A", "Aula", 60, "Moderada", 2, "", False),
+]
+# Rewards of the prototype store (costs moved to the allowed options: 50, 100, 150, 200, 300).
+REWARDS = [
+    ("A", "Escolher o filme da sexta", 50),
+    ("A", "Massagem de 20 minutos", 100),
+    ("A", "Café da manhã na cama", 150),
+    ("A", "Folga da louça por uma semana", 200),
+    ("A", "Jantar no restaurante que você escolher", 300),
+    ("R", "Playlist nova de corrida feita por mim", 50),
+    ("R", "Massagem nos pés", 100),
+    ("R", "Passeio de domingo à sua escolha", 150),
+]
+# (who redeemed, reward title, prototype day, status)
+REDEMPTIONS = [
+    ("R", "Escolher o filme da sexta", 3, "received"),
+    ("A", "Massagem nos pés", 14, "pending"),
 ]
 PHOTO_COLORS = {"R": ((76, 141, 255), (7, 18, 38)), "A": ((255, 92, 168), (42, 7, 22))}
 
@@ -160,6 +176,23 @@ def seed(reset: bool) -> None:
                     created_at=dt.datetime.combine(date, dt.time(19, 0), tzinfo=dt.UTC),
                 )
             )
+
+        rewards = {}
+        for who, title, cost in REWARDS:
+            reward = Reward(created_by=users[who].id, title=title, cost=cost)
+            db.add(reward)
+            rewards[title] = reward
+        db.flush()
+        for who, title, day, status in REDEMPTIONS:
+            when = dt.datetime.combine(monday + dt.timedelta(days=day - PROTOTYPE_MONDAY), dt.time(21, 0), tzinfo=dt.UTC)
+            reward = rewards[title]
+            redemption = Redemption(
+                reward_id=reward.id, redeemed_by=users[who].id, cost=reward.cost, status=status, created_at=when,
+                fulfilled_at=when if status != "pending" else None, received_at=when if status == "received" else None,
+            )
+            db.add(redemption)
+            db.flush()
+            db.add(PointLedger(user_id=users[who].id, source="redemption", ref_id=redemption.id, amount=-reward.cost))
         db.commit()
 
     print(f"Demonstração criada (hoje = {today:%d/%m/%Y}).")
