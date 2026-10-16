@@ -16,6 +16,7 @@ from .config import FRONTEND_DIR, Settings, get_settings
 from .db import Base, make_engine, make_session_factory
 from .maintenance import run_maintenance
 from .migrate import upgrade_to_head
+from .storage import make_storage
 
 
 async def _validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
@@ -39,6 +40,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     app.state.settings = settings
     app.state.session_factory = make_session_factory(engine)
+    app.state.storage = make_storage(settings)
     app.add_exception_handler(RequestValidationError, _validation_error)
 
     for router in routers.ALL:

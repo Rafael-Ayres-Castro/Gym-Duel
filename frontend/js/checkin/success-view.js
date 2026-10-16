@@ -22,7 +22,7 @@ function miniRow(player) {
     </div>`;
 }
 
-export function successView({ workout, scoreboard, feedback }, { wide }) {
+export function successView({ workout, scoreboard, feedback, photoError }, { wide }) {
   const { me, opponent } = splitPlayers(scoreboard);
   const tie = opponent && me.pct === opponent.pct && me.done > 0;
   return html`
@@ -34,7 +34,13 @@ export function successView({ workout, scoreboard, feedback }, { wide }) {
         </div>
         <h2 class="success__title display" id="checkin-title">+${workout.points} pontos!</h2>
         <p class="success__msg">${feedback.message}</p>
-        <p class="success__summary">${workout.type} · ${workout.duration_min} min · ${workout.intensity} · ${dayLabel(workout.date, scoreboard.today)}</p>
+        <p class="success__summary">${workout.type} · ${workout.duration_min} min · ${workout.intensity} · ${dayLabel(workout.date, scoreboard.today)}${workout.has_photo ? ' · com foto' : ''}</p>
+        ${photoError && html`
+          <div class="success__photo-error" role="alert">
+            ${icon('alert', 18, { stroke: 2.2 })}
+            <span><strong>A foto não foi enviada.</strong> ${photoError} O treino está salvo, sem o bônus de foto.</span>
+            <button class="btn btn--secondary btn--sm" type="button" data-action="retry-photo">Tentar de novo</button>
+          </div>`}
         <div class="success__board">
           ${scoreboard.players.map(miniRow)}
           ${tie && html`<p class="success__tie">Meta empatada. No empate, vence quem soma mais pontos.</p>`}

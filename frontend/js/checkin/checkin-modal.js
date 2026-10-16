@@ -4,6 +4,7 @@ import { api, ApiError } from '../core/api.js';
 import { loadScoreboard, setScoreboard } from '../core/app-state.js';
 import { createElement, html, on, renderInto } from '../core/dom.js';
 import { emit, EVENTS, listen } from '../core/events.js';
+import { PhotoError, preparePhoto } from '../core/image.js';
 import { isDesktop } from '../core/media.js';
 import { go } from '../core/router.js';
 import { addDays, parseDate, toIso } from '../domain/format.js';
@@ -51,9 +52,60 @@ function sync() {
   custom.classList.toggle('is-valid', form.custom !== '' && minutes !== null);
   custom.classList.toggle('is-invalid', form.custom !== '' && minutes === null);
   dialog.querySelector('.checkin__dur-error').hidden = !(form.custom !== '' && minutes === null);
-  dialog.querySelector('[data-bind="points"]').textContent = minutes ? `+${calcPoints(minutes, form.intensity, false, modal.rules)}` : '—';
-  dialog.querySelector('[data-bind="summary"]').textContent = `${form.type} · ${minutes ? `${minutes} min` : '— min'} · ${form.intensity}`;
-  dialog.querySelector('[data-action="save"]').disabled = !minutes || modal.saving;
+  const hasPhoto = Boolean(modal.photo);
+  dialog.querySelector('[data-bind="points"]').textContent = minutes ? `+${calcPoints(minutes, form.intensity, hasPhoto, modal.rules)}` : '—';
+  dialog.querySelector('[data-bind="summary"]').textContent =
+    `${form.type} · ${minutes ? `${minutes} min` : '— min'} · ${form.intensity}${hasPhoto ? ' · com foto' : ''}`;
+  dialog.querySelector('.photo-pick').dataset.photoState = hasPhoto ? 'filled' : 'empty';
+  dialog.querySelector('[data-action="save"]').disabled = !minutes || modal.saving || modal.preparingPhoto;
+}
+
+function showPhotoError(message) {
+  const error = modal.dialog.querySelector('.photo-pick__error');
+  error.hidden = !message;
+  error.querySelector('span').textContent = message || '';
+}
+
+/** Resize the chosen picture right away, so saving is instant and errors show before saving. */
+async function choosePhoto(input) {
+  const file = input.files?.[0];
+  input.value = ''; // allow choosing the same file again after "Remover"
+  if (!file) return;
+  showPhotoError(null);
+  modal.preparingPhoto = true;
+  sync();
+  try {
+    const blob = await preparePhoto(file);
+    if (!modal) return;
+    setPhoto({ blob, url: URL.createObjectURL(blob) });
+  } catch (error) {
+    if (!(error instanceof PhotoError)) throw error;
+    showPhotoError(error.message);
+  } finally {
+    if (modal) {
+      modal.preparingPhoto = false;
+      sync();
+    }
+  }
+}
+
+function setPhoto(photo) {
+  if (modal.photo) URL.revokeObjectURL(modal.photo.url);
+  modal.photo = photo;
+  const thumb = modal.dialog.querySelector('.photo-pick__thumb');
+  if (photo) thumb.src = photo.url;
+  else thumb.removeAttribute('src');
+  sync();
+}
+
+/** Upload after the workout exists. On failure the workout stays saved, without the bonus. */
+async function uploadPhoto(result) {
+  try {
+    return await api.uploadPhoto(result.workout.id, modal.photo.blob);
+  } catch (error) {
+    if (!(error instanceof ApiError)) throw error;
+    return { ...result, photoError: error.message };
+  }
 }
 
 function showError(message) {
@@ -80,9 +132,10 @@ async function save() {
       date: form.day === 'today' ? today : toIso(addDays(parseDate(today), -1)),
       note: form.note.trim(),
     });
-    setScoreboard(result.scoreboard);
-    showSuccess(result);
-    emit(EVENTS.workoutSaved, result);
+    const final = modal.photo ? await uploadPhoto(result) : result;
+    setScoreboard(final.scoreboard);
+    showSuccess(final);
+    emit(EVENTS.workoutSaved, final);
   } catch (error) {
     if (!(error instanceof ApiError)) throw error;
     modal.saving = false;
@@ -99,10 +152,23 @@ function showSuccess(result) {
   modal.dialog.querySelector('[data-action="close"]').focus({ preventScroll: true });
 }
 
+async function retryPhoto(button) {
+  button.disabled = true;
+  button.textContent = 'Enviando…';
+  const final = await uploadPhoto(modal.result);
+  if (!modal) return;
+  if (!final.photoError) {
+    setScoreboard(final.scoreboard);
+    emit(EVENTS.workoutSaved, final);
+  }
+  showSuccess(final);
+}
+
 function close() {
   if (!modal?.overlay) return;
   const { overlay, cleanup, previousFocus } = modal;
   cleanup.forEach((off) => off());
+  if (modal.photo) URL.revokeObjectURL(modal.photo.url);
   overlay.remove();
   document.body.classList.remove('has-modal');
   modal = null;
@@ -113,7 +179,7 @@ function onKeydown(event) {
   if (event.key === 'Escape') {
     event.preventDefault();
     close();
-  } else if (event.key === 'Enter' && !event.target.closest('textarea, [data-action="close"], [data-action="history"]')) {
+  } else if (event.key === 'Enter' && !event.target.closest('textarea, label, [data-action="close"], [data-action="history"], [data-action="retry-photo"], [data-action="remove-photo"]')) {
     event.preventDefault();
     if (modal.result) close();
     else save();
@@ -139,11 +205,14 @@ function bindEvents(overlay, dialog) {
       sync();
     }),
     on(dialog, 'input', '[name="note"]', (_, textarea) => { modal.form.note = textarea.value; }),
+    on(dialog, 'change', '[name="photo"], [name="photo-camera"]', (_, input) => choosePhoto(input)),
     on(dialog, 'click', '[data-action]', (_, button) => {
       const { action } = button.dataset;
       if (action === 'save') save();
       if (action === 'close') close();
       if (action === 'history') { close(); go('history'); }
+      if (action === 'remove-photo') setPhoto(null);
+      if (action === 'retry-photo') retryPhoto(button);
     }),
   ];
   // Click on the dimmed backdrop (desktop) closes, like the prototype.
@@ -173,11 +242,14 @@ async function open() {
   const overlay = createElement(html`
     <div class="checkin-overlay">
       <div class="checkin" role="dialog" aria-modal="true" aria-labelledby="checkin-title" tabindex="-1">
-        ${checkinFormView(board.today, board.rules)}
+        ${checkinFormView(board.today, board.rules, board.players.find((p) => !p.is_me)?.name || 'Sua dupla')}
       </div>
     </div>`);
   const dialog = overlay.firstElementChild;
-  modal = { overlay, dialog, form: prefill(lastWorkout), today: board.today, rules: board.rules, saving: false, result: null, previousFocus: document.activeElement };
+  modal = {
+    overlay, dialog, form: prefill(lastWorkout), today: board.today, rules: board.rules,
+    photo: null, preparingPhoto: false, saving: false, result: null, previousFocus: document.activeElement,
+  };
   dialog.querySelector('[name="custom"]').value = modal.form.custom;
   dialog.querySelector('[name="custom"]').placeholder = isDesktop() ? 'Outro' : '—';
   modal.cleanup = bindEvents(overlay, dialog);

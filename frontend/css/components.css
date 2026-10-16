@@ -184,3 +184,44 @@
   min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--pink); color: var(--pink-ink);
   font-size: 12px; font-weight: 800; display: inline-grid; place-items: center;
 }
+
+/* ---- Sheet: bottom sheet on mobile, centered modal on desktop ---- */
+.sheet-overlay {
+  position: fixed; inset: 0; z-index: 55; display: flex; align-items: flex-end; justify-content: center;
+  background: rgba(5, 6, 8, .72); backdrop-filter: blur(6px); animation: gdFade .18s ease-out;
+}
+.sheet {
+  width: 100%; max-height: 92dvh; overflow: auto; outline: none; position: relative;
+  background: var(--panel); border: 1px solid var(--line-strong); border-bottom: 0; border-radius: 28px 28px 0 0;
+  padding-bottom: env(safe-area-inset-bottom); animation: gdIn .22s cubic-bezier(.2, .8, .3, 1);
+}
+@media (min-width: 960px) {
+  .sheet-overlay { align-items: center; padding: 24px; }
+  .sheet { max-height: calc(100vh - 48px); border-bottom: 1px solid var(--line-strong); border-radius: 30px; box-shadow: 0 40px 80px -20px rgba(0, 0, 0, .6); padding-bottom: 0; }
+  .sheet--sm { max-width: 480px; }
+  .sheet--md { max-width: 560px; }
+  .sheet--lg { max-width: 600px; }
+}
+
+/* ---- Proof photos ---- */
+.photo-thumb {
+  width: 48px; height: 48px; flex: none; border: 0; padding: 0; border-radius: 12px; overflow: hidden;
+  background: repeating-linear-gradient(135deg, var(--surface-2) 0 8px, var(--surface-hover) 8px 16px);
+}
+.photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-thumb:hover, .photo-thumb:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
+
+.photo-viewer__image { aspect-ratio: 4 / 3; background: repeating-linear-gradient(135deg, var(--surface-2) 0 14px, var(--surface-hover) 14px 28px); }
+.photo-viewer__image img { width: 100%; height: 100%; object-fit: contain; display: block; background: #000; }
+.photo-viewer__info { padding: 18px 22px; display: flex; align-items: center; gap: 12px 14px; flex-wrap: wrap; }
+.photo-viewer__info .avatar__circle { font-size: 16px; }
+.photo-viewer__text { flex: 1 1 160px; min-width: 0; }
+.photo-viewer__actions { flex: 1 1 100%; display: flex; gap: 10px; }
+.photo-viewer__actions .btn { flex: 1; }
+@media (min-width: 960px) {
+  .photo-viewer__actions { flex: none; }
+  .photo-viewer__actions .btn { flex: none; }
+}
+.photo-viewer__title { font-size: 16px; font-weight: 800; }
+.photo-viewer__sub { margin-top: 1px; font-size: 13px; font-weight: 600; color: var(--text-2); }
+.photo-viewer__info .btn { height: 44px; font-size: 14px; gap: 8px; }

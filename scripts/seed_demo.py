@@ -15,8 +15,11 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import io
 import sys
 from pathlib import Path
+
+from PIL import Image, ImageDraw
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend"))
 
@@ -30,6 +33,7 @@ from app.models import User, Workout  # noqa: E402
 from app.scoring import calc_points, week_bounds  # noqa: E402
 from app.security import hash_password  # noqa: E402
 from app.services.players import set_goal  # noqa: E402
+from app.storage import make_storage  # noqa: E402
 
 DEMO_PASSWORD = "gymduel"
 PLAYERS = {
@@ -37,25 +41,51 @@ PLAYERS = {
     "A": ("Ana", "ana@email.com", 3),
 }
 PROTOTYPE_MONDAY = 13
-# (who, type, minutes, intensity, prototype day, note), newest first: copied from SEED in the prototype.
+# (who, type, minutes, intensity, prototype day, note, has photo), newest first: SEED of the v2 prototype.
 SEED = [
-    ("A", "Funcional", 45, "Alta", 16, ""),
-    ("R", "Musculação", 60, "Moderada", 15, "Treino de costas"),
-    ("A", "Corrida", 30, "Moderada", 15, ""),
-    ("A", "Aula", 60, "Alta", 14, "Spinning"),
-    ("R", "Corrida", 30, "Moderada", 14, ""),
-    ("R", "Musculação", 45, "Moderada", 13, ""),
-    ("R", "Corrida", 45, "Moderada", 12, ""),
-    ("A", "Aula", 60, "Alta", 10, ""),
-    ("R", "Musculação", 60, "Moderada", 10, ""),
-    ("R", "Musculação", 45, "Alta", 8, "Recorde no agachamento"),
-    ("A", "Funcional", 45, "Moderada", 8, ""),
-    ("A", "Corrida", 45, "Moderada", 6, ""),
-    ("R", "Funcional", 30, "Leve", 6, ""),
-    ("A", "Musculação", 45, "Moderada", 4, ""),
-    ("R", "Musculação", 60, "Moderada", 2, ""),
-    ("A", "Aula", 60, "Moderada", 2, ""),
+    ("A", "Funcional", 30, "Alta", 16, "", True),
+    ("R", "Musculação", 45, "Moderada", 15, "Treino de costas", True),
+    ("A", "Corrida", 30, "Moderada", 15, "", False),
+    ("A", "Aula", 60, "Alta", 14, "Spinning", False),
+    ("R", "Corrida", 30, "Moderada", 14, "", False),
+    ("R", "Musculação", 45, "Moderada", 13, "", False),
+    ("R", "Corrida", 45, "Moderada", 12, "", True),
+    ("A", "Aula", 60, "Alta", 10, "", True),
+    ("R", "Musculação", 60, "Moderada", 10, "", False),
+    ("R", "Musculação", 45, "Alta", 8, "Recorde no agachamento", True),
+    ("A", "Funcional", 45, "Moderada", 8, "", False),
+    ("A", "Corrida", 45, "Moderada", 6, "", False),
+    ("R", "Funcional", 30, "Leve", 6, "", False),
+    ("A", "Musculação", 45, "Moderada", 4, "", False),
+    ("R", "Musculação", 60, "Moderada", 2, "", False),
+    ("A", "Aula", 60, "Moderada", 2, "", False),
 ]
+PHOTO_COLORS = {"R": ((76, 141, 255), (7, 18, 38)), "A": ((255, 92, 168), (42, 7, 22))}
+
+
+def demo_photo(who: str, seed: int) -> bytes:
+    """A placeholder "gym photo": a diagonal gradient in the player's colors with a few bars."""
+    light, dark = PHOTO_COLORS[who]
+    width, height = 1200, 900
+    image = Image.new("RGB", (width, height))
+    pixels = image.load()
+    for y in range(0, height, 4):
+        for x in range(0, width, 4):
+            t = (x / width + y / height) / 2
+            color = tuple(int(dark[i] + (light[i] - dark[i]) * t) for i in range(3))
+            for dy in range(4):
+                for dx in range(4):
+                    pixels[x + dx, y + dy] = color
+    draw = ImageDraw.Draw(image)
+    for n in range(5):  # "dumbbell plates"
+        x = 180 + n * 190 + (seed * 37) % 60
+        draw.rounded_rectangle((x, 300, x + 90, 600), radius=24, fill=(20, 22, 27))
+    draw.rectangle((150, 430, 1050, 470), fill=(255, 225, 74))
+    output = io.BytesIO()
+    image.save(output, "JPEG", quality=80)
+    return output.getvalue()
+
+
 # Older weeks, to give the streak panel some history: 1 = goal met, 0 = missed (HIST in the prototype),
 # oldest first, ending two weeks before the oldest SEED week.
 HISTORY = {"R": [1, 1, 1, 0, 1, 0], "A": [1, 1, 1, 1, 1, 0]}
@@ -92,7 +122,7 @@ def seed(reset: bool) -> None:
             sys.exit("Já existem usuários no banco. Use --reset para apagar tudo e recriar a demonstração.")
 
         # Goals start on the week of the oldest workout, so past weeks count for the streak.
-        first_seed_week = week_bounds(monday + dt.timedelta(days=min(day for *_, day, _ in SEED) - PROTOTYPE_MONDAY))[0]
+        first_seed_week = week_bounds(monday + dt.timedelta(days=min(row[4] for row in SEED) - PROTOTYPE_MONDAY))[0]
         first_week = first_seed_week - dt.timedelta(weeks=len(HISTORY["R"]))
         users = {}
         for key, (name, email, goal) in PLAYERS.items():
@@ -102,18 +132,23 @@ def seed(reset: bool) -> None:
             set_goal(db, user.id, goal, first_week)
             users[key] = user
 
+        storage = make_storage(settings)
         skipped = 0
-        for position, (who, kind, minutes, intensity, day, note) in enumerate(SEED):
+        for position, (who, kind, minutes, intensity, day, note, has_photo) in enumerate(SEED):
             date = monday + dt.timedelta(days=day - PROTOTYPE_MONDAY)
             if date > today:
                 skipped += 1
                 continue
             # Same-day workouts keep the prototype order (earlier in SEED = registered later).
             created = dt.datetime.combine(date, dt.time(20, 0), tzinfo=dt.UTC) - dt.timedelta(minutes=position)
+            photo_key = None
+            if has_photo:
+                photo_key = f"workouts/demo-{position}.jpg"
+                storage.save(photo_key, demo_photo(who, position))
             db.add(
                 Workout(
                     user_id=users[who].id, date=date, type=kind, duration_min=minutes, intensity=intensity,
-                    points=calc_points(minutes, intensity), note=note, created_at=created,
+                    points=calc_points(minutes, intensity, has_photo), note=note, photo_key=photo_key, created_at=created,
                 )
             )
         history = history_workouts(first_seed_week)

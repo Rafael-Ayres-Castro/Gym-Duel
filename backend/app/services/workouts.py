@@ -12,10 +12,12 @@ from ..config import Settings
 from ..errors import api_error
 from ..models import User, Workout
 from ..schemas import WorkoutIn
+from ..scoring import WeekStats
+from ..storage import PhotoStorage
 from . import players, rules, stats
 
 
-def serialize(db: Session, workout: Workout) -> dict:
+def serialize(db: Session, workout: Workout, storage: PhotoStorage) -> dict:
     return {
         "id": workout.id,
         "user_id": workout.user_id,
@@ -28,6 +30,7 @@ def serialize(db: Session, workout: Workout) -> dict:
         "points": workout.points,
         "note": workout.note,
         "has_photo": bool(workout.photo_key),
+        "photo_url": storage.signed_url(workout.photo_key) if workout.photo_key else None,
         "created_at": workout.created_at,
     }
 
@@ -45,11 +48,11 @@ def _check_allowed(db: Session, user: User, day: dt.date, today: dt.date, settin
         raise api_error(409, "daily_limit", "Você já fez check-in neste dia.")
 
 
-def create_checkin(db: Session, user: User, data: WorkoutIn, today: dt.date, settings: Settings) -> dict:
+def create_checkin(
+    db: Session, user: User, data: WorkoutIn, today: dt.date, settings: Settings, storage: PhotoStorage
+) -> dict:
     """Store the workout and return it with the new scoreboard and the success-screen feedback."""
     _check_allowed(db, user, data.date, today, settings)
-    me_before = stats.load_duel(db, user, today).me_week
-
     workout = Workout(
         user_id=user.id,
         date=data.date,
@@ -62,20 +65,33 @@ def create_checkin(db: Session, user: User, data: WorkoutIn, today: dt.date, set
     db.add(workout)
     db.commit()
     db.refresh(workout)
+    return checkin_result(db, user, workout, today, storage)
 
+
+def checkin_result(db: Session, user: User, workout: Workout, today: dt.date, storage: PhotoStorage) -> dict:
+    """Workout + new scoreboard + feedback comparing the board with and without this workout.
+
+    Also used after a photo is attached, since the photo bonus changes the points.
+    """
     duel = stats.load_duel(db, user, today)
+    me_after = duel.me_week
     # "Ontem" on a Monday lands in last week: it is saved but does not move this week's board.
-    counts_for_current_week = data.date >= scoring.week_bounds(today)[0]
+    counts_for_current_week = workout.date >= scoring.week_bounds(today)[0]
+    me_before = (
+        WeekStats(me_after.user_id, me_after.done - 1, me_after.goal, me_after.points - workout.points)
+        if counts_for_current_week
+        else me_after
+    )
     feedback = scoring.checkin_feedback(
         me_before=me_before,
-        me_after=duel.me_week,
+        me_after=me_after,
         opponent=duel.opponent_week,
         counts_for_current_week=counts_for_current_week,
         streak_after=duel.me.streak(today),
         opponent_name=duel.opponent_name,
     )
     return {
-        "workout": serialize(db, workout),
+        "workout": serialize(db, workout, storage),
         "scoreboard": stats.build_scoreboard(db, duel),
         "feedback": {
             "message": feedback.message,
@@ -86,7 +102,7 @@ def create_checkin(db: Session, user: User, data: WorkoutIn, today: dt.date, set
 
 
 def list_workouts(
-    db: Session, user: User, person: str, period: str, today: dt.date, limit: int | None
+    db: Session, user: User, person: str, period: str, today: dt.date, limit: int | None, storage: PhotoStorage
 ) -> list[dict]:
     stmt = select(Workout)
     if person == "me":
@@ -103,17 +119,26 @@ def list_workouts(
     stmt = stmt.where(Workout.date <= end).order_by(Workout.date.desc(), Workout.created_at.desc(), Workout.id.desc())
     if limit:
         stmt = stmt.limit(limit)
-    return [serialize(db, w) for w in db.scalars(stmt)]
+    return [serialize(db, w, storage) for w in db.scalars(stmt)]
 
 
-def delete_workout(db: Session, user: User, workout_id: int, today: dt.date) -> None:
-    """Delete one of the user's own recent workouts; its points go away with it."""
+def own_recent_workout(db: Session, user: User, workout_id: int, today: dt.date, action: str) -> Workout:
+    """A workout of the user that can still change (today or yesterday)."""
     workout = db.get(Workout, workout_id)
     if workout is None:
         raise api_error(404, "not_found", "Treino não encontrado.")
     if workout.user_id != user.id:
-        raise api_error(403, "forbidden", "Você só pode apagar os seus treinos.")
+        raise api_error(403, "forbidden", f"Você só pode {action} os seus treinos.")
     if not in_checkin_window(workout.date, today):
-        raise api_error(409, "too_old", "Só dá para apagar treinos de hoje ou de ontem.")
+        raise api_error(409, "too_old", f"Só dá para {action} treinos de hoje ou de ontem.")
+    return workout
+
+
+def delete_workout(db: Session, user: User, workout_id: int, today: dt.date, storage: PhotoStorage) -> None:
+    """Delete one of the user's own recent workouts; its points (and photo) go away with it."""
+    workout = own_recent_workout(db, user, workout_id, today, "apagar")
+    photo_key = workout.photo_key
     db.delete(workout)
     db.commit()
+    if photo_key:
+        storage.delete(photo_key)

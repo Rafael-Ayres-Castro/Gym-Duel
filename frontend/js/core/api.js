@@ -19,13 +19,15 @@ async function request(method, path, { body, query } = {}) {
     if (value != null) url.searchParams.set(key, value);
   });
 
+  const isForm = body instanceof FormData; // uploads: the browser sets the multipart boundary itself
   const headers = {};
-  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  if (body !== undefined && !isForm) headers['Content-Type'] = 'application/json';
   if (session.token) headers.Authorization = `Bearer ${session.token}`;
 
   let response;
   try {
-    response = await fetch(url, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+    const payload = body === undefined || isForm ? body : JSON.stringify(body);
+    response = await fetch(url, { method, headers, body: payload });
   } catch {
     throw new ApiError(0, 'network', 'Sem conexão com o servidor. Confira a internet e tente de novo.');
   }
@@ -51,6 +53,12 @@ export const api = {
   checkin: (workout) => request('POST', '/workouts', { body: workout }),
   deleteWorkout: (id) => request('DELETE', `/workouts/${id}`),
   updateMe: (data) => request('PATCH', '/me', { body: data }),
+  uploadPhoto: (workoutId, blob) => {
+    const form = new FormData();
+    form.append('photo', blob, 'treino.jpg');
+    return request('POST', `/workouts/${workoutId}/photo`, { body: form });
+  },
+  cheer: (workoutId) => request('POST', `/workouts/${workoutId}/cheer`),
   rules: () => request('GET', '/rules'),
   proposeRules: (values) => request('POST', '/rules/proposals', { body: values }),
   approveRules: (id) => request('POST', `/rules/proposals/${id}/approve`),

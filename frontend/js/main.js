@@ -5,6 +5,7 @@ import { defineRoutes, startRouter } from './core/router.js';
 import { session } from './core/session.js';
 import { initShortcuts } from './core/shortcuts.js';
 import { logout, showInShell } from './layout/app-shell.js';
+import { initPhotoViewer } from './ui/photo-viewer.js';
 import * as history from './screens/history/history.js';
 import * as home from './screens/home/home.js';
 import * as goals from './screens/goals/goals.js';
@@ -30,5 +31,6 @@ defineRoutes(
 setSessionExpiredHandler(logout);
 initCheckin();
 initShortcuts();
+initPhotoViewer();
 
 startRouter();

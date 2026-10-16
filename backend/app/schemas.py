@@ -91,6 +91,7 @@ class WorkoutOut(BaseModel):
     points: int
     note: str
     has_photo: bool
+    photo_url: str | None = Field(description="URL assinada da foto, válida por poucos minutos")
     created_at: dt.datetime
 
 

@@ -11,7 +11,37 @@ const group = (label, content, extra = '') => html`
     ${content}
   </section>`;
 
-export function checkinFormView(todayIso, rules) {
+export const photoBonusLabel = (rules) => (rules.photo_bonus ? `+${rules.photo_bonus} pts` : 'sem bônus');
+
+/** Empty state (add from camera or gallery) and the filled state (preview + remove). */
+const photoPicker = (bonusLabel, opponentName) => html`
+  <div class="photo-pick" data-photo-state="empty">
+    <div class="photo-pick__empty">
+      <label class="photo-pick__add">
+        ${icon('camera', 26)}
+        <span class="photo-pick__text">
+          <strong>Adicionar foto</strong>
+          <span>Tire na hora ou escolha da galeria. ${opponentName} vê no histórico.</span>
+        </span>
+        <input class="visually-hidden" type="file" accept="image/*" name="photo">
+      </label>
+      <label class="photo-pick__camera">
+        ${icon('camera', 20)}<span>Câmera</span>
+        <input class="visually-hidden" type="file" accept="image/*" capture="environment" name="photo-camera">
+      </label>
+    </div>
+    <div class="photo-pick__filled">
+      <img class="photo-pick__thumb" alt="Prévia da foto do treino">
+      <div class="photo-pick__info">
+        <strong>Foto adicionada</strong>
+        <span>Treino verificado · ${bonusLabel}</span>
+      </div>
+      <button class="btn btn--secondary photo-pick__remove" type="button" data-action="remove-photo">Remover</button>
+    </div>
+    <div class="form-error photo-pick__error" role="alert" hidden>${icon('alert', 18, { stroke: 2.2 })}<span></span></div>
+  </div>`;
+
+export function checkinFormView(todayIso, rules, opponentName = 'Sua dupla') {
   const today = parseDate(todayIso);
   const days = [
     { value: 'today', label: 'Hoje', sub: shortDate(today) },
@@ -70,6 +100,8 @@ export function checkinFormView(todayIso, rules) {
         ${group('Observação', html`
           <textarea class="input textarea" name="note" rows="2" maxlength="${NOTE_MAX}"
             placeholder="Ex.: treino de perna, recorde no agachamento"></textarea>`, html` <span class="label-optional">(opcional)</span>`)}
+
+        ${group('Foto como prova', photoPicker(photoBonusLabel(rules), opponentName), html` <span class="label-optional">(opcional · ${photoBonusLabel(rules)})</span>`)}
       </div>
 
       <footer class="checkin__foot">

@@ -47,6 +47,7 @@ def client(tmp_path, clock):
         max_users=2,
         max_workouts_per_day=1,
         auto_migrate=False,
+        photo_dir=str(tmp_path / "photos"),
     )
     app = create_app(settings)
     app.dependency_overrides[get_today] = lambda: clock.today
@@ -75,6 +76,10 @@ class Player:
 
     def delete(self, path: str):
         return self.client.delete(f"/api{path}", headers=self.headers)
+
+    def upload_photo(self, workout_id: int, data: bytes, filename: str = "treino.jpg"):
+        files = {"photo": (filename, data, "image/jpeg")}
+        return self.client.post(f"/api/workouts/{workout_id}/photo", headers=self.headers, files=files)
 
     def balance(self) -> int:
         return self.get("/me").json()["balance"]

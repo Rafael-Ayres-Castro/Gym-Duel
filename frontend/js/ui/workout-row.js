@@ -1,7 +1,8 @@
-// One workout line: avatar, type, "Ana · 45 min · Alta", points and (optionally) the day.
+// One workout line: avatar, type, "Ana · 45 min · Alta", photo thumbnail, points and (optionally) the day.
 import { html } from '../core/dom.js';
 import { dayLabel } from '../domain/format.js';
 import { avatar } from './avatar.js';
+import { photoThumb } from './photo-viewer.js';
 
 export function workoutRow(workout, todayIso, { showWhen = true, showNote = false } = {}) {
   return html`
@@ -12,6 +13,7 @@ export function workoutRow(workout, todayIso, { showWhen = true, showNote = fals
         <div class="wrow__meta">${workout.user_name} · ${workout.duration_min} min · ${workout.intensity}</div>
         ${showNote && workout.note && html`<div class="wrow__note">“${workout.note}”</div>`}
       </div>
+      ${workout.has_photo && workout.photo_url && photoThumb(workout)}
       <div class="wrow__end">
         <span class="wrow__pts">+${workout.points} pts</span>
         ${showWhen && html`<span class="wrow__when">${dayLabel(workout.date, todayIso)}</span>`}

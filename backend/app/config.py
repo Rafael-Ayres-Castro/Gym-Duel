@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import date
 from functools import lru_cache
+from typing import Literal
 from pathlib import Path
 
 from fastapi import Request
@@ -23,6 +24,15 @@ class Settings(BaseSettings):
     jwt_expire_days: int = 30
     max_users: int = 2
     max_workouts_per_day: int = 1
+    # Proof photos: "local" (disk, development) or "s3" (any S3-compatible private bucket).
+    photo_storage: Literal["local", "s3"] = "local"
+    photo_dir: str = ""  # local only; default: data/photos in the project
+    photo_url_ttl_seconds: int = 600  # signed read URLs expire after 10 minutes
+    s3_bucket: str = ""
+    s3_endpoint_url: str = ""  # e.g. Cloudflare R2 or Supabase Storage endpoint
+    s3_region: str = ""
+    s3_access_key_id: str = ""
+    s3_secret_access_key: str = ""
     # Run Alembic migrations on start up. Tests turn it off and create tables directly (faster).
     auto_migrate: bool = True
     # Development only: pretend "today" is this date (YYYY-MM-DD). Never set it in production.
