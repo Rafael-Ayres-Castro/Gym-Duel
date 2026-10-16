@@ -17,6 +17,7 @@ def test_scoreboard_waits_for_the_opponent(rafael):
 
 def test_empty_week(rafael, ana):
     board = rafael.scoreboard()
+    assert board["rules"] == {"minutes_per_point": 3, "intensity_adjust": 5, "photo_bonus": 5, "week_winner_bonus": 20}
     assert board["week_start"] == "2026-10-12"
     assert board["week_end"] == "2026-10-18"
     assert board["leader_id"] is None
@@ -30,27 +31,22 @@ def test_each_player_sees_themselves_first(rafael, ana):
     assert ana.scoreboard()["players"][0]["name"] == "Ana"
 
 
-def test_leader_changes_ties_and_delete(rafael, ana):
-    # Ana trains: she leads with 33% (1 of 3); Rafael needs 2 of 4 to catch up.
+def test_leader_changes_ties_and_delete(rafael, make_player):
+    ana = make_player("Ana", "ana@email.com", 2)
+
+    # Ana trains: she leads with 50% (1 of 2); Rafael needs 2 of 4 to catch up.
     ana.checkin(minutes=45, days_ago=1)
     board = rafael.scoreboard()
     assert board["leader_id"] == ana.id
     assert board["duel_message"] == "Ana está na frente. Mais 2 treinos e você empata."
 
-    # Rafael trains twice: 50% (2 of 4) beats 33%.
+    # Rafael trains twice: 50% vs 50%, and his 20 pts beat her 15.
     rafael.checkin(minutes=30, days_ago=1)
     rafael.checkin(minutes=30, days_ago=0)
     board = rafael.scoreboard()
     assert board["leader_id"] == rafael.id
-    assert board["duel_message"] == "Você está na frente com 50% da meta."
-    assert players_by_name(board)["Rafael"]["is_leader"] is True
-
-    # Ana lowers her goal to 2: 50% vs 50%, and Rafael's 20 pts beat her 15.
-    ana.client.patch("/api/me", headers=ana.headers, json={"weekly_goal": 2})
-    board = rafael.scoreboard()
-    assert players_by_name(board)["Ana"]["pct"] == 50
-    assert board["leader_id"] == rafael.id
     assert board["duel_message"] == "Empate na meta. Você lidera nos pontos por 5."
+    assert players_by_name(board)["Rafael"]["is_leader"] is True
 
     # Ana trains again today: 2 of 2 = 100% and she leads.
     ana.checkin(minutes=30, days_ago=0)
@@ -64,8 +60,9 @@ def test_leader_changes_ties_and_delete(rafael, ana):
     assert rafael.scoreboard()["leader_id"] == rafael.id
 
 
-def test_full_tie_has_no_leader(rafael, ana):
-    rafael.client.patch("/api/me", headers=rafael.headers, json={"weekly_goal": 3})
+def test_full_tie_has_no_leader(make_player):
+    rafael = make_player("Rafael", "rafael@email.com", 3)
+    ana = make_player("Ana", "ana@email.com", 3)
     rafael.checkin(minutes=30)
     ana.checkin(minutes=30)
     board = rafael.scoreboard()

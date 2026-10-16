@@ -208,3 +208,69 @@ def test_feedback_workout_from_last_week():
     feedback = checkin_feedback(stats(ME, 0, 4, 0), stats(ME, 0, 4, 0), stats(OPP, 0, 3, 0), False, 0, "Ana")
     assert feedback.message == "Registrado na semana anterior."
     assert feedback.pill == "Não conta para o placar desta semana"
+
+
+# ---- configurable rules ----
+
+from app.scoring import DEFAULT_RULES, Rules, badges_reached, next_badge, streak_record, validate_rules  # noqa: E402
+
+
+@pytest.mark.parametrize(
+    ("minutes", "intensity", "photo", "rules", "expected"),
+    [
+        (45, "Moderada", True, DEFAULT_RULES, 20),  # the prototype example: 15 + 5 photo
+        (45, "Moderada", False, Rules(minutes_per_point=2), 23),  # 22.5 rounds up
+        (60, "Alta", False, Rules(minutes_per_point=4, intensity_adjust=10), 25),
+        (60, "Leve", False, Rules(intensity_adjust=10), 10),
+        (30, "Alta", True, Rules(intensity_adjust=0, photo_bonus=10), 20),
+        (5, "Leve", False, Rules(intensity_adjust=10), 5),  # floor of 5 points
+        (30, "Moderada", True, Rules(photo_bonus=0), 10),
+    ],
+)
+def test_calc_points_with_rules(minutes, intensity, photo, rules, expected):
+    assert calc_points(minutes, intensity, photo, rules) == expected
+
+
+def test_validate_rules_accepts_only_the_listed_options():
+    values = {"minutes_per_point": 2, "intensity_adjust": 10, "photo_bonus": 3, "week_winner_bonus": 0}
+    assert validate_rules(values) == Rules(**values)
+    with pytest.raises(ValueError):
+        validate_rules({**values, "minutes_per_point": 5})
+    with pytest.raises(ValueError):
+        validate_rules({**values, "week_winner_bonus": 15})
+
+
+def test_streak_record_is_the_longest_run():
+    assert streak_record([True, True, False, True, True, True, False]) == 3
+    assert streak_record([]) == 0
+
+
+def test_badges_are_earned_once():
+    assert badges_reached(2, set()) == [(2, 10)]
+    assert badges_reached(4, {2}) == [(4, 20)]
+    assert badges_reached(4, {2, 4}) == []
+    assert badges_reached(1, set()) == []
+
+
+def test_next_badge():
+    assert next_badge(0, set()) == (2, 2)
+    assert next_badge(3, {2}) == (4, 1)
+    assert next_badge(1, {2}) == (4, 3)  # 2-week badge already earned in an older streak
+    assert next_badge(12, {2, 4, 8, 12}) is None
+
+
+# ---- week closing date ----
+
+from app.services.weeks import last_closable_week  # noqa: E402
+
+
+@pytest.mark.parametrize(
+    ("today", "expected"),
+    [
+        (dt.date(2026, 10, 19), dt.date(2026, 10, 5)),  # Monday: Sunday is still "ontem", last week stays open
+        (dt.date(2026, 10, 20), dt.date(2026, 10, 12)),  # Tuesday: last week closes
+        (dt.date(2026, 10, 25), dt.date(2026, 10, 12)),  # Sunday
+    ],
+)
+def test_last_closable_week(today, expected):
+    assert last_closable_week(today) == expected

@@ -1,4 +1,4 @@
-"""Pure business rules of Gym Duel: points, weeks, goal %, leader, streak and messages.
+"""Pure business rules of Gym Duel: points, weeks, goal %, leader, streak, badges and messages.
 
 Nothing here touches the database or the clock, so every rule can be unit tested
 with plain values. The frontend mirrors `calc_points` only to preview points;
@@ -11,10 +11,8 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import date, timedelta
 
-INTENSITY_ADJUSTMENT = {"Leve": -5, "Moderada": 0, "Alta": 5}
 WORKOUT_TYPES = ("Musculação", "Corrida", "Funcional", "Aula", "Outro")
 MIN_POINTS = 5
-MINUTES_PER_POINT = 3
 MIN_DURATION_MIN = 5
 MAX_DURATION_MIN = 300
 MIN_WEEKLY_GOAL = 1
@@ -30,9 +28,44 @@ def _round_half_up(numerator: int, denominator: int) -> int:
     return (2 * numerator + denominator) // (2 * denominator)
 
 
-def calc_points(duration_min: int, intensity: str) -> int:
-    """Points for one workout: 1 point per 3 minutes plus the intensity adjustment, minimum 5."""
-    return max(MIN_POINTS, _round_half_up(duration_min, MINUTES_PER_POINT) + INTENSITY_ADJUSTMENT[intensity])
+@dataclass(frozen=True)
+class Rules:
+    """Scoring rules agreed by the couple (changed only when both approve)."""
+
+    minutes_per_point: int = 3
+    intensity_adjust: int = 5
+    photo_bonus: int = 5
+    week_winner_bonus: int = 20
+
+    def as_dict(self) -> dict[str, int]:
+        return {field: getattr(self, field) for field in RULE_OPTIONS}
+
+
+DEFAULT_RULES = Rules()
+# Allowed values for each rule (the screen offers exactly these).
+RULE_OPTIONS: dict[str, tuple[int, ...]] = {
+    "minutes_per_point": (2, 3, 4),
+    "intensity_adjust": (0, 5, 10),
+    "photo_bonus": (0, 3, 5, 10),
+    "week_winner_bonus": (0, 10, 20, 30),
+}
+INTENSITY_SIGN = {"Leve": -1, "Moderada": 0, "Alta": 1}
+
+
+def validate_rules(values: dict[str, int]) -> Rules:
+    """Build Rules from raw values, refusing anything outside RULE_OPTIONS."""
+    for field, allowed in RULE_OPTIONS.items():
+        if values.get(field) not in allowed:
+            raise ValueError(f"{field} must be one of {allowed}")
+    return Rules(**{field: values[field] for field in RULE_OPTIONS})
+
+
+def calc_points(duration_min: int, intensity: str, has_photo: bool = False, rules: Rules = DEFAULT_RULES) -> int:
+    """max(5, round(minutes / minutes_per_point) ± intensity adjustment + photo bonus)."""
+    points = _round_half_up(duration_min, rules.minutes_per_point) + INTENSITY_SIGN[intensity] * rules.intensity_adjust
+    if has_photo:
+        points += rules.photo_bonus
+    return max(MIN_POINTS, points)
 
 
 def week_bounds(day: date) -> tuple[date, date]:
@@ -91,6 +124,32 @@ def streak(closed_weeks_met: Iterable[bool], current_week_met: bool) -> int:
             break
         count += 1
     return count + (1 if current_week_met else 0)
+
+
+def streak_record(weeks_met: Iterable[bool]) -> int:
+    """Longest run of consecutive weeks with the goal met (weeks in chronological order)."""
+    record = run = 0
+    for met in weeks_met:
+        run = run + 1 if met else 0
+        record = max(record, run)
+    return record
+
+
+# Streak badges: (weeks in a row, bonus points added to the balance). Each one is earned once.
+BADGES: tuple[tuple[int, int], ...] = ((2, 10), (4, 20), (8, 40), (12, 60))
+
+
+def badges_reached(streak_after: int, earned: set[int]) -> list[tuple[int, int]]:
+    """Badges unlocked by a streak that were not earned before."""
+    return [(milestone, bonus) for milestone, bonus in BADGES if streak_after >= milestone and milestone not in earned]
+
+
+def next_badge(current_streak: int, earned: set[int]) -> tuple[int, int] | None:
+    """(milestone, weeks still needed) of the smallest badge not earned yet, or None if all are earned."""
+    for milestone, _ in BADGES:
+        if milestone not in earned:
+            return milestone, max(1, milestone - current_streak)
+    return None
 
 
 def _plural(count: int, singular: str, plural: str) -> str:

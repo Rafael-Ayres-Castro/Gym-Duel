@@ -20,11 +20,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend"))
 
-from sqlalchemy import func, select  # noqa: E402
+from sqlalchemy import func, select, text  # noqa: E402
 
 from app.clock import today_in_sao_paulo  # noqa: E402
 from app.config import get_settings  # noqa: E402
 from app.db import Base, make_engine, make_session_factory  # noqa: E402
+from app.migrate import upgrade_to_head  # noqa: E402
 from app.models import User, Workout  # noqa: E402
 from app.scoring import calc_points, week_bounds  # noqa: E402
 from app.security import hash_password  # noqa: E402
@@ -55,6 +56,24 @@ SEED = [
     ("R", "Musculação", 60, "Moderada", 2, ""),
     ("A", "Aula", 60, "Moderada", 2, ""),
 ]
+# Older weeks, to give the streak panel some history: 1 = goal met, 0 = missed (HIST in the prototype),
+# oldest first, ending two weeks before the oldest SEED week.
+HISTORY = {"R": [1, 1, 1, 0, 1, 0], "A": [1, 1, 1, 1, 1, 0]}
+HISTORY_DAYS = {"R": (0, 2, 4, 5), "A": (1, 3, 5)}  # weekday offsets used for filler workouts
+HISTORY_TYPES = ("Musculação", "Corrida", "Funcional", "Aula")
+
+
+def history_workouts(first_seed_week: dt.date) -> list[tuple[str, str, int, str, dt.date]]:
+    """Filler workouts for HISTORY: `goal` workouts in a met week, two fewer in a missed one."""
+    rows = []
+    for who, weeks in HISTORY.items():
+        goal = PLAYERS[who][2]
+        for index, met in enumerate(weeks):
+            week_start = first_seed_week - dt.timedelta(weeks=len(weeks) - index)
+            count = goal if met else max(0, goal - 2)
+            for n, offset in enumerate(HISTORY_DAYS[who][:count]):
+                rows.append((who, HISTORY_TYPES[(index + n) % len(HISTORY_TYPES)], 45, "Moderada", week_start + dt.timedelta(days=offset)))
+    return rows
 
 
 def seed(reset: bool) -> None:
@@ -62,7 +81,9 @@ def seed(reset: bool) -> None:
     engine = make_engine(settings.database_url)
     if reset:
         Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
+        with engine.begin() as connection:
+            connection.execute(text("DROP TABLE IF EXISTS alembic_version"))
+    upgrade_to_head(engine)
     today = today_in_sao_paulo(settings)
     monday = week_bounds(today)[0]
 
@@ -71,7 +92,8 @@ def seed(reset: bool) -> None:
             sys.exit("Já existem usuários no banco. Use --reset para apagar tudo e recriar a demonstração.")
 
         # Goals start on the week of the oldest workout, so past weeks count for the streak.
-        first_week = week_bounds(monday + dt.timedelta(days=min(day for *_, day, _ in SEED) - PROTOTYPE_MONDAY))[0]
+        first_seed_week = week_bounds(monday + dt.timedelta(days=min(day for *_, day, _ in SEED) - PROTOTYPE_MONDAY))[0]
+        first_week = first_seed_week - dt.timedelta(weeks=len(HISTORY["R"]))
         users = {}
         for key, (name, email, goal) in PLAYERS.items():
             user = User(name=name, email=email, password_hash=hash_password(DEMO_PASSWORD))
@@ -94,13 +116,22 @@ def seed(reset: bool) -> None:
                     points=calc_points(minutes, intensity), note=note, created_at=created,
                 )
             )
+        history = history_workouts(first_seed_week)
+        for who, kind, minutes, intensity, date in history:
+            db.add(
+                Workout(
+                    user_id=users[who].id, date=date, type=kind, duration_min=minutes, intensity=intensity,
+                    points=calc_points(minutes, intensity), note="",
+                    created_at=dt.datetime.combine(date, dt.time(19, 0), tzinfo=dt.UTC),
+                )
+            )
         db.commit()
 
     print(f"Demonstração criada (hoje = {today:%d/%m/%Y}).")
     for name, email, goal in PLAYERS.values():
         print(f"  {name}: {email} / senha {DEMO_PASSWORD} (meta {goal})")
     note = f" ({skipped} pulados por cair depois de hoje)" if skipped else ""
-    print(f"  {len(SEED) - skipped} treinos criados{note}")
+    print(f"  {len(SEED) - skipped} treinos da semana do protótipo{note} + {len(history)} de histórico")
 
 
 if __name__ == "__main__":

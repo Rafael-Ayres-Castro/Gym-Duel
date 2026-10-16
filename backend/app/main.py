@@ -5,7 +5,7 @@ Run with: uvicorn app.main:create_app --factory --app-dir backend
 
 from __future__ import annotations
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -14,6 +14,8 @@ from fastapi.staticfiles import StaticFiles
 from . import routers
 from .config import FRONTEND_DIR, Settings, get_settings
 from .db import Base, make_engine, make_session_factory
+from .maintenance import run_maintenance
+from .migrate import upgrade_to_head
 
 
 async def _validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
@@ -25,8 +27,10 @@ async def _validation_error(_: Request, exc: RequestValidationError) -> JSONResp
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
     engine = make_engine(settings.database_url)
-    # No migrations in the MVP: tables are created on start up if missing.
-    Base.metadata.create_all(engine)
+    if settings.auto_migrate:
+        upgrade_to_head(engine)
+    else:
+        Base.metadata.create_all(engine)
 
     app = FastAPI(
         title="Gym Duel API",
@@ -38,7 +42,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.add_exception_handler(RequestValidationError, _validation_error)
 
     for router in routers.ALL:
-        app.include_router(router, prefix="/api")
+        app.include_router(router, prefix="/api", dependencies=[Depends(run_maintenance)])
 
     @app.get("/api/health", tags=["health"])
     def health() -> dict:

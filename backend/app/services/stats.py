@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from .. import scoring
 from ..models import User, WeeklyGoal, Workout
 from ..scoring import WeekStats
-from . import players
+from . import players, rules
 
 WEEK = dt.timedelta(days=7)
 
@@ -63,6 +63,13 @@ class PlayerHistory:
 
     def streak(self, today: dt.date) -> int:
         return scoring.streak(self._closed_weeks_met(today), self.current_week(today).goal_met)
+
+    def record(self, today: dt.date) -> int:
+        """Longest streak ever, counting this week only once its goal is met."""
+        weeks = list(self._closed_weeks_met(today))[::-1]  # oldest first
+        if self.current_week(today).goal_met:
+            weeks.append(True)
+        return scoring.streak_record(weeks)
 
     def days_trained(self, week_start: dt.date) -> list[bool]:
         dates = {w.date for w in self.by_week.get(week_start, [])}
@@ -132,6 +139,7 @@ def build_scoreboard(db: Session, duel: Duel) -> dict:
         "leader_id": leader_id,
         "duel_message": scoring.duel_message(me_week, opponent_week, duel.opponent_name),
         "waiting_for_opponent": duel.opponent is None,
+        "rules": rules.rules_for_date(db, duel.today).as_dict(),
     }
 
 

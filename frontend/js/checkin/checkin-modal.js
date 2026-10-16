@@ -1,7 +1,7 @@
 // Check-in flow: full screen on mobile, modal on desktop. Opens on EVENTS.openCheckin,
 // pre-filled with the user's last workout; Enter saves, Esc closes.
 import { api, ApiError } from '../core/api.js';
-import { cachedScoreboard, loadScoreboard, setScoreboard } from '../core/app-state.js';
+import { loadScoreboard, setScoreboard } from '../core/app-state.js';
 import { createElement, html, on, renderInto } from '../core/dom.js';
 import { emit, EVENTS, listen } from '../core/events.js';
 import { isDesktop } from '../core/media.js';
@@ -51,7 +51,7 @@ function sync() {
   custom.classList.toggle('is-valid', form.custom !== '' && minutes !== null);
   custom.classList.toggle('is-invalid', form.custom !== '' && minutes === null);
   dialog.querySelector('.checkin__dur-error').hidden = !(form.custom !== '' && minutes === null);
-  dialog.querySelector('[data-bind="points"]').textContent = minutes ? `+${calcPoints(minutes, form.intensity)}` : '—';
+  dialog.querySelector('[data-bind="points"]').textContent = minutes ? `+${calcPoints(minutes, form.intensity, false, modal.rules)}` : '—';
   dialog.querySelector('[data-bind="summary"]').textContent = `${form.type} · ${minutes ? `${minutes} min` : '— min'} · ${form.intensity}`;
   dialog.querySelector('[data-action="save"]').disabled = !minutes || modal.saving;
 }
@@ -161,7 +161,7 @@ async function open() {
   let lastWorkout;
   try {
     [board, [lastWorkout]] = await Promise.all([
-      cachedScoreboard() || loadScoreboard(),
+      loadScoreboard(), // fresh: rules may have changed since the screen loaded
       api.workouts({ person: 'me', period: 'all', limit: 1 }),
     ]);
   } catch (error) {
@@ -173,11 +173,11 @@ async function open() {
   const overlay = createElement(html`
     <div class="checkin-overlay">
       <div class="checkin" role="dialog" aria-modal="true" aria-labelledby="checkin-title" tabindex="-1">
-        ${checkinFormView(board.today)}
+        ${checkinFormView(board.today, board.rules)}
       </div>
     </div>`);
   const dialog = overlay.firstElementChild;
-  modal = { overlay, dialog, form: prefill(lastWorkout), today: board.today, saving: false, result: null, previousFocus: document.activeElement };
+  modal = { overlay, dialog, form: prefill(lastWorkout), today: board.today, rules: board.rules, saving: false, result: null, previousFocus: document.activeElement };
   dialog.querySelector('[name="custom"]').value = modal.form.custom;
   dialog.querySelector('[name="custom"]').placeholder = isDesktop() ? 'Outro' : '—';
   modal.cleanup = bindEvents(overlay, dialog);

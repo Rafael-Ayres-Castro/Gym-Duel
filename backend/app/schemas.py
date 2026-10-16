@@ -5,9 +5,9 @@ from __future__ import annotations
 import datetime as dt
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints, field_validator, model_validator
 
-from .scoring import MAX_DURATION_MIN, MAX_WEEKLY_GOAL, MIN_DURATION_MIN, MIN_WEEKLY_GOAL
+from .scoring import MAX_DURATION_MIN, MAX_WEEKLY_GOAL, MIN_DURATION_MIN, MIN_WEEKLY_GOAL, validate_rules
 
 WorkoutType = Literal["Musculação", "Corrida", "Funcional", "Aula", "Outro"]
 Intensity = Literal["Leve", "Moderada", "Alta"]
@@ -48,7 +48,9 @@ class UserOut(BaseModel):
     name: str
     first_name: str
     email: str
-    weekly_goal: int
+    weekly_goal: int = Field(description="Meta em vigor nesta semana")
+    next_weekly_goal: int | None = Field(description="Meta agendada para a próxima semana, se mudou")
+    balance: int = Field(description="Saldo de pontos (treinos + bônus − resgates)")
     color: PlayerColor
     created_at: dt.datetime
 
@@ -61,7 +63,7 @@ class AuthOut(BaseModel):
 
 class MeUpdate(BaseModel):
     name: Name | None = None
-    weekly_goal: WeeklyGoal | None = Field(default=None, description="Vale da semana atual em diante")
+    weekly_goal: WeeklyGoal | None = Field(default=None, description="Vale a partir da próxima semana")
 
 
 # ---- Workouts ----
@@ -88,6 +90,92 @@ class WorkoutOut(BaseModel):
     intensity: str
     points: int
     note: str
+    has_photo: bool
+    created_at: dt.datetime
+
+
+# ---- Rules ----
+
+
+class RulesValues(BaseModel):
+    minutes_per_point: int = Field(description="1 ponto a cada X minutos (2, 3 ou 4)")
+    intensity_adjust: int = Field(description="Leve tira e alta soma este valor (0, 5 ou 10)")
+    photo_bonus: int = Field(description="Bônus por treino com foto (0, 3, 5 ou 10)")
+    week_winner_bonus: int = Field(description="Bônus de saldo para quem vence a semana (0, 10, 20 ou 30)")
+
+
+class RuleProposalIn(RulesValues):
+    @model_validator(mode="after")
+    def allowed_values(self) -> RuleProposalIn:
+        try:
+            validate_rules(self.model_dump())
+        except ValueError as error:
+            raise ValueError(f"Valor fora das opções permitidas: {error}") from None
+        return self
+
+
+class RuleProposalOut(BaseModel):
+    id: int
+    proposed_by_me: bool
+    proposed_by_name: str
+    values: RulesValues
+    created_at: dt.datetime
+
+
+class RulesStateOut(BaseModel):
+    current: RulesValues
+    options: dict[str, list[int]]
+    pending: RuleProposalOut | None
+
+
+# ---- Streaks ----
+
+
+class StreakWeekOut(BaseModel):
+    week_start: dt.date
+    is_current: bool
+    goal: int | None = Field(description="Meta daquela semana; None antes do cadastro")
+    done: int
+    met: bool
+
+
+class BadgeOut(BaseModel):
+    milestone: int
+    bonus: int
+    earned: bool
+
+
+class NextBadgeOut(BaseModel):
+    milestone: int
+    weeks_left: int
+
+
+class PlayerStreaksOut(BaseModel):
+    user_id: int
+    name: str
+    color: PlayerColor
+    is_me: bool
+    streak: int
+    record: int
+    weeks: list[StreakWeekOut]
+    badges: list[BadgeOut]
+    next_badge: NextBadgeOut | None
+
+
+class StreaksOut(BaseModel):
+    players: list[PlayerStreaksOut]
+
+
+# ---- Notifications ----
+
+
+class NotificationOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    kind: str
+    message: str
+    payload: dict | None
     created_at: dt.datetime
 
 
@@ -116,6 +204,7 @@ class ScoreboardOut(BaseModel):
     leader_id: int | None
     duel_message: str
     waiting_for_opponent: bool
+    rules: RulesValues = Field(description="Regras de pontos em vigor nesta semana")
 
 
 class FeedbackOut(BaseModel):
@@ -145,24 +234,3 @@ class SummaryOut(BaseModel):
     start: dt.date | None
     end: dt.date
     players: list[SummaryPlayerOut]
-
-
-# ---- Rules ----
-
-
-class PointsExampleOut(BaseModel):
-    duration_min: int
-    intensity: Intensity
-    points: int
-
-
-class RulesOut(BaseModel):
-    minutes_per_point: int
-    min_points: int
-    intensity_adjustment: dict[str, int]
-    min_duration_min: int
-    max_duration_min: int
-    min_weekly_goal: int
-    max_weekly_goal: int
-    max_workouts_per_day: int
-    examples: list[PointsExampleOut] = Field(description="Pontos calculados pela regra real, para exibir na tela")

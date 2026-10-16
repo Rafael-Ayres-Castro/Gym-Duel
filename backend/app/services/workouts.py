@@ -12,7 +12,7 @@ from ..config import Settings
 from ..errors import api_error
 from ..models import User, Workout
 from ..schemas import WorkoutIn
-from . import players, stats
+from . import players, rules, stats
 
 
 def serialize(db: Session, workout: Workout) -> dict:
@@ -27,12 +27,18 @@ def serialize(db: Session, workout: Workout) -> dict:
         "intensity": workout.intensity,
         "points": workout.points,
         "note": workout.note,
+        "has_photo": bool(workout.photo_key),
         "created_at": workout.created_at,
     }
 
 
+def in_checkin_window(day: dt.date, today: dt.date) -> bool:
+    """Check-ins (and deletions) only touch today or yesterday, so closed weeks never change."""
+    return day in (today, today - dt.timedelta(days=1))
+
+
 def _check_allowed(db: Session, user: User, day: dt.date, today: dt.date, settings: Settings) -> None:
-    if day not in (today, today - dt.timedelta(days=1)):
+    if not in_checkin_window(day, today):
         raise api_error(422, "invalid_date", "O check-in só vale para hoje ou ontem.")
     stmt = select(func.count()).select_from(Workout).where(Workout.user_id == user.id, Workout.date == day)
     if (db.scalar(stmt) or 0) >= settings.max_workouts_per_day:
@@ -50,7 +56,7 @@ def create_checkin(db: Session, user: User, data: WorkoutIn, today: dt.date, set
         type=data.type,
         duration_min=data.duration_min,
         intensity=data.intensity,
-        points=scoring.calc_points(data.duration_min, data.intensity),
+        points=scoring.calc_points(data.duration_min, data.intensity, False, rules.rules_for_date(db, data.date)),
         note=data.note,
     )
     db.add(workout)
@@ -100,12 +106,14 @@ def list_workouts(
     return [serialize(db, w) for w in db.scalars(stmt)]
 
 
-def delete_workout(db: Session, user: User, workout_id: int) -> None:
-    """Delete one of the user's own workouts; its points go away with it."""
+def delete_workout(db: Session, user: User, workout_id: int, today: dt.date) -> None:
+    """Delete one of the user's own recent workouts; its points go away with it."""
     workout = db.get(Workout, workout_id)
     if workout is None:
         raise api_error(404, "not_found", "Treino não encontrado.")
     if workout.user_id != user.id:
         raise api_error(403, "forbidden", "Você só pode apagar os seus treinos.")
+    if not in_checkin_window(workout.date, today):
+        raise api_error(409, "too_old", "Só dá para apagar treinos de hoje ou de ontem.")
     db.delete(workout)
     db.commit()

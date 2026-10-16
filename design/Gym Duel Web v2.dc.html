@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0B0C0F;color:#F3F4F6;font-family:Manrope,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#FFE14A;text-decoration:none}a:hover{color:#FFF0A0}
+button,input,textarea{font-family:Manrope,sans-serif}
+input::placeholder,textarea::placeholder{color:#6B7180}
+@keyframes gdBurst{0%{transform:translate(0,0) rotate(0) scale(.3);opacity:0}25%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--rot)) scale(1);opacity:1}}
+@keyframes gdIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes gdFade{from{opacity:0}to{opacity:1}}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0B0C0F;color:#F3F4F6">
+
+<sc-if value="{{ isAuth }}" hint-placeholder-val="{{ true }}">
+<div data-screen-label="Login" style="min-height:100vh;display:flex;flex-wrap:wrap">
+<div style="flex:1.15 1 520px;min-width:0;padding:44px 64px 56px;display:flex;flex-direction:column;gap:40px;background:radial-gradient(circle at 18% 8%,rgba(255,225,74,.10),rgba(255,225,74,0) 45%),#0B0C0F">
+<div style="display:flex;align-items:center;gap:12px"><div style="width:44px;height:44px;border-radius:14px;background:#FFE14A;display:grid;place-items:center;transform:rotate(-6deg);box-shadow:0 12px 30px -10px rgba(255,225,74,.6)"><svg width="24" height="24" viewBox="0 0 24 24" style="fill:#14120A"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg></div><span style="font-family:Anton;font-size:28px;letter-spacing:.5px">GYM <span style="color:#FFE14A">DUEL</span></span></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:28px;max-width:640px">
+<h1 style="margin:0;font-family:Anton;font-weight:400;font-size:84px;line-height:.98;text-transform:uppercase">Treinem juntos.<br><span style="color:#FFE14A">Disputem a semana.</span></h1>
+<p style="margin:0;font-size:18px;line-height:1.55;color:#B4B9C4;font-weight:600;max-width:520px;text-wrap:pretty">Cada treino vira ponto. O placar compara a % da meta pessoal de cada um, então a disputa é justa para os dois.</p>
+<div style="max-width:520px;background:#14161B;border:1px solid #23262E;border-radius:26px;padding:18px;display:grid;grid-template-columns:1fr 40px 1fr;align-items:center">
+<div style="display:flex;align-items:center;gap:14px;padding:12px"><div style="width:48px;height:48px;flex:none;border-radius:50%;background:#4C8DFF;color:#071226;display:grid;place-items:center;font-weight:800;font-size:19px">R</div><div><div style="font-size:14px;font-weight:800">Rafael</div><div style="font-family:Anton;font-size:34px;line-height:1.1">75%</div></div></div>
+<span style="font-family:Anton;font-size:18px;color:#4A4F5C;text-align:center">VS</span>
+<div style="display:flex;align-items:center;gap:14px;padding:12px;border-radius:18px;border:1px solid rgba(255,225,74,.45);background:rgba(255,225,74,.06)"><div style="position:relative;flex:none"><svg width="22" height="22" viewBox="0 0 24 24" style="position:absolute;top:-17px;left:13px;fill:#FFE14A"><path d="M3 8l4.5 3.5L12 5l4.5 6.5L21 8l-1.8 10H4.8z"></path></svg><div style="width:48px;height:48px;border-radius:50%;background:#FF5CA8;color:#2A0716;display:grid;place-items:center;font-weight:800;font-size:19px;box-shadow:0 0 0 2px #17181A,0 0 0 4px #FFE14A">A</div></div><div><div style="font-size:14px;font-weight:800">Ana</div><div style="font-family:Anton;font-size:34px;line-height:1.1;color:#FFE14A">100%</div></div></div>
+</div>
+</div>
+</div>
+<div style="flex:1 1 440px;min-width:0;background:#101216;border-left:1px solid #1F2229;display:flex;align-items:center;justify-content:center;padding:56px 32px">
+
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+<form onSubmit="{{ submitLogin }}" style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:18px">
+<div><h2 style="margin:0;font-size:32px;font-weight:800;letter-spacing:-.5px">Entrar</h2><p style="margin:6px 0 0;color:#8D93A1;font-size:15px;font-weight:600">Bom te ver de volta.</p></div>
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:700;color:#B4B9C4">E-mail</span>
+<div style="position:relative"><svg width="20" height="20" viewBox="0 0 24 24" style="position:absolute;left:16px;top:18px;fill:none;stroke:#8D93A1;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none"><rect x="3" y="5" width="18" height="14" rx="3"></rect><path d="M4 7l8 6 8-6"></path></svg><input type="text" value="{{ email }}" onChange="{{ onEmail }}" placeholder="seu@email.com" style="width:100%;height:56px;border-radius:16px;background:#14161B;border:1.5px solid {{ emailBd }};padding:0 16px 0 48px;color:#F3F4F6;font-size:16px;font-weight:600;outline:none" style-focus="border-color:#FFE14A"></div></label>
+<sc-if value="{{ emailErr }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:8px;color:#FF7B70;font-size:13.5px;font-weight:700;margin-top:-8px"><svg width="18" height="18" viewBox="0 0 24 24" style="flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5v.01"></path></svg>{{ loginErr }}</div></sc-if>
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:700;color:#B4B9C4">Senha</span>
+<div style="position:relative"><svg width="20" height="20" viewBox="0 0 24 24" style="position:absolute;left:16px;top:18px;fill:none;stroke:{{ pwIcon }};stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"></rect><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"></path></svg><input type="{{ pwType }}" value="{{ pw }}" onChange="{{ onPw }}" placeholder="Sua senha" style="width:100%;height:56px;border-radius:16px;background:{{ pwBg }};border:1.5px solid {{ pwBd }};padding:0 52px 0 48px;color:#F3F4F6;font-size:16px;font-weight:600;outline:none" style-focus="border-color:#FFE14A"><button type="button" onClick="{{ togglePw }}" aria-label="Mostrar senha" style="position:absolute;right:8px;top:8px;width:40px;height:40px;border:0;border-radius:12px;background:transparent;display:grid;place-items:center;cursor:pointer" style-hover="background:#1C1F26"><svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:#8D93A1;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"></path><circle cx="12" cy="12" r="3"></circle></svg></button></div></label>
+<sc-if value="{{ pwErr }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:8px;color:#FF7B70;font-size:13.5px;font-weight:700;margin-top:-8px"><svg width="18" height="18" viewBox="0 0 24 24" style="flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5v.01"></path></svg>{{ loginErr }}</div></sc-if>
+<div style="display:flex;justify-content:flex-end;margin-top:-4px"><button type="button" onClick="{{ forgot }}" style="border:0;background:transparent;padding:0;font-size:14px;font-weight:700;color:#FFE14A;cursor:pointer">Esqueci a senha</button></div>
+<button type="submit" style="height:58px;border:0;border-radius:18px;background:#FFE14A;color:#14120A;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 12px 30px -12px rgba(255,225,74,.6)" style-hover="background:#FFEA7A">Entrar</button>
+<div style="font-size:13px;color:#8D93A1;font-weight:600;text-align:center">Demonstração: senha <span style="color:#F3F4F6;font-weight:800">gymduel</span></div>
+<div style="height:1px;background:#22252C;margin:6px 0"></div>
+<div style="text-align:center;font-size:15px;color:#8D93A1;font-weight:600">Novo por aqui? <button type="button" onClick="{{ goSignup }}" style="border:0;background:transparent;padding:0;color:#FFE14A;font-size:15px;font-weight:800;cursor:pointer">Criar conta</button></div>
+</form>
+</sc-if>
+
+<sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
+<form onSubmit="{{ submitSignup }}" style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:18px">
+<div><h2 style="margin:0;font-size:32px;font-weight:800;letter-spacing:-.5px">Criar conta</h2><p style="margin:6px 0 0;color:#8D93A1;font-size:15px;font-weight:600">Leva menos de um minuto.</p></div>
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:700;color:#B4B9C4">Nome</span><input type="text" value="{{ suName }}" onChange="{{ onSuName }}" placeholder="Como quer ser chamado" style="width:100%;height:56px;border-radius:16px;background:#14161B;border:1.5px solid #2A2E37;padding:0 16px;color:#F3F4F6;font-size:16px;font-weight:600;outline:none" style-focus="border-color:#FFE14A"></label>
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:700;color:#B4B9C4">E-mail</span><input type="text" value="{{ suEmail }}" onChange="{{ onSuEmail }}" placeholder="seu@email.com" style="width:100%;height:56px;border-radius:16px;background:#14161B;border:1.5px solid #2A2E37;padding:0 16px;color:#F3F4F6;font-size:16px;font-weight:600;outline:none" style-focus="border-color:#FFE14A"></label>
+<label style="display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:700;color:#B4B9C4">Senha</span><input type="password" value="{{ suPw }}" onChange="{{ onSuPw }}" placeholder="Mínimo de 6 caracteres" style="width:100%;height:56px;border-radius:16px;background:#14161B;border:1.5px solid #2A2E37;padding:0 16px;color:#F3F4F6;font-size:16px;font-weight:600;outline:none" style-focus="border-color:#FFE14A"></label>
+<div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:13px;font-weight:700;color:#B4B9C4">Meta semanal</span>
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
+<sc-for list="{{ goals }}" as="g" hint-placeholder-count="5"><button type="button" onClick="{{ g.pick }}" style="height:56px;border-radius:16px;border:1.5px solid {{ g.bd }};background:{{ g.bg }};color:{{ g.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer" style-hover="filter:brightness(1.15)"><span style="font-family:Anton;font-size:22px;line-height:1.1">{{ g.label }}</span><span style="font-size:10.5px;font-weight:800">treinos</span></button></sc-for>
+</div>
+<span style="font-size:12.5px;color:#8D93A1;font-weight:600;line-height:1.45">A meta define os seus 100% no placar. Dá para mudar depois.</span></div>
+<sc-if value="{{ suHasErr }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:8px;color:#FF7B70;font-size:13.5px;font-weight:700"><svg width="18" height="18" viewBox="0 0 24 24" style="flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5v.01"></path></svg>{{ suErr }}</div></sc-if>
+<button type="submit" style="height:58px;border:0;border-radius:18px;background:#FFE14A;color:#14120A;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 12px 30px -12px rgba(255,225,74,.6)" style-hover="background:#FFEA7A">Criar conta</button>
+<div style="text-align:center;font-size:15px;color:#8D93A1;font-weight:600">Já tem conta? <button type="button" onClick="{{ goLogin }}" style="border:0;background:transparent;padding:0;color:#FFE14A;font-size:15px;font-weight:800;cursor:pointer">Entrar</button></div>
+</form>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isApp }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;min-height:100vh">
+<aside style="width:248px;flex:none;position:sticky;top:0;height:100vh;background:#101216;border-right:1px solid #1F2229;padding:28px 16px 18px;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;gap:12px;padding:0 10px"><div style="width:40px;height:40px;border-radius:13px;background:#FFE14A;display:grid;place-items:center;transform:rotate(-6deg)"><svg width="22" height="22" viewBox="0 0 24 24" style="fill:#14120A"><path d="M13 2 4 14h7l-1 8 9-12h-7z"></path></svg></div><span style="font-family:Anton;font-size:26px;letter-spacing:.5px">GYM <span style="color:#FFE14A">DUEL</span></span></div>
+<nav style="margin-top:40px;display:flex;flex-direction:column;gap:4px">
+<button onClick="{{ goHome }}" style="display:flex;align-items:center;gap:12px;height:48px;padding:0 14px;border:0;border-radius:14px;background:{{ navHomeBg }};color:{{ navHomeFg }};font-size:15px;font-weight:800;cursor:pointer;text-align:left" style-hover="filter:brightness(1.2)"><svg width="22" height="22" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z"></path></svg>Home</button>
+<button onClick="{{ goHistory }}" style="display:flex;align-items:center;gap:12px;height:48px;padding:0 14px;border:0;border-radius:14px;background:{{ navHistBg }};color:{{ navHistFg }};font-size:15px;font-weight:800;cursor:pointer;text-align:left" style-hover="filter:brightness(1.2)"><svg width="22" height="22" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1L3.5 8.5"></path><path d="M3.5 4v4.5H8"></path><path d="M12 7.5V12l3 2"></path></svg>Histórico</button>
+<button onClick="{{ goChallenges }}" style="display:flex;align-items:center;gap:12px;height:48px;padding:0 14px;border:0;border-radius:14px;background:{{ navChalBg }};color:{{ navChalFg }};font-size:15px;font-weight:800;cursor:pointer;text-align:left" style-hover="filter:brightness(1.2)"><svg width="22" height="22" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"></path><path d="M13 19l6-6M16 16l4 4M19 21l2-2"></path><path d="M14.5 6.5 18 3h3v3l-3.5 3.5"></path><path d="M5 14l4 4M7 17l-3 3M3 19l2 2"></path></svg>Desafios<sc-if value="{{ hasChalBadge }}" hint-placeholder-val="{{ false }}"><span style="margin-left:auto;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#FF5CA8;color:#2A0716;font-size:12px;font-weight:800;display:grid;place-items:center">{{ chalBadge }}</span></sc-if></button>
+<button onClick="{{ goRewards }}" style="display:flex;align-items:center;gap:12px;height:48px;padding:0 14px;border:0;border-radius:14px;background:{{ navRewBg }};color:{{ navRewFg }};font-size:15px;font-weight:800;cursor:pointer;text-align:left" style-hover="filter:brightness(1.2)"><svg width="22" height="22" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"></path><path d="M16 5.5h3V7a3 3 0 0 1-3 3M8 5.5H5V7a3 3 0 0 0 3 3M12 13v4M8.5 20h7"></path></svg>Prêmios<sc-if value="{{ hasRewBadge }}" hint-placeholder-val="{{ false }}"><span style="margin-left:auto;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#FF5CA8;color:#2A0716;font-size:12px;font-weight:800;display:grid;place-items:center">{{ rewBadge }}</span></sc-if></button>
+<button onClick="{{ goGoals }}" style="display:flex;align-items:center;gap:12px;height:48px;padding:0 14px;border:0;border-radius:14px;background:{{ navGoalBg }};color:{{ navGoalFg }};font-size:15px;font-weight:800;cursor:pointer;text-align:left" style-hover="filter:brightness(1.2)"><svg width="22" height="22" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><circle cx="12" cy="12" r="8.5"></circle><circle cx="12" cy="12" r="4.5"></circle><circle cx="12" cy="12" r="1"></circle></svg>Metas e regras</button>
+</nav>
+<div style="flex:1"></div>
+<div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:#14161B;border:1px solid #1F2229">
+<div style="width:38px;height:38px;flex:none;border-radius:50%;background:#4C8DFF;color:#071226;display:grid;place-items:center;font-weight:800;font-size:15px">{{ meInitial }}</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:14px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ meName }}</span><span style="font-size:12px;font-weight:600;color:#8D93A1">{{ meGoalLabel }}</span></div>
+<button onClick="{{ logout }}" aria-label="Sair" title="Sair" style="width:34px;height:34px;flex:none;border:0;border-radius:10px;background:transparent;display:grid;place-items:center;cursor:pointer" style-hover="background:#1C1F26"><svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:#8D93A1;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"></path><path d="M10 16l-4-4 4-4M6 12h10"></path></svg></button>
+</div>
+</aside>
+<main style="flex:1;min-width:0;padding:36px 48px 64px">
+<div style="max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:26px">
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<div data-screen-label="Home" style="display:flex;flex-direction:column;gap:26px">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap">
+<div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center;gap:7px;font-size:14px;font-weight:700;color:#8D93A1"><svg width="16" height="16" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg>Semana de 13 a 19 de out</div><h1 style="margin:0;font-size:34px;font-weight:800;letter-spacing:-.5px">{{ greeting }}</h1></div>
+<button onClick="{{ openCheckin }}" style="height:60px;padding:0 18px 0 16px;border:0;border-radius:20px;background:#FFE14A;color:#14120A;font-size:18px;font-weight:800;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:0 14px 34px -12px rgba(255,225,74,.7)" style-hover="background:#FFEA7A"><span style="width:32px;height:32px;border-radius:50%;background:#14120A;display:grid;place-items:center"><svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:#FFE14A;stroke-width:3;stroke-linecap:round;stroke-linejoin:round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>Fiz check-in<span style="margin-left:6px;font-size:12px;font-weight:800;padding:3px 8px;border-radius:7px;background:rgba(20,18,10,.12)">C</span></button>
+</div>
+
+<div style="background:#14161B;border:1px solid #23262E;border-radius:32px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 30px 0"><span style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">PLACAR DA SEMANA · % DA META</span><span style="font-size:13px;font-weight:700;color:#8D93A1">{{ daysLabel }}</span></div>
+<div style="display:flex;flex-wrap:wrap;align-items:stretch;padding:16px 20px 20px">
+<div style="flex:1 1 320px;min-width:0;display:flex;align-items:center;gap:26px;padding:30px;border-radius:26px;border:1px {{ r.bstyle }} {{ r.border }};background:{{ r.bg }};transition:background .3s,border-color .3s">
+<div style="position:relative;width:88px;height:88px;flex:none">
+<sc-if value="{{ r.lead }}" hint-placeholder-val="{{ false }}"><svg width="36" height="36" viewBox="0 0 24 24" style="position:absolute;top:-31px;left:26px;fill:#FFE14A"><path d="M3 8l4.5 3.5L12 5l4.5 6.5L21 8l-1.8 10H4.8z"></path></svg></sc-if>
+<div style="width:88px;height:88px;border-radius:50%;background:#4C8DFF;color:#071226;display:grid;place-items:center;font-weight:800;font-size:32px;box-shadow:{{ r.ring }}">{{ r.initial }}</div>
+<sc-if value="{{ r.lead }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);background:#FFE14A;color:#14120A;font-size:10.5px;font-weight:800;letter-spacing:.8px;padding:3px 8px;border-radius:7px">LÍDER</span></sc-if>
+</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><span style="font-size:18px;font-weight:800">{{ r.name }}</span><span style="font-size:15px;font-weight:800">{{ r.ptsLabel }}</span></div>
+<span style="font-family:Anton;font-size:72px;line-height:1.05;color:{{ r.scoreColor }}">{{ r.pctLabel }}</span>
+<div style="height:10px;border-radius:5px;background:#2A2E37;margin-top:8px;overflow:hidden"><div style="width:{{ r.barW }};height:100%;border-radius:5px;background:#4C8DFF;transition:width .7s cubic-bezier(.2,.8,.3,1)"></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px"><span style="font-size:13px;font-weight:600;color:#8D93A1">{{ r.caption }}</span><span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:800;color:#FFB067"><svg width="15" height="15" viewBox="0 0 24 24" style="fill:#FF8A1F"><path d="M12 2.5c.6 3.2 2.6 5 4.3 6.9 1.6 1.8 2.7 3.6 2.7 6.1A7 7 0 0 1 5 15.5c0-2.3 1-4.1 2.6-5.6.3 1.6 1.2 2.7 2.4 3.2-.6-3.8.4-7.6 2-10.6z"></path></svg>{{ r.streakLabel }}</span></div>
+</div>
+</div>
+<div style="flex:none;width:80px;display:flex;align-items:center;justify-content:center;padding:12px 0"><span style="font-family:Anton;font-size:28px;color:#4A4F5C">VS</span></div>
+<div style="flex:1 1 320px;min-width:0;display:flex;align-items:center;gap:26px;padding:30px;border-radius:26px;border:1px {{ a.bstyle }} {{ a.border }};background:{{ a.bg }};transition:background .3s,border-color .3s">
+<div style="position:relative;width:88px;height:88px;flex:none">
+<sc-if value="{{ a.lead }}" hint-placeholder-val="{{ false }}"><svg width="36" height="36" viewBox="0 0 24 24" style="position:absolute;top:-31px;left:26px;fill:#FFE14A"><path d="M3 8l4.5 3.5L12 5l4.5 6.5L21 8l-1.8 10H4.8z"></path></svg></sc-if>
+<div style="width:88px;height:88px;border-radius:50%;background:#FF5CA8;color:#2A0716;display:grid;place-items:center;font-weight:800;font-size:32px;box-shadow:{{ a.ring }}">{{ a.initial }}</div>
+<sc-if value="{{ a.lead }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);background:#FFE14A;color:#14120A;font-size:10.5px;font-weight:800;letter-spacing:.8px;padding:3px 8px;border-radius:7px">LÍDER</span></sc-if>
+</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><span style="font-size:18px;font-weight:800">{{ a.name }}</span><span style="font-size:15px;font-weight:800">{{ a.ptsLabel }}</span></div>
+<span style="font-family:Anton;font-size:72px;line-height:1.05;color:{{ a.scoreColor }}">{{ a.pctLabel }}</span>
+<div style="height:10px;border-radius:5px;background:#2A2E37;margin-top:8px;overflow:hidden"><div style="width:{{ a.barW }};height:100%;border-radius:5px;background:#FF5CA8;transition:width .7s cubic-bezier(.2,.8,.3,1)"></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px"><span style="font-size:13px;font-weight:600;color:#8D93A1">{{ a.caption }}</span><span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:800;color:#FFB067"><svg width="15" height="15" viewBox="0 0 24 24" style="fill:#FF8A1F"><path d="M12 2.5c.6 3.2 2.6 5 4.3 6.9 1.6 1.8 2.7 3.6 2.7 6.1A7 7 0 0 1 5 15.5c0-2.3 1-4.1 2.6-5.6.3 1.6 1.2 2.7 2.4 3.2-.6-3.8.4-7.6 2-10.6z"></path></svg>{{ a.streakLabel }}</span></div>
+</div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px;padding:14px 30px;background:#1A1D23;font-size:14px;font-weight:600;color:#C9CDD5"><svg width="18" height="18" viewBox="0 0 24 24" style="flex:none;fill:none;stroke:#FFE14A;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"></path><path d="M16 5.5h3V7a3 3 0 0 1-3 3M8 5.5H5V7a3 3 0 0 0 3 3M12 13v4M8.5 20h7"></path></svg>{{ duelMsg }}</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:20px;align-items:start">
+<div style="background:#14161B;border:1px solid #1F2229;border-radius:28px;padding:22px 24px;display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px"><span style="font-size:17px;font-weight:800">Últimos treinos</span><button onClick="{{ goHistory }}" style="border:0;background:transparent;padding:0;font-size:14px;font-weight:700;color:#FFE14A;cursor:pointer">Ver histórico</button></div>
+<sc-if value="{{ hasRecents }}" hint-placeholder-val="{{ true }}">
+<sc-for list="{{ recents }}" as="w" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:14px;min-height:64px;border-top:1px solid {{ w.line }}">
+<div style="width:40px;height:40px;border-radius:50%;background:{{ w.color }};color:{{ w.ink }};display:grid;place-items:center;font-weight:800;font-size:16px;flex:none">{{ w.initial }}</div>
+<div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:700">{{ w.type }}</div><div style="font-size:13px;color:#8D93A1;font-weight:600">{{ w.meta }}</div></div>
+<span style="font-size:13px;color:#8D93A1;font-weight:600;min-width:64px">{{ w.when }}</span>
+<span style="font-size:16px;font-weight:800;min-width:68px;text-align:right">{{ w.ptsLabel }}</span>
+</div>
+</sc-for>
+</sc-if>
+<sc-if value="{{ noRecents }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:8px;padding:24px;border-radius:20px;border:1.5px dashed #2A2E37;display:flex;align-items:center;gap:18px">
+<div style="width:56px;height:56px;flex:none;border-radius:18px;background:rgba(255,138,31,.14);display:grid;place-items:center"><svg width="30" height="30" viewBox="0 0 24 24" style="fill:#FF8A1F"><path d="M12 2.5c.6 3.2 2.6 5 4.3 6.9 1.6 1.8 2.7 3.6 2.7 6.1A7 7 0 0 1 5 15.5c0-2.3 1-4.1 2.6-5.6.3 1.6 1.2 2.7 2.4 3.2-.6-3.8.4-7.6 2-10.6z"></path></svg></div>
+<div style="display:flex;flex-direction:column;gap:4px"><div style="font-size:17px;font-weight:800">Semana nova, placar zerado</div><div style="font-size:14px;line-height:1.5;color:#8D93A1;font-weight:600;text-wrap:pretty">Ninguém treinou ainda. Um check-in hoje já coloca você no placar e mantém sua sequência viva.</div></div>
+</div>
+</sc-if>
+</div>
+<div style="background:#14161B;border:1px solid #1F2229;border-radius:28px;padding:22px 24px;display:flex;flex-direction:column;gap:18px">
+<span style="font-size:17px;font-weight:800">Dias de treino</span>
+<div style="display:grid;grid-template-columns:96px repeat(7,minmax(0,1fr));gap:8px 6px;align-items:center;text-align:center;font-size:11px;font-weight:800;color:#8D93A1">
+<span></span>
+<sc-for list="{{ dayHeads }}" as="d" hint-placeholder-count="7"><span style="color:{{ d.color }}">{{ d.label }}</span></sc-for>
+<span style="display:flex;align-items:center;gap:8px;font-size:14px;color:#F3F4F6;text-align:left"><span style="width:26px;height:26px;flex:none;border-radius:50%;background:#4C8DFF;color:#071226;display:grid;place-items:center;font-size:12px">{{ r.initial }}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.name }}</span></span>
+<sc-for list="{{ rDays }}" as="c" hint-placeholder-count="7"><span style="height:30px;border-radius:9px;background:{{ c.bg }};border:{{ c.bd }};transition:background .3s"></span></sc-for>
+<span style="display:flex;align-items:center;gap:8px;font-size:14px;color:#F3F4F6;text-align:left"><span style="width:26px;height:26px;flex:none;border-radius:50%;background:#FF5CA8;color:#2A0716;display:grid;place-items:center;font-size:12px">A</span>Ana</span>
+<sc-for list="{{ aDays }}" as="c" hint-placeholder-count="7"><span style="height:30px;border-radius:9px;background:{{ c.bg }};border:{{ c.bd }}"></span></sc-for>
+</div>
+<div style="font-size:13.5px;font-weight:600;color:#8D93A1;line-height:1.5">{{ daysMsg }}</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isHistory }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Histórico" style="display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap">
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:14px;font-weight:700;color:#8D93A1">{{ periodLabel }}</span><h1 style="margin:0;font-family:Anton;font-weight:400;font-size:48px;line-height:1.05;text-transform:uppercase">Histórico</h1></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+<div style="display:grid;grid-template-columns:repeat(3,84px);padding:4px;border-radius:14px;background:#14161B;border:1px solid #22252C">
+<sc-for list="{{ persons }}" as="p" hint-placeholder-count="3"><button onClick="{{ p.pick }}" style="height:38px;border:0;border-radius:10px;background:{{ p.bg }};color:{{ p.fg }};font-size:14px;font-weight:800;cursor:pointer;transition:background .15s">{{ p.label }}</button></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(2,88px);padding:4px;border-radius:14px;background:#14161B;border:1px solid #22252C">
+<sc-for list="{{ periods }}" as="p" hint-placeholder-count="2"><button onClick="{{ p.pick }}" style="height:38px;border:0;border-radius:10px;background:{{ p.bg }};color:{{ p.fg }};font-size:14px;font-weight:800;cursor:pointer;transition:background .15s">{{ p.label }}</button></sc-for>
+</div>
+<button onClick="{{ openCheckin }}" style="height:46px;padding:0 18px 0 12px;border:0;border-radius:15px;background:#FFE14A;color:#14120A;font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px;cursor:pointer" style-hover="background:#FFEA7A"><svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:#14120A;stroke-width:2.6;stroke-linecap:round"><path d="M12 5v14M5 12h14"></path></svg>Fiz check-in</button>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
+<sc-for list="{{ summary }}" as="p" hint-placeholder-count="2">
+<div style="background:#14161B;border:1px solid #1F2229;border-radius:24px;padding:22px 24px;display:flex;align-items:center;gap:20px">
+<div style="width:52px;height:52px;flex:none;border-radius:50%;background:{{ p.color }};color:{{ p.ink }};display:grid;place-items:center;font-weight:800;font-size:20px">{{ p.initial }}</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><span style="font-size:16px;font-weight:800">{{ p.name }}</span><span style="font-size:15px;font-weight:800;color:{{ p.text }}">{{ p.ptsLabel }}</span></div>
+<div style="display:flex;align-items:baseline;gap:8px"><span style="font-family:Anton;font-size:40px;line-height:1">{{ p.count }}</span><span style="font-size:14px;font-weight:700;color:#8D93A1">{{ p.countLabel }}</span></div>
+<sc-if value="{{ weekMode }}" hint-placeholder-val="{{ true }}"><div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:8px;border-radius:4px;background:#2A2E37;overflow:hidden"><div style="width:{{ p.barW }};height:100%;border-radius:4px;background:{{ p.color }}"></div></div><span style="font-size:13px;font-weight:800">{{ p.pctLabel }}</span></div></sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+<sc-if value="{{ historyEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:40px;border-radius:24px;border:1.5px dashed #2A2E37;text-align:center;font-size:15px;font-weight:600;color:#8D93A1">Nenhum treino neste período ainda. O primeiro check-in aparece aqui.</div></sc-if>
+<div style="display:flex;flex-direction:column;gap:24px">
+<sc-for list="{{ groups }}" as="g" hint-placeholder-count="3">
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;padding:0 4px"><span style="font-size:12px;font-weight:800;letter-spacing:1.2px;color:#8D93A1;text-transform:uppercase">{{ g.day }}</span><span style="font-size:12px;font-weight:800;color:#8D93A1">{{ g.total }}</span></div>
+<div style="background:#14161B;border:1px solid #1F2229;border-radius:22px;overflow:hidden">
+<sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;gap:16px;padding:14px 20px;border-top:1px solid {{ it.line }}" style-hover="background:#181A20">
+<div style="width:40px;height:40px;flex:none;border-radius:50%;background:{{ it.color }};color:{{ it.ink }};display:grid;place-items:center;font-weight:800;font-size:16px">{{ it.initial }}</div>
+<div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:700">{{ it.type }}</div><div style="font-size:13px;color:#8D93A1;font-weight:600;margin-top:1px">{{ it.meta }}</div><sc-if value="{{ it.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#B4B9C4;font-weight:600;margin-top:4px;font-style:italic">“{{ it.note }}”</div></sc-if></div>
+<sc-if value="{{ it.hasPhoto }}" hint-placeholder-val="{{ false }}"><button onClick="{{ it.openPhoto }}" aria-label="Ver foto" style="width:48px;height:48px;flex:none;border:0;padding:0;border-radius:12px;overflow:hidden;cursor:pointer;background:repeating-linear-gradient(135deg,#1C1F26 0 8px,#181A20 8px 16px);display:grid;place-items:center" style-hover="outline:2px solid #FFE14A"><sc-if value="{{ it.photoHasUrl }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:100%;background-image:{{ it.photoBg }};background-size:cover;background-position:center"></div></sc-if><sc-if value="{{ it.photoPh }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:#8D93A1;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.8l1.4-2h4.6l1.4 2h1.8A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"></path><circle cx="12" cy="12.5" r="3.5"></circle></svg></sc-if></button></sc-if>
+<span style="font-size:16px;font-weight:800">{{ it.ptsLabel }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isChallenges }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Desafios" style="display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap">
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:14px;font-weight:700;color:#8D93A1">Disputas extras, combinadas entre vocês dois</span><h1 style="margin:0;font-family:Anton;font-weight:400;font-size:48px;line-height:1.05;text-transform:uppercase">Desafios</h1></div>
+<button onClick="{{ openChal }}" style="height:52px;padding:0 20px 0 14px;border:0;border-radius:16px;background:#FFE14A;color:#14120A;font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 12px 30px -12px rgba(255,225,74,.6)" style-hover="background:#FFEA7A"><svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:#14120A;stroke-width:2.6;stroke-linecap:round"><path d="M12 5v14M5 12h14"></path></svg>Novo desafio</button>
+</div>
+<sc-if value="{{ hasIncoming }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:12px">
+<span style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:#FF8CC2">A ANA TE DESAFIOU</span>
+<sc-for list="{{ incoming }}" as="c" hint-placeholder-count="1">
+<div style="background:rgba(255,92,168,.06);border:1.5px solid rgba(255,92,168,.5);border-radius:26px;padding:22px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+<div style="width:52px;height:52px;flex:none;border-radius:50%;background:#FF5CA8;color:#2A0716;display:grid;place-items:center;font-weight:800;font-size:20px">A</div>
+<div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:4px"><span style="font-size:19px;font-weight:800">{{ c.title }}</span><span style="font-size:14px;color:#B4B9C4;font-weight:600">{{ c.period }} · {{ c.stake }}</span></div>
+<div style="display:flex;gap:10px"><button onClick="{{ c.decline }}" style="height:48px;padding:0 18px;border-radius:15px;border:1.5px solid #2A2E37;background:#1C1F26;color:#F3F4F6;font-size:15px;font-weight:800;cursor:pointer" style-hover="background:#23262E">Recusar</button><button onClick="{{ c.accept }}" style="height:48px;padding:0 20px;border:0;border-radius:15px;background:#FFE14A;color:#14120A;font-size:15px;font-weight:800;cursor:pointer" style-hover="background:#FFEA7A">Aceitar desafio</button></div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<div style="display:flex;flex-direction:column;gap:12px">
+<span style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">EM ANDAMENTO</span>
+<sc-if value="{{ noActive }}" hint-placeholder-val="{{ false }}"><div style="padding:32px;border-radius:24px;border:1.5px dashed #2A2E37;text-align:center;font-size:15px;font-weight:600;color:#8D93A1">Nenhum desafio ativo. Crie um para dar um tempero extra à semana.</div></sc-if>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:16px">
+<sc-for list="{{ active }}" as="c" hint-placeholder-count="2">
+<div style="background:#14161B;border:1px solid #23262E;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px"><div style="min-width:0"><div style="font-size:19px;font-weight:800;line-height:1.3">{{ c.title }}</div><div style="font-size:13.5px;color:#8D93A1;font-weight:600;margin-top:4px">{{ c.sub }}</div></div><span style="flex:none;font-size:12px;font-weight:800;padding:6px 10px;border-radius:9px;background:rgba(255,225,74,.12);color:#FFE14A;white-space:nowrap">{{ c.ends }}</span></div>
+<sc-for list="{{ c.rows }}" as="p" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;gap:14px">
+<div style="position:relative;flex:none"><sc-if value="{{ p.lead }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" style="position:absolute;top:-13px;left:11px;fill:#FFE14A"><path d="M3 8l4.5 3.5L12 5l4.5 6.5L21 8l-1.8 10H4.8z"></path></svg></sc-if><div style="width:40px;height:40px;border-radius:50%;background:{{ p.color }};color:{{ p.ink }};display:grid;place-items:center;font-weight:800;font-size:16px;box-shadow:{{ p.ring }}">{{ p.initial }}</div></div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;font-size:14px;font-weight:800"><span>{{ p.name }}</span><span style="color:{{ p.valColor }}">{{ p.valLabel }}</span></div><div style="height:8px;border-radius:4px;background:#2A2E37;overflow:hidden"><div style="width:{{ p.barW }};height:100%;border-radius:4px;background:{{ p.color }};transition:width .6s"></div></div></div>
+</div>
+</sc-for>
+<div style="display:flex;align-items:center;gap:10px;padding-top:14px;border-top:1px solid #22252C;font-size:13.5px;font-weight:700;color:#C9CDD5"><svg width="18" height="18" viewBox="0 0 24 24" style="flex:none;fill:none;stroke:#FFE14A;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"></path><path d="M16 5.5h3V7a3 3 0 0 1-3 3M8 5.5H5V7a3 3 0 0 0 3 3M12 13v4M8.5 20h7"></path></svg><span style="flex:1;min-width:0">{{ c.stake }}</span><span style="color:{{ c.statusColor }};font-weight:800;white-space:nowrap">{{ c.status }}</span></div>
+</div>
+</sc-for>
+</div>
+</div>
+<sc-if value="{{ hasOutgoing }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px">
+<span style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">AGUARDANDO A ANA ACEITAR</span>
+<sc-for list="{{ outgoing }}" as="c" hint-placeholder-count="1">
+<div style="background:#14161B;border:1px dashed #2A2E37;border-radius:22px;padding:18px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+<div style="flex:1 1 280px;min-width:0"><div style="font-size:16px;font-weight:800">{{ c.title }}</div><div style="font-size:13px;color:#8D93A1;font-weight:600;margin-top:2px">{{ c.period }} · {{ c.stake }}</div></div>
+<button onClick="{{ c.cancel }}" style="height:40px;padding:0 14px;border:0;border-radius:12px;background:transparent;color:#8D93A1;font-size:14px;font-weight:800;cursor:pointer" style-hover="color:#F3F4F6">Cancelar</button>
+<button onClick="{{ c.accept }}" style="height:40px;padding:0 14px;border-radius:12px;border:1.5px solid #2A2E37;background:#1C1F26;color:#F3F4F6;font-size:13.5px;font-weight:800;cursor:pointer" style-hover="background:#23262E">Simular aceite da Ana</button>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<div style="display:flex;flex-direction:column;gap:12px">
+<span style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">CONCLUÍDOS</span>
+<div style="background:#14161B;border:1px solid #1F2229;border-radius:22px;overflow:hidden">
+<sc-for list="{{ doneChals }}" as="c" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;gap:16px;padding:16px 20px;border-top:1px solid {{ c.line }};flex-wrap:wrap">
+<div style="position:relative;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" style="position:absolute;top:-11px;left:10px;fill:#FFE14A"><path d="M3 8l4.5 3.5L12 5l4.5 6.5L21 8l-1.8 10H4.8z"></path></svg><div style="width:36px;height:36px;border-radius:50%;background:{{ c.color }};color:{{ c.ink }};display:grid;place-items:center;font-weight:800;font-size:15px">{{ c.initial }}</div></div>
+<div style="flex:1 1 240px;min-width:0"><div style="font-size:15px;font-weight:700">{{ c.title }}</div><div style="font-size:12.5px;color:#8D93A1;font-weight:600;margin-top:1px">{{ c.period }}</div></div>
+<span style="font-size:14px;font-weight:800;color:{{ c.resColor }}">{{ c.result }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isRewards }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Prêmios" style="display:flex;flex-direction:column;gap:26px">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap">
+<div style="display:flex;flex-direction:column;gap:4px;max-width:560px"><span style="font-size:14px;font-weight:700;color:#8D93A1">Mimos combinados entre vocês, pagos com pontos</span><h1 style="margin:0;font-family:Anton;font-weight:400;font-size:48px;line-height:1.05;text-transform:uppercase">Prêmios</h1><span style="font-size:13.5px;font-weight:600;color:#8D93A1;line-height:1.5;margin-top:4px">Treinos, desafios e selos de sequência viram saldo. Resgatar não muda o placar da semana.</span></div>
+<div style="display:flex;align-items:center;gap:20px;padding:14px 22px;border-radius:22px;background:#14161B;border:1px solid #23262E">
+<div style="display:flex;flex-direction:column"><span style="font-size:11px;font-weight:800;letter-spacing:1.3px;color:#8D93A1">SEU SALDO</span><div style="display:flex;align-items:baseline;gap:6px"><span style="font-family:Anton;font-size:40px;line-height:1.1;color:#FFE14A">{{ balance }}</span><span style="font-size:15px;font-weight:800;color:#FFE14A">pts</span></div></div>
+<div style="width:1px;align-self:stretch;background:#22252C"></div>
+<div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12.5px;font-weight:700;color:#8D93A1">Saldo da Ana</span><span style="font-size:18px;font-weight:800;color:#FF8CC2">{{ anaBalance }} pts</span></div>
+</div>
+</div>
+<div style="display:flex;padding:4px;border-radius:14px;background:#14161B;border:1px solid #22252C;gap:2px;align-self:flex-start">
+<sc-for list="{{ rTabs }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.pick }}" style="height:40px;padding:0 16px;border:0;border-radius:10px;background:{{ t.bg }};color:{{ t.fg }};font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:8px">{{ t.label }}<sc-if value="{{ t.hasCount }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:#FF5CA8;color:#2A0716;font-size:11.5px;font-weight:800;display:grid;place-items:center">{{ t.count }}</span></sc-if></button></sc-for>
+</div>
+
+<sc-if value="{{ isStore }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<span style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">OFERECIDOS PELA ANA · VOCÊ RESGATA</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">
+<sc-for list="{{ storeA }}" as="rw" hint-placeholder-count="5">
+<div style="background:#14161B;border:1px solid #23262E;border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:14px;min-height:232px">
+<div style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:#8D93A1"><span style="width:22px;height:22px;border-radius:50%;background:#FF5CA8;color:#2A0716;display:grid;place-items:center;font-size:10px;font-weight:800">A</span>Oferecido pela Ana</div>
+<div style="flex:1;font-size:18px;font-weight:800;line-height:1.3;text-wrap:pretty">{{ rw.title }}</div>
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-family:Anton;font-size:34px;line-height:1;color:{{ rw.costColor }}">{{ rw.cost }}</span><span style="font-size:13px;font-weight:800;color:#8D93A1">pts</span></div>
+<sc-if value="{{ rw.short }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:6px"><div style="height:6px;border-radius:3px;background:#2A2E37;overflow:hidden"><div style="width:{{ rw.barW }};height:100%;border-radius:3px;background:#4C8DFF"></div></div><span style="font-size:12.5px;font-weight:700;color:#8D93A1">{{ rw.shortLabel }}</span></div></sc-if>
+<button onClick="{{ rw.redeem }}" style="height:46px;border:0;border-radius:14px;background:{{ rw.btnBg }};color:{{ rw.btnFg }};font-size:15px;font-weight:800;cursor:{{ rw.cursor }}" style-hover="filter:brightness(1.06)">{{ rw.btnLabel }}</button>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<span style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">QUE VOCÊ OFERECE · A ANA RESGATA</span>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">
+<sc-for list="{{ storeR }}" as="rw" hint-placeholder-count="3">
+<div style="background:#14161B;border:1px solid #1F2229;border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:14px;min-height:190px">
+<div style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:#8D93A1"><span style="width:22px;height:22px;border-radius:50%;background:#4C8DFF;color:#071226;display:grid;place-items:center;font-size:10px;font-weight:800">{{ meInitial }}</span>Oferecido por você</div>
+<div style="flex:1;font-size:17px;font-weight:800;line-height:1.3;text-wrap:pretty">{{ rw.title }}</div>
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><div style="display:flex;align-items:baseline;gap:6px"><span style="font-family:Anton;font-size:28px;line-height:1">{{ rw.cost }}</span><span style="font-size:13px;font-weight:800;color:#8D93A1">pts</span></div><span style="font-size:12px;font-weight:700;color:{{ rw.anaColor }};text-align:right">{{ rw.anaLabel }}</span></div>
+</div>
+</sc-for>
+<button onClick="{{ openReward }}" style="min-height:190px;border-radius:24px;border:1.5px dashed #2A2E37;background:transparent;color:#B4B9C4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;padding:20px" style-hover="border-color:#FFE14A;color:#FFE14A"><span style="width:44px;height:44px;border-radius:50%;background:#1C1F26;display:grid;place-items:center"><svg width="22" height="22" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round"><path d="M12 5v14M5 12h14"></path></svg></span><span style="font-size:16px;font-weight:800">Criar prêmio</span><span style="font-size:13px;font-weight:600;color:#8D93A1">Algo que você topa fazer pela Ana</span></button>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isRedList }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ redEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:40px;border-radius:24px;border:1.5px dashed #2A2E37;text-align:center;font-size:15px;font-weight:600;color:#8D93A1">{{ redEmptyMsg }}</div></sc-if>
+<div style="background:#14161B;border:1px solid #1F2229;border-radius:22px;overflow:hidden">
+<sc-for list="{{ redList }}" as="x" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;gap:16px;padding:18px 20px;border-top:1px solid {{ x.line }};flex-wrap:wrap">
+<div style="width:40px;height:40px;flex:none;border-radius:50%;background:{{ x.color }};color:{{ x.ink }};display:grid;place-items:center;font-weight:800;font-size:16px">{{ x.initial }}</div>
+<div style="flex:1 1 240px;min-width:0"><div style="font-size:16px;font-weight:800">{{ x.title }}</div><div style="font-size:13px;color:#8D93A1;font-weight:600;margin-top:2px">{{ x.sub }}</div></div>
+<span style="font-size:12px;font-weight:800;padding:6px 10px;border-radius:9px;background:{{ x.stBg }};color:{{ x.stFg }}">{{ x.status }}</span>
+<sc-if value="{{ x.hasSecondary }}" hint-placeholder-val="{{ false }}"><button onClick="{{ x.secondary }}" style="height:40px;padding:0 14px;border-radius:12px;border:1.5px solid #2A2E37;background:#1C1F26;color:#F3F4F6;font-size:13.5px;font-weight:800;cursor:pointer" style-hover="background:#23262E">{{ x.secondaryLabel }}</button></sc-if>
+<sc-if value="{{ x.isPending }}" hint-placeholder-val="{{ false }}"><button onClick="{{ x.primary }}" style="height:40px;padding:0 16px;border:0;border-radius:12px;background:#FFE14A;color:#14120A;font-size:13.5px;font-weight:800;cursor:pointer" style-hover="background:#FFEA7A">{{ x.primaryLabel }}</button></sc-if>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isGoals }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Metas e regras" style="display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:14px;font-weight:700;color:#8D93A1">Constância vale mais que volume</span><h1 style="margin:0;font-family:Anton;font-weight:400;font-size:48px;line-height:1.05;text-transform:uppercase">Metas e regras</h1></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px">
+<div style="background:#14161B;border:1px solid #23262E;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:center;gap:10px"><div style="width:28px;height:28px;border-radius:50%;background:#4C8DFF;color:#071226;display:grid;place-items:center;font-weight:800;font-size:12px">{{ meInitial }}</div><span style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">SUA META SEMANAL</span></div>
+<div style="display:flex;align-items:center;gap:18px">
+<button onClick="{{ goalDec }}" aria-label="Diminuir" style="width:52px;height:52px;flex:none;border-radius:16px;border:1.5px solid #2A2E37;background:#1C1F26;display:grid;place-items:center;cursor:pointer" style-hover="background:#23262E"><svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:#F3F4F6;stroke-width:2.6;stroke-linecap:round"><path d="M5 12h14"></path></svg></button>
+<div style="display:flex;align-items:baseline;gap:10px;min-width:150px;justify-content:center"><span style="font-family:Anton;font-size:72px;line-height:1;color:{{ goalColor }}">{{ goalDraft }}</span><span style="font-size:15px;font-weight:700;color:#8D93A1">treinos<br>por semana</span></div>
+<button onClick="{{ goalInc }}" aria-label="Aumentar" style="width:52px;height:52px;flex:none;border-radius:16px;border:1.5px solid #2A2E37;background:#1C1F26;display:grid;place-items:center;cursor:pointer" style-hover="background:#23262E"><svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:#F3F4F6;stroke-width:2.6;stroke-linecap:round"><path d="M12 5v14M5 12h14"></path></svg></button>
+</div>
+<div style="font-size:13.5px;font-weight:600;color:#B4B9C4;line-height:1.5;text-wrap:pretty">{{ goalNote }}</div>
+<sc-if value="{{ goalChanged }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:10px"><button onClick="{{ goalReset }}" style="height:46px;padding:0 16px;border-radius:14px;border:1.5px solid #2A2E37;background:#1C1F26;color:#F3F4F6;font-size:14px;font-weight:800;cursor:pointer">Cancelar</button><button onClick="{{ goalSave }}" style="flex:1;height:46px;border:0;border-radius:14px;background:#FFE14A;color:#14120A;font-size:15px;font-weight:800;cursor:pointer" style-hover="background:#FFEA7A">Salvar meta</button></div></sc-if>
+</div>
+<div style="background:#14161B;border:1px solid #1F2229;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:center;gap:10px"><div style="width:28px;height:28px;border-radius:50%;background:#FF5CA8;color:#2A0716;display:grid;place-items:center;font-weight:800;font-size:12px">A</div><span style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">META DA ANA</span></div>
+<div style="display:flex;align-items:baseline;gap:10px;height:52px"><span style="font-family:Anton;font-size:72px;line-height:1">3</span><span style="font-size:15px;font-weight:700;color:#8D93A1">treinos<br>por semana</span></div>
+<div style="font-size:13.5px;font-weight:600;color:#B4B9C4;line-height:1.5">Cada treino vale 33% do placar dela. Só a Ana muda a meta dela.</div>
+</div>
+</div>
+
+<div style="background:#14161B;border:1px solid #1F2229;border-radius:28px;padding:24px 26px 10px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:6px"><span style="font-size:17px;font-weight:800">Sequências</span><span style="font-size:13px;font-weight:600;color:#8D93A1">Semanas seguidas com a meta batida. Semana perdida zera a sequência, mas não tira pontos.</span></div>
+<sc-for list="{{ streaks }}" as="p" hint-placeholder-count="2">
+<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:center;padding:20px 0;border-top:1px solid {{ p.line }}">
+<div style="flex:0 0 210px;display:flex;align-items:center;gap:14px">
+<div style="width:48px;height:48px;flex:none;border-radius:50%;background:{{ p.color }};color:{{ p.ink }};display:grid;place-items:center;font-weight:800;font-size:19px">{{ p.initial }}</div>
+<div style="display:flex;flex-direction:column"><span style="font-size:15px;font-weight:800">{{ p.name }}</span><div style="display:flex;align-items:center;gap:6px"><svg width="22" height="22" viewBox="0 0 24 24" style="fill:#FF8A1F"><path d="M12 2.5c.6 3.2 2.6 5 4.3 6.9 1.6 1.8 2.7 3.6 2.7 6.1A7 7 0 0 1 5 15.5c0-2.3 1-4.1 2.6-5.6.3 1.6 1.2 2.7 2.4 3.2-.6-3.8.4-7.6 2-10.6z"></path></svg><span style="font-family:Anton;font-size:34px;line-height:1.1">{{ p.streak }}</span><span style="font-size:13px;font-weight:700;color:#8D93A1">{{ p.streakUnit }}</span></div><span style="font-size:12.5px;font-weight:600;color:#8D93A1">Recorde: {{ p.record }} semanas</span></div>
+</div>
+<div style="flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:12px">
+<div style="display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px">
+<sc-for list="{{ p.weeks }}" as="w" hint-placeholder-count="9"><div style="display:flex;flex-direction:column;gap:6px;align-items:center"><div style="width:100%;height:34px;border-radius:10px;background:{{ w.bg }};border:{{ w.bd }};display:grid;place-items:center;font-size:11px;font-weight:800;color:#F3F4F6">{{ w.txt }}</div><span style="font-size:10.5px;font-weight:700;color:{{ w.lc }};white-space:nowrap">{{ w.label }}</span></div></sc-for>
+</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+<sc-for list="{{ p.miles }}" as="m" hint-placeholder-count="4"><span style="display:flex;align-items:center;gap:4px;height:28px;padding:0 10px 0 7px;border-radius:14px;background:{{ m.bg }};color:{{ m.fg }};font-size:12px;font-weight:800"><svg width="14" height="14" viewBox="0 0 24 24" style="fill:{{ m.icon }}"><path d="M12 2.5c.6 3.2 2.6 5 4.3 6.9 1.6 1.8 2.7 3.6 2.7 6.1A7 7 0 0 1 5 15.5c0-2.3 1-4.1 2.6-5.6.3 1.6 1.2 2.7 2.4 3.2-.6-3.8.4-7.6 2-10.6z"></path></svg>{{ m.label }}</span></sc-for>
+<span style="font-size:12.5px;font-weight:600;color:#8D93A1;margin-left:6px">{{ p.next }}</span>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+
+<div style="background:#14161B;border:1px solid #23262E;border-radius:28px;padding:24px 26px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap"><div><div style="font-size:17px;font-weight:800">Regras de pontos</div><div style="font-size:13px;font-weight:600;color:#8D93A1;margin-top:3px">Valem para os dois e só mudam quando os dois aprovam. Ao aprovar, os pontos da semana são recalculados.</div></div><span style="font-size:12px;font-weight:800;padding:6px 10px;border-radius:9px;background:{{ rulesStBg }};color:{{ rulesStFg }}">{{ rulesStatus }}</span></div>
+<div style="margin-top:12px">
+<sc-for list="{{ ruleRows }}" as="r" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:16px 0;border-top:1px solid #22252C">
+<div style="flex:1 1 240px;min-width:0"><div style="display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800">{{ r.label }}<sc-if value="{{ r.changed }}" hint-placeholder-val="{{ false }}"><span style="font-size:10.5px;font-weight:800;letter-spacing:.6px;padding:2px 7px;border-radius:6px;background:rgba(255,225,74,.14);color:#FFE14A">ALTERADO</span></sc-if></div><div style="font-size:13px;color:#8D93A1;font-weight:600;margin-top:2px">{{ r.desc }}</div></div>
+<div style="display:flex;padding:4px;border-radius:14px;background:#0B0C0F;border:1px solid #22252C;gap:2px"><sc-for list="{{ r.opts }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.pick }}" style="min-width:64px;height:36px;padding:0 12px;border:0;border-radius:10px;background:{{ o.bg }};color:{{ o.fg }};font-size:14px;font-weight:800;cursor:pointer">{{ o.label }}</button></sc-for></div>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 18px;border-radius:18px;background:#0B0C0F;border:1px solid #22252C;margin-top:6px">
+<span style="flex:1 1 300px;font-size:14px;font-weight:600;color:#C9CDD5">Exemplo: musculação, 45 min, moderada, com foto</span>
+<span style="font-family:Anton;font-size:28px;color:#FFE14A">{{ exPts }} pts</span>
+</div>
+<sc-if value="{{ rulesDirty }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap"><button onClick="{{ rulesDiscard }}" style="height:48px;padding:0 18px;border-radius:15px;border:1.5px solid #2A2E37;background:#1C1F26;color:#F3F4F6;font-size:15px;font-weight:800;cursor:pointer">Descartar</button><button onClick="{{ rulesPropose }}" style="height:48px;padding:0 22px;border:0;border-radius:15px;background:#FFE14A;color:#14120A;font-size:15px;font-weight:800;cursor:pointer" style-hover="background:#FFEA7A">Propor mudança à Ana</button></div></sc-if>
+<sc-if value="{{ rulesPending }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:12px;align-items:center;justify-content:flex-end;margin-top:16px;flex-wrap:wrap"><span style="flex:1 1 260px;font-size:14px;font-weight:700;color:#FFE14A">Proposta enviada. As regras atuais seguem valendo até a Ana aprovar.</span><button onClick="{{ rulesDiscard }}" style="height:44px;padding:0 14px;border:0;border-radius:14px;background:transparent;color:#8D93A1;font-size:14px;font-weight:800;cursor:pointer">Cancelar proposta</button><button onClick="{{ rulesApprove }}" style="height:44px;padding:0 16px;border-radius:14px;border:1.5px solid #2A2E37;background:#1C1F26;color:#F3F4F6;font-size:14px;font-weight:800;cursor:pointer" style-hover="background:#23262E">Simular aprovação da Ana</button></div></sc-if>
+</div>
+</div>
+</sc-if>
+</div>
+</main>
+</div>
+</sc-if>
+
+<sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ backdrop }}" style="position:fixed;inset:0;z-index:50;background:rgba(5,6,8,.72);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;animation:gdFade .18s ease-out">
+<div data-screen-label="Check-in" style="width:100%;max-width:640px;max-height:calc(100vh - 48px);overflow:auto;background:#101216;border:1px solid #23262E;border-radius:30px;box-shadow:0 40px 80px -20px rgba(0,0,0,.6);animation:gdIn .22s cubic-bezier(.2,.8,.3,1);position:relative">
+
+<sc-if value="{{ showForm }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:26px 28px 6px">
+<div><h2 style="margin:0;font-size:24px;font-weight:800;letter-spacing:-.3px">Novo check-in</h2><p style="margin:4px 0 0;font-size:13.5px;color:#8D93A1;font-weight:600">Pré-preenchido com seu último treino. Confira e salve.</p></div>
+<button onClick="{{ closeModal }}" aria-label="Fechar" style="width:40px;height:40px;flex:none;border:0;border-radius:20px;background:#1C1F26;display:grid;place-items:center;cursor:pointer" style-hover="background:#2A2E37"><svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:#F3F4F6;stroke-width:2.4;stroke-linecap:round"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+</div>
+<div style="padding:18px 28px 24px;display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">TIPO DE TREINO</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{ types }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.pick }}" style="height:44px;padding:0 16px;border-radius:22px;border:1.5px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.fg }};font-size:15px;font-weight:800;display:flex;align-items:center;gap:6px;cursor:pointer" style-hover="filter:brightness(1.15)"><sc-if value="{{ t.on }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" style="margin-left:-4px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>{{ t.label }}</button></sc-for>
+</div></div>
+<div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">DURAÇÃO</span>
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) minmax(0,1.5fr);gap:8px">
+<sc-for list="{{ durs }}" as="d" hint-placeholder-count="4"><button onClick="{{ d.pick }}" style="height:58px;border-radius:16px;border:1.5px solid {{ d.bd }};background:{{ d.bg }};color:{{ d.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer" style-hover="filter:brightness(1.15)"><span style="font-family:Anton;font-size:22px;line-height:1.1">{{ d.label }}</span><span style="font-size:11px;font-weight:800">min</span></button></sc-for>
+<label style="height:58px;display:flex;align-items:center;gap:6px;padding:0 14px;border-radius:16px;background:#14161B;border:1.5px solid {{ customBd }};cursor:text"><input value="{{ custom }}" onChange="{{ onCustom }}" placeholder="Outro" inputMode="numeric" style="width:100%;min-width:0;background:transparent;border:0;outline:none;color:#F3F4F6;font-size:17px;font-weight:800"><span style="font-size:13px;color:#8D93A1;font-weight:700">min</span></label>
+</div>
+<sc-if value="{{ durInvalid }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;font-weight:700;color:#FF7B70">Digite uma duração entre 5 e 300 minutos.</span></sc-if>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px">
+<div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">INTENSIDADE</span>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+<sc-for list="{{ ints }}" as="i" hint-placeholder-count="3"><button onClick="{{ i.pick }}" style="height:58px;border-radius:16px;border:1.5px solid {{ i.bd }};background:{{ i.bg }};color:{{ i.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer" style-hover="filter:brightness(1.15)"><span style="font-size:15px;font-weight:800">{{ i.label }}</span><span style="font-size:11px;font-weight:700;opacity:.8">{{ i.sub }}</span></button></sc-for>
+</div></div>
+<div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">DATA</span>
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+<sc-for list="{{ days }}" as="i" hint-placeholder-count="2"><button onClick="{{ i.pick }}" style="height:58px;border-radius:16px;border:1.5px solid {{ i.bd }};background:{{ i.bg }};color:{{ i.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer" style-hover="filter:brightness(1.15)"><span style="font-size:15px;font-weight:800">{{ i.label }}</span><span style="font-size:11px;font-weight:700;opacity:.8">{{ i.sub }}</span></button></sc-for>
+</div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">OBSERVAÇÃO <span style="font-weight:600;letter-spacing:0">(opcional)</span></span>
+<textarea value="{{ note }}" onChange="{{ onNote }}" rows="2" placeholder="Ex.: treino de perna, recorde no agachamento" style="resize:none;padding:14px 16px;border-radius:16px;background:#14161B;border:1.5px solid #2A2E37;color:#F3F4F6;font-size:15px;font-weight:600;outline:none;line-height:1.4" style-focus="border-color:#FFE14A"></textarea>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">FOTO COMO PROVA <span style="font-weight:600;letter-spacing:0">(opcional · {{ photoBonusLabel }})</span></span>
+<sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;gap:8px;align-items:stretch">
+<label style="flex:1;min-height:76px;border-radius:16px;border:1.5px dashed #2A2E37;display:flex;align-items:center;gap:14px;padding:0 18px;cursor:pointer;color:#B4B9C4" style-hover="border-color:#FFE14A;color:#FFE14A"><svg width="26" height="26" viewBox="0 0 24 24" style="flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.8l1.4-2h4.6l1.4 2h1.8A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"></path><circle cx="12" cy="12.5" r="3.5"></circle></svg><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:800">Adicionar foto</span><span style="font-size:12.5px;font-weight:600;color:#8D93A1">Tire na hora ou escolha da galeria. A Ana vê no histórico.</span></span><input type="file" accept="image/*" capture="environment" onChange="{{ onPhoto }}" style="display:none"></label>
+<button onClick="{{ photoDemo }}" style="flex:none;width:96px;border-radius:16px;border:1.5px solid #2A2E37;background:#1C1F26;color:#B4B9C4;font-size:12.5px;font-weight:800;cursor:pointer;line-height:1.3" style-hover="background:#23262E">Usar foto de exemplo</button>
+</div>
+</sc-if>
+<sc-if value="{{ hasFormPhoto }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:14px;padding:10px 12px 10px 10px;border-radius:16px;background:rgba(255,225,74,.06);border:1.5px solid #FFE14A">
+<div style="width:64px;height:64px;flex:none;border-radius:12px;overflow:hidden;background:repeating-linear-gradient(135deg,#1C1F26 0 8px,#181A20 8px 16px);display:grid;place-items:center"><sc-if value="{{ formPhotoHasUrl }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:100%;background-image:{{ formPhotoBg }};background-size:cover;background-position:center"></div></sc-if><sc-if value="{{ formPhotoPh }}" hint-placeholder-val="{{ true }}"><svg width="22" height="22" viewBox="0 0 24 24" style="fill:none;stroke:#6B7180;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.8l1.4-2h4.6l1.4 2h1.8A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"></path><circle cx="12" cy="12.5" r="3.5"></circle></svg></sc-if></div>
+<div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:800;color:#FFE14A">Foto adicionada</div><div style="font-size:12.5px;font-weight:600;color:#B4B9C4;margin-top:2px">Treino verificado · {{ photoBonusLabel }}</div></div>
+<button onClick="{{ removePhoto }}" style="height:38px;padding:0 14px;border-radius:12px;border:1.5px solid #2A2E37;background:#1C1F26;color:#F3F4F6;font-size:13px;font-weight:800;cursor:pointer" style-hover="background:#23262E">Remover</button>
+</div>
+</sc-if>
+</div>
+</div>
+<div style="position:sticky;bottom:0;padding:16px 28px 22px;background:#101216;border-top:1px solid #22252C;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+<div style="flex:1 1 200px;display:flex;flex-direction:column"><span style="font-size:10.5px;font-weight:800;letter-spacing:1.3px;color:#8D93A1">VOCÊ GANHA</span><div style="display:flex;align-items:baseline;gap:6px"><span style="font-family:Anton;font-size:38px;line-height:1.1;color:#FFE14A">{{ ptsPreview }}</span><span style="font-size:15px;font-weight:800;color:#FFE14A">pontos</span></div><span style="font-size:12.5px;font-weight:600;color:#8D93A1">{{ formSummary }}</span></div>
+<div style="flex:1 1 240px;display:flex;flex-direction:column;gap:8px;align-items:stretch">
+<button onClick="{{ save }}" style="height:58px;border:0;border-radius:18px;background:{{ saveBg }};color:#14120A;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 12px 30px -12px rgba(255,225,74,.6)" style-hover="filter:brightness(1.06)">Salvar check-in</button>
+<span style="font-size:11.5px;font-weight:700;color:#6B7180;text-align:center">Enter para salvar · Esc para fechar</span>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showSuccess }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Check-in sucesso" style="padding:52px 36px 30px;display:flex;flex-direction:column;align-items:center;text-align:center;background:radial-gradient(circle at 50% 18%,rgba(255,225,74,.16),rgba(255,225,74,0) 50%)">
+<div style="position:relative;width:116px;height:116px">
+{{ burst }}
+<div style="position:absolute;inset:0;border-radius:50%;background:#FFE14A;display:grid;place-items:center;box-shadow:0 0 0 12px rgba(255,225,74,.12),0 0 70px 8px rgba(255,225,74,.35)"><svg width="54" height="54" viewBox="0 0 24 24" style="fill:none;stroke:#14120A;stroke-width:3;stroke-linecap:round;stroke-linejoin:round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></div>
+</div>
+<div style="position:relative;z-index:1;font-family:Anton;font-size:64px;line-height:1;color:#FFE14A;margin-top:56px;text-transform:uppercase">{{ sTitle }}</div>
+<div style="font-size:26px;font-weight:800;margin-top:12px;letter-spacing:-.3px">{{ sMsg }}</div>
+<div style="font-size:14px;color:#8D93A1;font-weight:600;margin-top:8px">{{ sSummary }}</div>
+<div style="width:100%;max-width:460px;margin-top:28px;background:#14161B;border:1px solid #23262E;border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:16px;text-align:left">
+<sc-for list="{{ miniRows }}" as="m" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;gap:14px">
+<div style="position:relative;flex:none"><sc-if value="{{ m.lead }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" style="position:absolute;top:-13px;left:11px;fill:#FFE14A"><path d="M3 8l4.5 3.5L12 5l4.5 6.5L21 8l-1.8 10H4.8z"></path></svg></sc-if><div style="width:40px;height:40px;border-radius:50%;background:{{ m.color }};color:{{ m.ink }};display:grid;place-items:center;font-weight:800;font-size:16px;box-shadow:{{ m.ring }}">{{ m.initial }}</div></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;font-size:14px;font-weight:800"><span>{{ m.label }}</span><span style="color:#8D93A1">{{ m.ptsLabel }}</span></div><div style="height:8px;border-radius:4px;background:#2A2E37;overflow:hidden"><div style="width:{{ m.barW }};height:100%;border-radius:4px;background:{{ m.color }}"></div></div></div>
+<span style="font-family:Anton;font-size:26px;width:64px;text-align:right;color:{{ m.scoreColor }}">{{ m.pctLabel }}</span>
+</div>
+</sc-for>
+<sc-if value="{{ tieNote }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:#8D93A1;font-weight:600;line-height:1.4;border-top:1px solid #22252C;padding-top:12px">Meta empatada. No empate, vence quem soma mais pontos.</div></sc-if>
+</div>
+<div style="margin-top:16px;display:flex;align-items:center;gap:8px;padding:10px 16px 10px 12px;border-radius:999px;background:rgba(255,138,31,.14);color:#FFB067;font-size:13.5px;font-weight:800"><svg width="18" height="18" viewBox="0 0 24 24" style="flex:none;fill:#FF8A1F"><path d="M12 2.5c.6 3.2 2.6 5 4.3 6.9 1.6 1.8 2.7 3.6 2.7 6.1A7 7 0 0 1 5 15.5c0-2.3 1-4.1 2.6-5.6.3 1.6 1.2 2.7 2.4 3.2-.6-3.8.4-7.6 2-10.6z"></path></svg>{{ sPill }}</div>
+<div style="width:100%;max-width:460px;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:30px">
+<button onClick="{{ successHistory }}" style="height:56px;border-radius:18px;border:1.5px solid #2A2E37;background:#1C1F26;color:#F3F4F6;font-size:16px;font-weight:800;cursor:pointer" style-hover="background:#23262E">Ver histórico</button>
+<button onClick="{{ closeModal }}" style="height:56px;border:0;border-radius:18px;background:#FFE14A;color:#14120A;font-size:16px;font-weight:800;cursor:pointer" style-hover="background:#FFEA7A">Voltar ao placar</button>
+</div>
+</div>
+</sc-if>
+
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ sheetChal }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ sheetBackdrop }}" style="position:fixed;inset:0;z-index:50;background:rgba(5,6,8,.72);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;animation:gdFade .18s ease-out">
+<div data-screen-label="Novo desafio" style="width:100%;max-width:600px;max-height:calc(100vh - 48px);overflow:auto;background:#101216;border:1px solid #23262E;border-radius:30px;box-shadow:0 40px 80px -20px rgba(0,0,0,.6);animation:gdIn .22s cubic-bezier(.2,.8,.3,1)">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:26px 28px 6px"><div><h2 style="margin:0;font-size:24px;font-weight:800;letter-spacing:-.3px">Novo desafio</h2><p style="margin:4px 0 0;font-size:13.5px;color:#8D93A1;font-weight:600">A Ana precisa aceitar para valer.</p></div><button onClick="{{ closeSheet }}" aria-label="Fechar" style="width:40px;height:40px;flex:none;border:0;border-radius:20px;background:#1C1F26;display:grid;place-items:center;cursor:pointer" style-hover="background:#2A2E37"><svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:#F3F4F6;stroke-width:2.4;stroke-linecap:round"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></div>
+<div style="padding:18px 28px 24px;display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">MODELO</span><div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ cKinds }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.pick }}" style="height:44px;padding:0 16px;border-radius:22px;border:1.5px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};font-size:15px;font-weight:800;cursor:pointer">{{ o.label }}</button></sc-for></div></div>
+<sc-if value="{{ cShowType }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">TIPO DE TREINO</span><div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ cTypes }}" as="o" hint-placeholder-count="5"><button onClick="{{ o.pick }}" style="height:44px;padding:0 16px;border-radius:22px;border:1.5px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};font-size:15px;font-weight:800;cursor:pointer">{{ o.label }}</button></sc-for></div></div>
+<div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">PERÍODO</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><sc-for list="{{ cPeriods }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.pick }}" style="height:56px;border-radius:16px;border:1.5px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer"><span style="font-size:15px;font-weight:800">{{ o.label }}</span><span style="font-size:11px;font-weight:700;opacity:.8">{{ o.sub }}</span></button></sc-for></div></div></sc-if>
+<div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">VALE</span><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px"><sc-for list="{{ cStakes }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.pick }}" style="height:48px;border-radius:16px;border:1.5px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};font-size:15px;font-weight:800;cursor:pointer">{{ o.label }}</button></sc-for></div>
+<sc-if value="{{ cCustom }}" hint-placeholder-val="{{ false }}"><input value="{{ cText }}" onChange="{{ onCText }}" placeholder="Ex.: quem perder faz o jantar de sexta" style="height:52px;border-radius:16px;background:#14161B;border:1.5px solid #2A2E37;padding:0 16px;color:#F3F4F6;font-size:15px;font-weight:600;outline:none" style-focus="border-color:#FFE14A"></sc-if>
+<span style="font-size:12.5px;font-weight:600;color:#8D93A1">Pontos de desafio são bônus para quem vence. Ninguém perde pontos.</span></div>
+<div style="padding:16px 18px;border-radius:18px;background:#14161B;border:1px solid #23262E;display:flex;gap:14px;align-items:center"><svg width="22" height="22" viewBox="0 0 24 24" style="flex:none;fill:none;stroke:#FFE14A;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"></path><path d="M16 5.5h3V7a3 3 0 0 1-3 3M8 5.5H5V7a3 3 0 0 0 3 3M12 13v4M8.5 20h7"></path></svg><div style="min-width:0"><div style="font-size:16px;font-weight:800">{{ cPrevTitle }}</div><div style="font-size:13px;color:#8D93A1;font-weight:600;margin-top:2px">{{ cPrevSub }}</div></div></div>
+</div>
+<div style="position:sticky;bottom:0;padding:16px 28px 22px;background:#101216;border-top:1px solid #22252C;display:flex;gap:10px">
+<button onClick="{{ closeSheet }}" style="height:56px;padding:0 20px;border-radius:18px;border:1.5px solid #2A2E37;background:#1C1F26;color:#F3F4F6;font-size:16px;font-weight:800;cursor:pointer">Cancelar</button>
+<button onClick="{{ sendChal }}" style="flex:1;height:56px;border:0;border-radius:18px;background:{{ cSendBg }};color:#14120A;font-size:16px;font-weight:800;cursor:pointer" style-hover="filter:brightness(1.06)">Enviar desafio para a Ana</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ sheetReward }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ sheetBackdrop }}" style="position:fixed;inset:0;z-index:50;background:rgba(5,6,8,.72);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;animation:gdFade .18s ease-out">
+<div data-screen-label="Criar prêmio" style="width:100%;max-width:520px;background:#101216;border:1px solid #23262E;border-radius:30px;box-shadow:0 40px 80px -20px rgba(0,0,0,.6);animation:gdIn .22s cubic-bezier(.2,.8,.3,1)">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:26px 28px 6px"><div><h2 style="margin:0;font-size:24px;font-weight:800;letter-spacing:-.3px">Criar prêmio</h2><p style="margin:4px 0 0;font-size:13.5px;color:#8D93A1;font-weight:600">Algo que você topa fazer. A Ana resgata com os pontos dela.</p></div><button onClick="{{ closeSheet }}" aria-label="Fechar" style="width:40px;height:40px;flex:none;border:0;border-radius:20px;background:#1C1F26;display:grid;place-items:center;cursor:pointer" style-hover="background:#2A2E37"><svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:#F3F4F6;stroke-width:2.4;stroke-linecap:round"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></div>
+<div style="padding:18px 28px 8px;display:flex;flex-direction:column;gap:20px">
+<label style="display:flex;flex-direction:column;gap:10px"><span style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">PRÊMIO</span><input value="{{ rwTitle }}" onChange="{{ onRwTitle }}" placeholder="Ex.: Sobremesa feita por mim" style="height:56px;border-radius:16px;background:#14161B;border:1.5px solid #2A2E37;padding:0 16px;color:#F3F4F6;font-size:16px;font-weight:600;outline:none" style-focus="border-color:#FFE14A"></label>
+<div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">CUSTO</span><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px"><sc-for list="{{ rwCosts }}" as="o" hint-placeholder-count="5"><button onClick="{{ o.pick }}" style="height:56px;border-radius:16px;border:1.5px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer"><span style="font-family:Anton;font-size:20px;line-height:1.1">{{ o.label }}</span><span style="font-size:10.5px;font-weight:800">pts</span></button></sc-for></div><span style="font-size:12.5px;font-weight:600;color:#8D93A1">Referência: uma semana com a meta batida rende cerca de {{ weekRef }} pts.</span></div>
+</div>
+<div style="padding:16px 28px 24px;display:flex;gap:10px">
+<button onClick="{{ closeSheet }}" style="height:56px;padding:0 20px;border-radius:18px;border:1.5px solid #2A2E37;background:#1C1F26;color:#F3F4F6;font-size:16px;font-weight:800;cursor:pointer">Cancelar</button>
+<button onClick="{{ saveReward }}" style="flex:1;height:56px;border:0;border-radius:18px;background:{{ rwSaveBg }};color:#14120A;font-size:16px;font-weight:800;cursor:pointer">Adicionar à loja da Ana</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ sheetRedeem }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ sheetBackdrop }}" style="position:fixed;inset:0;z-index:50;background:rgba(5,6,8,.72);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;animation:gdFade .18s ease-out">
+<div data-screen-label="Resgate" style="width:100%;max-width:480px;background:#101216;border:1px solid #23262E;border-radius:30px;box-shadow:0 40px 80px -20px rgba(0,0,0,.6);animation:gdIn .22s cubic-bezier(.2,.8,.3,1);overflow:hidden">
+<sc-if value="{{ rdConfirm }}" hint-placeholder-val="{{ true }}">
+<div style="padding:28px 28px 8px;display:flex;flex-direction:column;gap:18px">
+<span style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:#8D93A1">RESGATAR PRÊMIO</span>
+<div style="font-size:24px;font-weight:800;line-height:1.25;letter-spacing:-.3px">{{ rdTitle }}</div>
+<div style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:18px;background:#14161B;border:1px solid #23262E">
+<div style="flex:1;display:flex;flex-direction:column"><span style="font-size:12px;font-weight:700;color:#8D93A1">Saldo atual</span><span style="font-family:Anton;font-size:28px;line-height:1.1">{{ rdFrom }}</span></div>
+<svg width="22" height="22" viewBox="0 0 24 24" style="fill:none;stroke:#8D93A1;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+<div style="flex:1;display:flex;flex-direction:column;align-items:flex-end"><span style="font-size:12px;font-weight:700;color:#8D93A1">Depois do resgate</span><span style="font-family:Anton;font-size:28px;line-height:1.1;color:#FFE14A">{{ rdTo }}</span></div>
+</div>
+<span style="font-size:13.5px;font-weight:600;color:#B4B9C4;line-height:1.5">Custa {{ rdCost }} pts. A Ana recebe um aviso para cumprir e vocês combinam o melhor dia.</span>
+</div>
+<div style="padding:16px 28px 24px;display:flex;gap:10px">
+<button onClick="{{ closeSheet }}" style="height:56px;padding:0 20px;border-radius:18px;border:1.5px solid #2A2E37;background:#1C1F26;color:#F3F4F6;font-size:16px;font-weight:800;cursor:pointer">Cancelar</button>
+<button onClick="{{ confirmRedeem }}" style="flex:1;height:56px;border:0;border-radius:18px;background:#FFE14A;color:#14120A;font-size:16px;font-weight:800;cursor:pointer" style-hover="background:#FFEA7A">Confirmar resgate</button>
+</div>
+</sc-if>
+<sc-if value="{{ rdDone }}" hint-placeholder-val="{{ false }}">
+<div style="padding:40px 28px 26px;display:flex;flex-direction:column;align-items:center;text-align:center;background:radial-gradient(circle at 50% 14%,rgba(255,225,74,.16),rgba(255,225,74,0) 55%)">
+<div style="width:88px;height:88px;border-radius:50%;background:#FFE14A;display:grid;place-items:center;box-shadow:0 0 0 10px rgba(255,225,74,.12)"><svg width="44" height="44" viewBox="0 0 24 24" style="fill:none;stroke:#14120A;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"></path><path d="M16 5.5h3V7a3 3 0 0 1-3 3M8 5.5H5V7a3 3 0 0 0 3 3M12 13v4M8.5 20h7"></path></svg></div>
+<div style="font-family:Anton;font-size:44px;line-height:1;color:#FFE14A;margin-top:24px;text-transform:uppercase">Resgatado!</div>
+<div style="font-size:18px;font-weight:800;margin-top:10px">{{ rdTitle }}</div>
+<div style="font-size:14px;color:#8D93A1;font-weight:600;margin-top:6px;line-height:1.5">A Ana foi avisada. Quando ela cumprir, marque como recebido.</div>
+<div style="width:100%;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:26px">
+<button onClick="{{ rdSeeMine }}" style="height:54px;border-radius:18px;border:1.5px solid #2A2E37;background:#1C1F26;color:#F3F4F6;font-size:15px;font-weight:800;cursor:pointer">Ver meus resgates</button>
+<button onClick="{{ closeSheet }}" style="height:54px;border:0;border-radius:18px;background:#FFE14A;color:#14120A;font-size:15px;font-weight:800;cursor:pointer">Voltar à loja</button>
+</div>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ sheetPhoto }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ sheetBackdrop }}" style="position:fixed;inset:0;z-index:50;background:rgba(5,6,8,.86);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;animation:gdFade .18s ease-out">
+<div data-screen-label="Foto do treino" style="width:100%;max-width:560px;background:#101216;border:1px solid #23262E;border-radius:28px;overflow:hidden;animation:gdIn .22s cubic-bezier(.2,.8,.3,1)">
+<div style="aspect-ratio:4 / 3;background:repeating-linear-gradient(135deg,#1C1F26 0 14px,#181A20 14px 28px);display:grid;place-items:center">
+<sc-if value="{{ lbHasUrl }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:100%;background-image:{{ lbBg }};background-size:cover;background-position:center"></div></sc-if>
+<sc-if value="{{ lbPh }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-direction:column;align-items:center;gap:8px;color:#6B7180;font-size:13px;font-weight:700"><svg width="40" height="40" viewBox="0 0 24 24" style="fill:none;stroke:#6B7180;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.8l1.4-2h4.6l1.4 2h1.8A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"></path><circle cx="12" cy="12.5" r="3.5"></circle></svg>foto do treino</div></sc-if>
+</div>
+<div style="padding:18px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+<div style="width:40px;height:40px;flex:none;border-radius:50%;background:{{ lbColor }};color:{{ lbInk }};display:grid;place-items:center;font-weight:800;font-size:16px">{{ lbInitial }}</div>
+<div style="flex:1 1 200px;min-width:0"><div style="font-size:16px;font-weight:800">{{ lbTitle }}</div><div style="font-size:13px;color:#8D93A1;font-weight:600;margin-top:1px">{{ lbSub }}</div></div>
+<sc-if value="{{ lbIsAna }}" hint-placeholder-val="{{ false }}"><button onClick="{{ lbCheer }}" style="height:44px;padding:0 16px;border:0;border-radius:14px;background:#FFE14A;color:#14120A;font-size:14px;font-weight:800;cursor:pointer">Mandar parabéns</button></sc-if>
+<button onClick="{{ closeSheet }}" style="height:44px;padding:0 16px;border-radius:14px;border:1.5px solid #2A2E37;background:#1C1F26;color:#F3F4F6;font-size:14px;font-weight:800;cursor:pointer">Fechar</button>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:70;display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:16px;background:#F3F4F6;color:#0B0C0F;font-size:14.5px;font-weight:800;box-shadow:0 20px 40px -12px rgba(0,0,0,.5);animation:gdIn .2s ease-out"><svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:#0B0C0F;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"></path><path d="M16 5.5h3V7a3 3 0 0 1-3 3M8 5.5H5V7a3 3 0 0 0 3 3M12 13v4M8.5 20h7"></path></svg>{{ toast }}</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Login&quot;,&quot;Home&quot;,&quot;Histórico&quot;,&quot;Desafios&quot;,&quot;Prêmios&quot;,&quot;Metas e regras&quot;],&quot;default&quot;:&quot;Home&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Protótipo&quot;},&quot;weekState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Em andamento&quot;,&quot;Início (vazio)&quot;],&quot;default&quot;:&quot;Em andamento&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Protótipo&quot;},&quot;animateSuccess&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Protótipo&quot;}}">
+class Component extends DCLogic {
+  static DOW = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+  static DOWFULL = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo'];
+  static WEEKS = ['18 ago', '25 ago', '1 set', '8 set', '15 set', '22 set', '29 set', '6 out', '13 out'];
+  static HIST = { R: [1, 1, 1, 0, 1, 0, 1, 1], A: [1, 1, 1, 1, 1, 0, 1, 1] };
+  static MILES = [[2, 10], [4, 20], [8, 40], [12, 60]];
+  static RULES = { per: 3, adj: 5, photo: 5, win: 20 };
+  static RULEDEFS = [
+    { key: 'per', label: 'Pontos por tempo', desc: '1 ponto a cada X minutos de treino', opts: [[2, '2 min'], [3, '3 min'], [4, '4 min']] },
+    { key: 'adj', label: 'Intensidade', desc: 'Quanto o treino leve tira e o alto soma', opts: [[0, '±0'], [5, '±5'], [10, '±10']] },
+    { key: 'photo', label: 'Foto como prova', desc: 'Bônus por treino registrado com foto', opts: [[0, '+0'], [3, '+3'], [5, '+5'], [10, '+10']] },
+    { key: 'win', label: 'Vencedor da semana', desc: 'Bônus de saldo para quem fecha a semana na frente', opts: [[0, '+0'], [10, '+10'], [20, '+20'], [30, '+30']] }
+  ];
+  static SEED = [
+    ['A', 'Funcional', 30, 'Alta', 16, '', 1],
+    ['R', 'Musculação', 45, 'Moderada', 15, 'Treino de costas', 1],
+    ['A', 'Corrida', 30, 'Moderada', 15, '', 0],
+    ['A', 'Aula', 60, 'Alta', 14, 'Spinning', 0],
+    ['R', 'Corrida', 30, 'Moderada', 14, '', 0],
+    ['R', 'Musculação', 45, 'Moderada', 13, '', 0],
+    ['R', 'Corrida', 45, 'Moderada', 12, '', 1],
+    ['A', 'Aula', 60, 'Alta', 10, '', 1],
+    ['R', 'Musculação', 60, 'Moderada', 10, '', 0],
+    ['R', 'Musculação', 45, 'Alta', 8, 'Recorde no agachamento', 1],
+    ['A', 'Funcional', 45, 'Moderada', 8, '', 0],
+    ['A', 'Corrida', 45, 'Moderada', 6, '', 0],
+    ['R', 'Funcional', 30, 'Leve', 6, '', 0],
+    ['A', 'Musculação', 45, 'Moderada', 4, '', 0],
+    ['R', 'Musculação', 60, 'Moderada', 2, '', 0],
+    ['A', 'Aula', 60, 'Moderada', 2, '', 0]
+  ].map(([who, type, dur, int, day, note, ph], i) => ({ who, type, dur, int, day, note, photo: ph ? { ph: true } : null, seq: 1000 - i }));
+
+  state = {
+    screen: null, email: 'rafael@email.com', pw: '', showPw: false, loginErr: '', errField: null,
+    suName: '', suEmail: '', suPw: '', suGoal: 3, suErr: '',
+    me: { name: 'Rafael', goal: 4 }, added: [],
+    modal: false, success: null, form: null,
+    hPerson: 'Todos', hPeriod: 'Semana', toast: '', burst: 0,
+    sheet: null, lb: null, redeemId: null, redeemDone: false, chalDraft: null, rwDraft: null, rTab: 'Loja',
+    goalDraft: null, nextGoal: null,
+    rules: { ...Component.RULES }, rulesDraft: { ...Component.RULES }, rulesPending: false,
+    rewards: [
+      { id: 'a1', by: 'A', title: 'Escolher o filme da sexta', cost: 60 },
+      { id: 'a2', by: 'A', title: 'Massagem de 20 minutos', cost: 120 },
+      { id: 'a3', by: 'A', title: 'Café da manhã na cama', cost: 150 },
+      { id: 'a4', by: 'A', title: 'Folga da louça por uma semana', cost: 200 },
+      { id: 'a5', by: 'A', title: 'Jantar no restaurante que você escolher', cost: 300 },
+      { id: 'r1', by: 'R', title: 'Playlist nova de corrida feita por mim', cost: 50 },
+      { id: 'r2', by: 'R', title: 'Massagem nos pés', cost: 100 },
+      { id: 'r3', by: 'R', title: 'Passeio de domingo à sua escolha', cost: 180 }
+    ],
+    redemptions: [
+      { id: 'x1', who: 'R', title: 'Escolher o filme da sexta', cost: 60, day: 3, status: 'done' },
+      { id: 'x2', who: 'A', title: 'Massagem nos pés', cost: 100, day: 14, status: 'pending' }
+    ],
+    challenges: [
+      { id: 'c3', from: 'A', kind: 'minutes', wtype: 'Corrida', period: 'Fim de semana', stake: { pts: 30 }, status: 'pending' },
+      { id: 'c1', from: 'A', kind: 'count', wtype: 'Musculação', period: 'Semana', stake: { pts: 20 }, status: 'active' },
+      { id: 'c2', from: 'R', kind: 'minutes', wtype: null, period: 'Semana', stake: { text: 'quem perder lava a louça no domingo' }, status: 'active' },
+      { id: 'c4', from: 'R', kind: 'goal', wtype: null, period: '6 a 12 de out', stake: { pts: 20 }, status: 'done', winner: 'A' },
+      { id: 'c5', from: 'A', kind: 'count', wtype: 'Corrida', period: '29 set a 5 de out', stake: { pts: 15 }, status: 'done', winner: 'R' }
+    ]
+  };
+
+  componentDidMount() { this._key = e => this.onKey(e); window.addEventListener('keydown', this._key); }
+  componentWillUnmount() { window.removeEventListener('keydown', this._key); clearTimeout(this._tt); }
+
+  screen() { return this.state.screen ?? ({ 'Login': 'login', 'Home': 'home', 'Histórico': 'history', 'Desafios': 'challenges', 'Prêmios': 'rewards', 'Metas e regras': 'goals' }[this.props.startScreen] || 'login'); }
+  mode() { return (this.props.weekState ?? 'Em andamento') === 'Início (vazio)' ? 'empty' : 'live'; }
+  inApp(scr) { return ['home', 'history', 'challenges', 'rewards', 'goals'].includes(scr); }
+
+  onKey(e) {
+    const s = this.state, tag = (e.target.tagName || '').toLowerCase();
+    if (s.sheet) { if (e.key === 'Escape') this.closeSheet(); return; }
+    if (s.modal) {
+      if (e.key === 'Escape') this.closeModal();
+      else if (e.key === 'Enter' && tag !== 'textarea' && tag !== 'button') { e.preventDefault(); s.success ? this.closeModal() : this.save(); }
+      return;
+    }
+    if (this.inApp(this.screen()) && tag !== 'input' && tag !== 'textarea' && (e.key === 'c' || e.key === 'C') && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); this.openModal(); }
+  }
+
+  calc(w, ru) {
+    ru = ru || this.state.rules;
+    const adj = w.int === 'Leve' ? -ru.adj : w.int === 'Alta' ? ru.adj : 0;
+    return Math.max(5, Math.round(w.dur / ru.per) + adj + (w.photo ? ru.photo : 0));
+  }
+
+  streakOf(who, done, goal) {
+    const seq = Component.HIST[who].concat(done >= goal ? [1] : []);
+    let streak = 0; for (let i = seq.length - 1; i >= 0 && seq[i]; i--) streak++;
+    let rec = 0, run = 0; seq.forEach(x => { run = x ? run + 1 : 0; rec = Math.max(rec, run); });
+    return { streak, record: rec };
+  }
+
+  model(st) {
+    const s = st || this.state, mode = this.mode(), empty = mode === 'empty';
+    const today = empty ? 13 : 16;
+    const list = Component.SEED.filter(w => !empty || w.day < 13).concat(s.added.filter(w => w.mode === mode))
+      .map(w => ({ ...w, pts: this.calc(w, s.rules) })).sort((x, y) => y.day - x.day || y.seq - x.seq);
+    const stat = (who, goal) => {
+      const ws = list.filter(w => w.who === who && w.day >= 13 && w.day <= 19);
+      const done = ws.length, pts = ws.reduce((t, w) => t + w.pts, 0);
+      return { done, goal, pts, pct: Math.min(100, Math.round(done / goal * 100)), ...this.streakOf(who, done, goal) };
+    };
+    const R = stat('R', s.me.goal), A = stat('A', 3);
+    let lead = null;
+    if (R.done || A.done) { if (R.pct !== A.pct) lead = R.pct > A.pct ? 'R' : 'A'; else if (R.pts !== A.pts) lead = R.pts > A.pts ? 'R' : 'A'; }
+    const bal = who => ({ R: 120, A: 90 })[who]
+      + list.filter(w => w.who === who).reduce((t, w) => t + w.pts, 0)
+      + s.challenges.filter(c => c.status === 'done' && c.winner === who && c.stake.pts).reduce((t, c) => t + c.stake.pts, 0)
+      - s.redemptions.filter(r => r.who === who).reduce((t, r) => t + r.cost, 0);
+    return { list, today, R, A, lead, mode, balR: bal('R'), balA: bal('A') };
+  }
+
+  dayLabel(d, today, long) {
+    const dow = Component.DOW[((d - 13) % 7 + 7) % 7];
+    if (d === today) return long ? `Hoje · ${dow.toLowerCase()}, ${d} out` : 'Hoje';
+    if (d === today - 1) return long ? `Ontem · ${dow.toLowerCase()}, ${d} out` : 'Ontem';
+    return `${dow}, ${d} out`;
+  }
+
+  person(who) {
+    const isR = who === 'R', name = isR ? this.state.me.name : 'Ana';
+    return { name, initial: (name[0] || '?').toUpperCase(), color: isR ? '#4C8DFF' : '#FF5CA8', ink: isR ? '#071226' : '#2A0716', text: isR ? '#7FB0FF' : '#FF8CC2' };
+  }
+
+  panel(st, who, lead) {
+    const p = this.person(who), on = lead === who;
+    return {
+      ...p, lead: on,
+      ring: on ? '0 0 0 4px #17181A,0 0 0 7px #FFE14A,0 0 34px 6px rgba(255,225,74,.3)' : `0 0 0 4px #14161B,0 0 0 7px ${who === 'R' ? 'rgba(76,141,255,.45)' : 'rgba(255,92,168,.45)'}`,
+      pctLabel: st.pct + '%', scoreColor: on ? '#FFE14A' : (st.done ? '#F3F4F6' : '#4A4F5C'), barW: st.pct + '%',
+      caption: `${st.done} de ${st.goal} treinos`, ptsLabel: st.pts + ' pts',
+      streakLabel: st.streak + (st.streak === 1 ? ' semana' : ' semanas'),
+      border: on ? 'rgba(255,225,74,.45)' : (st.done ? 'transparent' : '#2A2E37'), bg: on ? 'rgba(255,225,74,.06)' : 'transparent', bstyle: (st.done || on) ? 'solid' : 'dashed'
+    };
+  }
+
+  duelMsg(R, A, lead) {
+    if (!R.done && !A.done) return 'Placar zerado. Quem treinar primeiro abre a semana na frente.';
+    if (lead === 'A') {
+      if (R.pct === A.pct) return `Empate na meta. Ana lidera nos pontos por ${A.pts - R.pts}.`;
+      const need = Math.max(1, Math.ceil(A.pct / 100 * R.goal) - R.done);
+      return `${A.pct === 100 ? 'Ana bateu a meta.' : 'Ana está na frente.'} Mais ${need} treino${need > 1 ? 's' : ''} e você empata.`;
+    }
+    if (lead === 'R') {
+      if (R.pct === A.pct) return `Empate na meta. Você lidera nos pontos por ${R.pts - A.pts}.`;
+      return R.pct === 100 ? 'Você bateu a meta e está na frente. Boa!' : `Você está na frente com ${R.pct}% da meta.`;
+    }
+    return 'Empate total. O próximo treino desempata.';
+  }
+
+  toast(msg) { clearTimeout(this._tt); this.setState({ toast: msg }); this._tt = setTimeout(() => this.setState({ toast: '' }), 2600); }
+
+  openModal() {
+    const last = this.model().list.find(w => w.who === 'R'), q = [30, 45, 60, 90];
+    const f = last ? { type: last.type, dur: q.includes(last.dur) ? last.dur : 45, custom: q.includes(last.dur) ? '' : String(last.dur), int: last.int } : { type: 'Musculação', dur: 45, custom: '', int: 'Moderada' };
+    this.setState({ modal: true, success: null, form: { ...f, day: 'Hoje', note: '', photo: null } });
+  }
+  closeModal() { this.setState({ modal: false, success: null }); }
+  closeSheet() { this.setState({ sheet: null }); }
+  setForm(patch) { this.setState(s => ({ form: { ...s.form, ...patch } })); }
+  formDur(f) { if (!f) return 45; if (f.custom !== '') { const n = parseInt(f.custom, 10); return n >= 5 && n <= 300 ? n : null; } return f.dur; }
+
+  save() {
+    const s = this.state, f = s.form, dur = this.formDur(f);
+    if (!f || !dur) return;
+    const before = this.model();
+    const day = f.day === 'Hoje' ? before.today : before.today - 1;
+    const w = { who: 'R', type: f.type, dur, int: f.int, day, note: f.note.trim(), photo: f.photo, mode: before.mode, seq: 2000 + s.added.length };
+    const pts = this.calc(w);
+    const next = { ...s, added: s.added.concat(w) };
+    const after = this.model(next);
+    const inWeek = day >= 13;
+    let msg;
+    if (!inWeek) msg = 'Registrado na semana anterior.';
+    else if (after.lead === 'R' && before.lead !== 'R') msg = 'Você passou na frente!';
+    else if (after.lead === 'R') msg = 'Você segue na frente!';
+    else if (after.lead === null) msg = 'Empate no placar!';
+    else msg = 'Você está mais perto da Ana!';
+    let pill;
+    if (!inWeek) pill = 'Não conta para o placar desta semana';
+    else if (before.R.done < before.R.goal && after.R.done >= after.R.goal) pill = `Meta batida · sequência de ${after.R.streak} semanas`;
+    else if (after.R.done < after.R.goal) { const n = after.R.goal - after.R.done; pill = `Falta${n > 1 ? 'm' : ''} ${n} treino${n > 1 ? 's' : ''} para sua meta`; }
+    else pill = 'Treino extra · pontos contam no desempate';
+    this.setState({ added: next.added, burst: s.burst + 1, success: { title: `+${pts} pontos!`, msg, pill, summary: `${w.type} · ${dur} min · ${w.int} · ${this.dayLabel(day, before.today)}${w.photo ? ' · com foto' : ''}` } });
+  }
+
+  burstEl() {
+    const animate = this.props.animateSuccess ?? true, cols = ['#FFE14A', '#4C8DFF', '#FF5CA8', '#FF8A1F', '#F3F4F6'], kids = [];
+    for (let i = 0; i < 24; i++) {
+      const ang = (i / 24) * Math.PI * 2 + (i % 2 ? 0.13 : 0), r = 90 + (i % 4) * 20;
+      const dx = Math.round(Math.cos(ang) * r * 1.5), dy = Math.min(70, Math.round(Math.sin(ang) * r));
+      const w = i % 3 === 0 ? 13 : 8, h = i % 3 === 0 ? 5 : 8, rot = (i * 47) % 180;
+      const st = { position: 'absolute', left: '50%', top: '50%', width: w, height: h, marginLeft: -w / 2, marginTop: -h / 2, borderRadius: i % 3 === 0 ? 2 : 4, background: cols[i % 5], '--dx': dx + 'px', '--dy': dy + 'px', '--rot': rot + 'deg' };
+      if (animate) st.animation = `gdBurst 1.1s cubic-bezier(.15,.8,.3,1) ${(i % 4) * 0.05}s both`;
+      else st.transform = `translate(${dx}px,${dy}px) rotate(${rot}deg)`;
+      kids.push(React.createElement('span', { key: i, style: st }));
+    }
+    return React.createElement('div', { key: 'b' + this.state.burst + (animate ? 'a' : 's'), style: { position: 'absolute', inset: 0, pointerEvents: 'none' } }, kids);
+  }
+
+  submitLogin(e) {
+    e.preventDefault();
+    const { email, pw } = this.state;
+    if (!email.trim()) return this.setState({ loginErr: 'Digite seu e-mail.', errField: 'email' });
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) return this.setState({ loginErr: 'Digite um e-mail válido.', errField: 'email' });
+    if (!pw) return this.setState({ loginErr: 'Digite sua senha.', errField: 'pw' });
+    if (pw !== 'gymduel') return this.setState({ loginErr: 'Senha incorreta. Confira e tente de novo.', errField: 'pw' });
+    this.setState({ screen: 'home', loginErr: '', errField: null, pw: '', showPw: false });
+  }
+  submitSignup(e) {
+    e.preventDefault();
+    const { suName, suEmail, suPw, suGoal } = this.state;
+    if (!suName.trim()) return this.setState({ suErr: 'Digite seu nome.' });
+    if (!/^\S+@\S+\.\S+$/.test(suEmail.trim())) return this.setState({ suErr: 'Digite um e-mail válido.' });
+    if (suPw.length < 6) return this.setState({ suErr: 'A senha precisa ter pelo menos 6 caracteres.' });
+    const name = suName.trim().split(' ')[0];
+    this.setState({ me: { name, goal: suGoal }, screen: 'home', suErr: '', suPw: '' });
+    this.toast(`Conta criada. Bem-vindo(a), ${name}!`);
+  }
+
+  chip(on) { return on ? { bg: 'rgba(255,225,74,.12)', fg: '#FFE14A', bd: '#FFE14A' } : { bg: '#1C1F26', fg: '#F3F4F6', bd: '#2A2E37' }; }
+  seg(on) { return on ? { bg: '#F3F4F6', fg: '#0B0C0F' } : { bg: 'transparent', fg: '#8D93A1' }; }
+  nav(on) { return on ? { bg: 'rgba(255,225,74,.1)', fg: '#FFE14A' } : { bg: 'transparent', fg: '#B4B9C4' }; }
+  updChal(id, patch) { this.setState(s => ({ challenges: s.challenges.map(c => c.id === id ? { ...c, ...patch } : c) })); }
+  updRed(id, patch) { this.setState(s => ({ redemptions: s.redemptions.map(r => r.id === id ? { ...r, ...patch } : r) })); }
+
+  chalTitle(c) {
+    const t = c.wtype ? c.wtype.toLowerCase() : null;
+    const b = c.kind === 'count' ? 'Mais treinos' + (t ? ' de ' + t : '') : c.kind === 'minutes' ? 'Mais minutos' + (t ? ' de ' + t : ' de treino') : 'Primeiro a bater a meta';
+    return b + (c.period === 'Semana' ? ' na semana' : c.period === 'Fim de semana' ? ' no fim de semana' : '');
+  }
+  chalPeriod(c) { return c.period === 'Semana' ? '13 a 19 de out' : c.period === 'Fim de semana' ? 'Sáb e dom, 18 e 19 de out' : c.period; }
+  chalStake(c) { return c.stake.pts ? `Vale +${c.stake.pts} pts para quem vencer` : `Vale: ${c.stake.text || 'descreva o combinado'}`; }
+  chalVals(c, M) {
+    if (c.kind === 'goal') return { R: M.R.pct, A: M.A.pct };
+    const [d0, d1] = c.period === 'Fim de semana' ? [18, 19] : [13, 19];
+    const ws = who => M.list.filter(w => w.who === who && w.day >= d0 && w.day <= d1 && (!c.wtype || w.type === c.wtype));
+    const v = who => c.kind === 'count' ? ws(who).length : ws(who).reduce((t, w) => t + w.dur, 0);
+    return { R: v('R'), A: v('A') };
+  }
+  chalUnit(c, v) { return c.kind === 'count' ? `${v} treino${v === 1 ? '' : 's'}` : c.kind === 'minutes' ? `${v} min` : `${v}%`; }
+
+  renderVals() {
+    const s = this.state, scr = this.screen(), M = this.model(), { R, A, lead, today, list } = M;
+    const r = this.panel(R, 'R', lead), a = this.panel(A, 'A', lead);
+    const f = s.form, fdur = this.formDur(f), ru = s.rules;
+    const row = (w, i) => {
+      const p = this.person(w.who);
+      return {
+        ...p, type: w.type, meta: `${p.name} · ${w.dur} min · ${w.int}`, ptsLabel: `+${w.pts} pts`, when: this.dayLabel(w.day, today), note: w.note, hasNote: !!w.note, line: i === 0 ? 'transparent' : '#22252C',
+        hasPhoto: !!w.photo, photoHasUrl: !!(w.photo && w.photo.url), photoBg: w.photo && w.photo.url ? `url("${w.photo.url}")` : 'none', photoPh: !!(w.photo && !w.photo.url),
+        openPhoto: () => this.setState({ sheet: 'photo', lb: w })
+      };
+    };
+    const week = list.filter(w => w.day >= 13);
+    const recents = week.slice(0, 3).map(row);
+    const cells = (who, color) => [13, 14, 15, 16, 17, 18, 19].map(d => {
+      const t = list.some(w => w.who === who && w.day === d);
+      return { bg: t ? color : '#1C1F26', bd: !t && d === today ? '1.5px dashed #FFE14A' : '1.5px solid transparent' };
+    });
+    const left = R.goal - R.done, dLeft = 19 - today;
+    const daysMsg = left > 0
+      ? `Hoje é ${Component.DOWFULL[today - 13].toLowerCase()}. Falta${left > 1 ? 'm' : ''} ${left} treino${left > 1 ? 's' : ''} até domingo para fechar sua meta.`
+      : 'Sua meta da semana está batida. Treinos extras somam pontos para o desempate.';
+
+    const inPeriod = s.hPeriod === 'Semana' ? list.filter(w => w.day >= 13) : list;
+    const keep = w => s.hPerson === 'Todos' || (s.hPerson === 'Eu' ? w.who === 'R' : w.who === 'A');
+    const byDay = [];
+    inPeriod.filter(keep).forEach(w => { let g = byDay.find(x => x.d === w.day); if (!g) byDay.push(g = { d: w.day, ws: [] }); g.ws.push(w); });
+    const groups = byDay.map(g => ({ day: this.dayLabel(g.d, today, true), total: `+${g.ws.reduce((t, w) => t + w.pts, 0)} pts`, items: g.ws.map(row) }));
+    const summary = ['R', 'A'].map(who => {
+      const ws = inPeriod.filter(w => w.who === who), st = who === 'R' ? R : A, p = this.person(who);
+      return { ...p, count: ws.length, countLabel: ws.length === 1 ? 'treino' : 'treinos', ptsLabel: ws.reduce((t, w) => t + w.pts, 0) + ' pts', barW: st.pct + '%', pctLabel: st.pct + '% da meta' };
+    });
+    const miniRows = [['R', R], ['A', A]].map(([who, st]) => {
+      const pn = this.panel(st, who, lead);
+      return { ...pn, label: `${who === 'R' ? 'Você' : 'Ana'} · ${st.done} de ${st.goal}`, ring: pn.lead ? '0 0 0 2px #14161B,0 0 0 4px #FFE14A' : 'none', barW: st.pct + '%' };
+    });
+    const opt = (vals, key) => vals.map(v => { const [label, sub] = Array.isArray(v) ? v : [v]; const on = !!f && f[key] === label; return { label: String(label), sub, on, ...this.chip(on), pick: () => this.setForm({ [key]: label }) }; });
+
+    // Desafios
+    const chalCard = c => {
+      const v = this.chalVals(c, M), max = Math.max(v.R, v.A, 1);
+      const ld = v.R === v.A ? null : (v.R > v.A ? 'R' : 'A');
+      const rows = ['R', 'A'].map(who => {
+        const p = this.person(who), val = v[who], on = ld === who;
+        return { ...p, name: who === 'R' ? 'Você' : 'Ana', lead: on, ring: on ? '0 0 0 2px #14161B,0 0 0 4px #FFE14A' : 'none', barW: (c.kind === 'goal' ? val : Math.round(val / max * 100)) + '%', valLabel: this.chalUnit(c, val), valColor: on ? '#FFE14A' : '#F3F4F6' };
+      });
+      let status;
+      if (c.kind === 'goal' && (v.R >= 100 || v.A >= 100)) status = v.R >= 100 && v.A >= 100 ? 'Os dois bateram' : v.A >= 100 ? 'Ana bateu primeiro' : 'Você bateu primeiro';
+      else status = ld === null ? (v.R === 0 ? 'Ninguém pontuou ainda' : 'Empatado') : ld === 'R' ? 'Você na frente' : 'Ana na frente';
+      return {
+        title: this.chalTitle(c), sub: `Proposto por ${c.from === 'R' ? 'você' : 'Ana'} · ${this.chalPeriod(c)}`, period: this.chalPeriod(c), stake: this.chalStake(c),
+        ends: c.period === 'Fim de semana' ? 'Sáb e dom' : 'Até dom, 19', rows, status, statusColor: ld === 'R' ? '#FFE14A' : ld === 'A' ? '#FF8CC2' : '#8D93A1',
+        accept: () => { this.updChal(c.id, { status: 'active' }); this.toast(c.from === 'A' ? 'Desafio aceito. Boa sorte!' : 'A Ana aceitou o desafio.'); },
+        decline: () => { this.setState(st => ({ challenges: st.challenges.filter(x => x.id !== c.id) })); this.toast('Desafio recusado. A Ana foi avisada.'); },
+        cancel: () => { this.setState(st => ({ challenges: st.challenges.filter(x => x.id !== c.id) })); this.toast('Desafio cancelado.'); }
+      };
+    };
+    const incoming = s.challenges.filter(c => c.status === 'pending' && c.from === 'A').map(chalCard);
+    const outgoing = s.challenges.filter(c => c.status === 'pending' && c.from === 'R').map(chalCard);
+    const active = s.challenges.filter(c => c.status === 'active').map(chalCard);
+    const doneChals = s.challenges.filter(c => c.status === 'done').map((c, i) => ({ ...this.person(c.winner), title: this.chalTitle(c), period: this.chalPeriod(c), result: `${c.winner === 'R' ? 'Você venceu' : 'Ana venceu'}${c.stake.pts ? ` · +${c.stake.pts} pts` : ''}`, resColor: c.winner === 'R' ? '#FFE14A' : '#FF8CC2', line: i === 0 ? 'transparent' : '#22252C' }));
+    const cd = s.chalDraft || { kind: 'Mais treinos', wtype: 'Qualquer', period: 'Esta semana', stake: '+20 pts', text: '' };
+    const KM = { 'Mais treinos': 'count', 'Mais minutos': 'minutes', 'Primeiro a bater a meta': 'goal' };
+    const draftChal = { kind: KM[cd.kind], wtype: cd.wtype === 'Qualquer' || KM[cd.kind] === 'goal' ? null : cd.wtype, period: KM[cd.kind] === 'goal' || cd.period === 'Esta semana' ? 'Semana' : 'Fim de semana', stake: cd.stake === 'Combinado' ? { text: cd.text.trim() } : { pts: parseInt(cd.stake.replace(/\D/g, ''), 10) } };
+    const canSend = cd.stake !== 'Combinado' || !!cd.text.trim();
+    const setCd = patch => this.setState({ chalDraft: { ...cd, ...patch } });
+    const cOpts = (vals, key) => vals.map(v => { const [label, sub] = Array.isArray(v) ? v : [v]; return { label, sub, ...this.chip(cd[key] === label), pick: () => setCd({ [key]: label }) }; });
+
+    // Prêmios
+    const bal = M.balR, anaBal = M.balA;
+    const storeA = s.rewards.filter(x => x.by === 'A').map(rw => {
+      const ok = bal >= rw.cost;
+      return { title: rw.title, cost: rw.cost, short: !ok, shortLabel: `Faltam ${rw.cost - bal} pts`, barW: Math.min(100, Math.round(Math.max(0, bal) / rw.cost * 100)) + '%', costColor: ok ? '#FFE14A' : '#F3F4F6', btnBg: ok ? '#FFE14A' : '#1C1F26', btnFg: ok ? '#14120A' : '#6B7180', btnLabel: ok ? 'Resgatar' : 'Saldo insuficiente', cursor: ok ? 'pointer' : 'not-allowed', redeem: () => { if (ok) this.setState({ sheet: 'redeem', redeemId: rw.id, redeemDone: false }); } };
+    });
+    const storeR = s.rewards.filter(x => x.by === 'R').map(rw => ({ title: rw.title, cost: rw.cost, anaLabel: anaBal >= rw.cost ? 'A Ana já tem saldo' : `Faltam ${rw.cost - anaBal} pts à Ana`, anaColor: anaBal >= rw.cost ? '#FF8CC2' : '#8D93A1' }));
+    const mine = s.redemptions.filter(x => x.who === 'R').sort((x, y) => y.day - x.day);
+    const forAna = s.redemptions.filter(x => x.who === 'A').sort((x, y) => y.day - x.day);
+    const fulfillPending = forAna.filter(x => x.status === 'pending').length;
+    const pendBadge = { stBg: 'rgba(255,225,74,.12)', stFg: '#FFE14A' }, doneBadge = { stBg: '#1C1F26', stFg: '#8D93A1' };
+    const redList = s.rTab === 'Meus resgates'
+      ? mine.map((x, i) => ({ ...this.person('A'), title: x.title, sub: `Resgatado em ${x.day} out · ${x.cost} pts · a Ana cumpre`, status: x.status === 'pending' ? 'Aguardando a Ana' : 'Recebido', ...(x.status === 'pending' ? pendBadge : doneBadge), isPending: x.status === 'pending', hasSecondary: x.status === 'pending', secondaryLabel: 'Lembrar a Ana', secondary: () => this.toast('Lembrete enviado para a Ana.'), primaryLabel: 'Recebi', primary: () => { this.updRed(x.id, { status: 'done' }); this.toast('Prêmio marcado como recebido.'); }, line: i === 0 ? 'transparent' : '#22252C' }))
+      : forAna.map((x, i) => ({ ...this.person('A'), title: `A Ana resgatou: ${x.title}`, sub: `Em ${x.day} out · ${x.cost} pts`, status: x.status === 'pending' ? 'Você precisa cumprir' : 'Cumprido', ...(x.status === 'pending' ? pendBadge : doneBadge), isPending: x.status === 'pending', hasSecondary: false, secondaryLabel: '', secondary: null, primaryLabel: 'Marcar como cumprido', primary: () => { this.updRed(x.id, { status: 'done' }); this.toast('A Ana foi avisada que você cumpriu.'); }, line: i === 0 ? 'transparent' : '#22252C' }));
+    const rdTarget = s.rewards.find(x => x.id === s.redeemId);
+    const rd = s.rwDraft || { title: '', cost: 100 };
+    const weekRef = Math.round((45 / ru.per) * 4 / 5) * 5 + ru.photo * 2;
+
+    // Metas
+    const baseGoal = s.nextGoal ?? s.me.goal;
+    const goalDraft = s.goalDraft ?? baseGoal;
+    const goalChanged = goalDraft !== baseGoal;
+    let goalNote;
+    if (goalChanged) goalNote = 'A mudança vale a partir da semana de 20 a 26 de out, para não mexer no placar desta semana.';
+    else if (s.nextGoal && s.nextGoal !== s.me.goal) goalNote = `Esta semana segue com ${s.me.goal}. A partir de 20 de out, sua meta passa a ${s.nextGoal} treinos.`;
+    else goalNote = `Nesta semana: ${R.done} de ${R.goal}. Cada treino vale ${Math.round(100 / R.goal)}% do seu placar.`;
+    const streaks = [['R', R], ['A', A]].map(([who, st], idx) => {
+      const p = this.person(who), hist = Component.HIST[who], hit = st.done >= st.goal;
+      const weeks = hist.map((h, i) => ({ bg: h ? p.color : '#1C1F26', bd: '1.5px solid transparent', txt: '', label: Component.WEEKS[i], lc: '#6B7180' }))
+        .concat([{ bg: hit ? p.color : '#1C1F26', bd: hit ? '1.5px solid #FFE14A' : '1.5px dashed #FFE14A', txt: hit ? '' : `${st.done}/${st.goal}`, label: 'Esta', lc: '#FFE14A' }]);
+      const nx = Component.MILES.find(([n]) => n > st.streak);
+      return {
+        ...p, line: idx === 0 ? 'transparent' : '#22252C', streak: st.streak, streakUnit: st.streak === 1 ? 'semana' : 'semanas', record: st.record, weeks,
+        miles: Component.MILES.map(([n, b]) => { const on = st.record >= n; return { label: `${n} sem · +${b}`, bg: on ? 'rgba(255,138,31,.14)' : '#1C1F26', fg: on ? '#FFB067' : '#6B7180', icon: on ? '#FF8A1F' : '#4A4F5C' }; }),
+        next: nx ? `Próximo selo em ${nx[0] - st.streak} semana${nx[0] - st.streak > 1 ? 's' : ''}` : 'Todos os selos conquistados'
+      };
+    });
+    const rdft = s.rulesDraft, rDirty = JSON.stringify(rdft) !== JSON.stringify(ru);
+    const ruleRows = Component.RULEDEFS.map(d => ({ label: d.label, desc: d.desc, changed: rdft[d.key] !== ru[d.key], opts: d.opts.map(([v, l]) => ({ label: l, ...this.seg(rdft[d.key] === v), pick: () => this.setState(st => ({ rulesDraft: { ...st.rulesDraft, [d.key]: v }, rulesPending: false })) })) }));
+    const rulesStatus = s.rulesPending ? 'Aguardando a Ana' : rDirty ? 'Rascunho' : 'Em vigor · aprovadas pelos dois';
+
+    return {
+      isAuth: scr === 'login' || scr === 'signup', isLogin: scr === 'login', isSignup: scr === 'signup', isApp: this.inApp(scr), isHome: scr === 'home', isHistory: scr === 'history',
+      isChallenges: scr === 'challenges', isRewards: scr === 'rewards', isGoals: scr === 'goals',
+      email: s.email, onEmail: e => this.setState({ email: e.target.value, errField: s.errField === 'email' ? null : s.errField }),
+      pw: s.pw, onPw: e => this.setState({ pw: e.target.value, errField: s.errField === 'pw' ? null : s.errField }),
+      pwType: s.showPw ? 'text' : 'password', togglePw: () => this.setState({ showPw: !s.showPw }),
+      emailErr: s.errField === 'email', pwErr: s.errField === 'pw', loginErr: s.loginErr,
+      emailBd: s.errField === 'email' ? '#FF5A4E' : '#2A2E37', pwBd: s.errField === 'pw' ? '#FF5A4E' : '#2A2E37', pwBg: s.errField === 'pw' ? 'rgba(255,90,78,.07)' : '#14161B', pwIcon: s.errField === 'pw' ? '#FF5A4E' : '#8D93A1',
+      submitLogin: e => this.submitLogin(e), forgot: () => this.toast('Enviamos um link de redefinição para o seu e-mail.'),
+      goSignup: () => this.setState({ screen: 'signup', suErr: '' }), goLogin: () => this.setState({ screen: 'login' }),
+      suName: s.suName, onSuName: e => this.setState({ suName: e.target.value }), suEmail: s.suEmail, onSuEmail: e => this.setState({ suEmail: e.target.value }), suPw: s.suPw, onSuPw: e => this.setState({ suPw: e.target.value }),
+      goals: [2, 3, 4, 5, 6].map(g => ({ label: String(g), ...this.chip(s.suGoal === g), pick: () => this.setState({ suGoal: g }) })),
+      suHasErr: !!s.suErr, suErr: s.suErr, submitSignup: e => this.submitSignup(e),
+
+      goHome: () => this.setState({ screen: 'home' }), goHistory: () => this.setState({ screen: 'history' }),
+      goChallenges: () => this.setState({ screen: 'challenges' }), goRewards: () => this.setState({ screen: 'rewards' }), goGoals: () => this.setState({ screen: 'goals' }),
+      navHomeBg: this.nav(scr === 'home').bg, navHomeFg: this.nav(scr === 'home').fg,
+      navHistBg: this.nav(scr === 'history').bg, navHistFg: this.nav(scr === 'history').fg,
+      navChalBg: this.nav(scr === 'challenges').bg, navChalFg: this.nav(scr === 'challenges').fg,
+      navRewBg: this.nav(scr === 'rewards').bg, navRewFg: this.nav(scr === 'rewards').fg,
+      navGoalBg: this.nav(scr === 'goals').bg, navGoalFg: this.nav(scr === 'goals').fg,
+      hasChalBadge: incoming.length > 0, chalBadge: incoming.length, hasRewBadge: fulfillPending > 0, rewBadge: fulfillPending,
+      meName: s.me.name, meInitial: r.initial, meGoalLabel: `Saldo: ${bal} pts`,
+      logout: () => this.setState({ screen: 'login', pw: '', errField: null, loginErr: '', modal: false, sheet: null }),
+
+      greeting: `${M.mode === 'empty' ? 'Boa semana' : 'Bom dia'}, ${s.me.name}`,
+      daysLabel: `${Component.DOWFULL[today - 13]} · ${dLeft === 0 ? 'último dia' : dLeft + (dLeft === 1 ? ' dia restante' : ' dias pela frente')}`,
+      r, a, duelMsg: this.duelMsg(R, A, lead),
+      recents, hasRecents: recents.length > 0, noRecents: recents.length === 0,
+      dayHeads: ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'].map((l, i) => ({ label: l, color: 13 + i === today ? '#FFE14A' : '#8D93A1' })),
+      rDays: cells('R', '#4C8DFF'), aDays: cells('A', '#FF5CA8'), daysMsg,
+      openCheckin: () => this.openModal(),
+
+      periodLabel: s.hPeriod === 'Semana' ? 'Semana de 13 a 19 de out' : 'Outubro até agora',
+      persons: ['Todos', 'Eu', 'Ela'].map(p => ({ label: p, ...this.seg(s.hPerson === p), pick: () => this.setState({ hPerson: p }) })),
+      periods: ['Semana', 'Mês'].map(p => ({ label: p, ...this.seg(s.hPeriod === p), pick: () => this.setState({ hPeriod: p }) })),
+      summary, weekMode: s.hPeriod === 'Semana', groups, historyEmpty: groups.length === 0,
+
+      modalOpen: s.modal, showForm: s.modal && !s.success, showSuccess: !!s.success,
+      backdrop: e => { if (e.target === e.currentTarget) this.closeModal(); }, closeModal: () => this.closeModal(),
+      types: opt(['Musculação', 'Corrida', 'Funcional', 'Aula', 'Outro'], 'type'),
+      durs: [30, 45, 60, 90].map(d => ({ label: String(d), ...this.chip(!!f && f.custom === '' && f.dur === d), pick: () => this.setForm({ dur: d, custom: '' }) })),
+      custom: f ? f.custom : '', onCustom: e => this.setForm({ custom: e.target.value.replace(/\D/g, '').slice(0, 3) }),
+      customBd: f && f.custom !== '' ? (fdur ? '#FFE14A' : '#FF5A4E') : '#2A2E37', durInvalid: !!f && f.custom !== '' && !fdur,
+      ints: opt([['Leve', ru.adj ? `−${ru.adj} pts` : 'base'], ['Moderada', 'base'], ['Alta', ru.adj ? `+${ru.adj} pts` : 'base']], 'int'),
+      days: opt([['Hoje', today], ['Ontem', today - 1]].map(([l, d]) => [l, `${Component.DOW[((d - 13) % 7 + 7) % 7].toLowerCase()}, ${d} out`]), 'day'),
+      note: f ? f.note : '', onNote: e => this.setForm({ note: e.target.value }),
+      photoBonusLabel: ru.photo ? `+${ru.photo} pts` : 'sem bônus',
+      noPhoto: !(f && f.photo), hasFormPhoto: !!(f && f.photo), formPhotoHasUrl: !!(f && f.photo && f.photo.url), formPhotoBg: f && f.photo && f.photo.url ? `url("${f.photo.url}")` : 'none', formPhotoPh: !!(f && f.photo && !f.photo.url),
+      onPhoto: e => { const file = e.target.files && e.target.files[0]; if (file) this.setForm({ photo: { url: URL.createObjectURL(file) } }); },
+      photoDemo: () => this.setForm({ photo: { ph: true } }), removePhoto: () => this.setForm({ photo: null }),
+      ptsPreview: fdur ? '+' + this.calc({ dur: fdur, int: f ? f.int : 'Moderada', photo: f && f.photo }) : '—',
+      formSummary: f ? `${f.type} · ${fdur ? fdur + ' min' : '— min'} · ${f.int}${f.photo ? ' · com foto' : ''}` : '',
+      saveBg: fdur ? '#FFE14A' : '#5C5530', save: () => this.save(),
+
+      burst: s.success ? this.burstEl() : null,
+      sTitle: s.success ? s.success.title : '', sMsg: s.success ? s.success.msg : '', sSummary: s.success ? s.success.summary : '', sPill: s.success ? s.success.pill : '',
+      miniRows, tieNote: R.pct === A.pct && R.done > 0,
+      successHistory: () => this.setState({ modal: false, success: null, screen: 'history', hPeriod: 'Semana', hPerson: 'Todos' }),
+      hasToast: !!s.toast, toast: s.toast,
+
+      openChal: () => this.setState({ sheet: 'chal', chalDraft: null }),
+      incoming, hasIncoming: incoming.length > 0, outgoing, hasOutgoing: outgoing.length > 0, active, noActive: active.length === 0, doneChals,
+      cKinds: cOpts(['Mais treinos', 'Mais minutos', 'Primeiro a bater a meta'], 'kind'),
+      cShowType: KM[cd.kind] !== 'goal',
+      cTypes: cOpts(['Qualquer', 'Musculação', 'Corrida', 'Funcional', 'Aula'], 'wtype'),
+      cPeriods: cOpts([['Esta semana', 'até dom, 19 out'], ['Fim de semana', 'sáb e dom']], 'period'),
+      cStakes: cOpts(['+10 pts', '+20 pts', '+50 pts', 'Combinado'], 'stake'),
+      cCustom: cd.stake === 'Combinado', cText: cd.text, onCText: e => setCd({ text: e.target.value }),
+      cPrevTitle: this.chalTitle(draftChal), cPrevSub: `${this.chalPeriod(draftChal)} · ${this.chalStake(draftChal)}`,
+      cSendBg: canSend ? '#FFE14A' : '#5C5530',
+      sendChal: () => { if (!canSend) return; this.setState(st => ({ sheet: null, challenges: [{ id: 'n' + Date.now(), from: 'R', status: 'pending', ...draftChal }].concat(st.challenges) })); this.toast('Desafio enviado para a Ana.'); },
+
+      balance: bal, anaBalance: anaBal,
+      rTabs: [['Loja', 0], ['Meus resgates', 0], ['Para cumprir', fulfillPending]].map(([l, c]) => ({ label: l, count: c, hasCount: c > 0, ...this.seg(s.rTab === l), pick: () => this.setState({ rTab: l }) })),
+      isStore: s.rTab === 'Loja', isRedList: s.rTab !== 'Loja',
+      storeA, storeR, redList, redEmpty: redList.length === 0,
+      redEmptyMsg: s.rTab === 'Meus resgates' ? 'Você ainda não resgatou nada. Que tal escolher algo na loja?' : 'Nenhum pedido da Ana por enquanto.',
+      openReward: () => this.setState({ sheet: 'reward', rwDraft: null }),
+      rwTitle: rd.title, onRwTitle: e => this.setState({ rwDraft: { ...rd, title: e.target.value } }),
+      rwCosts: [50, 100, 150, 200, 300].map(c => ({ label: String(c), ...this.chip(rd.cost === c), pick: () => this.setState({ rwDraft: { ...rd, cost: c } }) })),
+      weekRef, rwSaveBg: rd.title.trim() ? '#FFE14A' : '#5C5530',
+      saveReward: () => { if (!rd.title.trim()) return; this.setState(st => ({ sheet: null, rewards: st.rewards.concat({ id: 'u' + Date.now(), by: 'R', title: rd.title.trim(), cost: rd.cost }) })); this.toast('Prêmio adicionado à loja da Ana.'); },
+      rdConfirm: !s.redeemDone, rdDone: s.redeemDone, rdTitle: rdTarget ? rdTarget.title : '', rdCost: rdTarget ? rdTarget.cost : 0,
+      rdFrom: bal + ' pts', rdTo: rdTarget ? (bal - rdTarget.cost) + ' pts' : '',
+      confirmRedeem: () => { if (!rdTarget) return; this.setState(st => ({ redeemDone: true, redemptions: [{ id: 'y' + Date.now(), who: 'R', title: rdTarget.title, cost: rdTarget.cost, day: today, status: 'pending' }].concat(st.redemptions) })); },
+      rdSeeMine: () => this.setState({ sheet: null, rTab: 'Meus resgates' }),
+
+      goalDraft, goalChanged, goalNote, goalColor: goalChanged ? '#FFE14A' : '#F3F4F6',
+      goalDec: () => this.setState({ goalDraft: Math.max(1, goalDraft - 1) }), goalInc: () => this.setState({ goalDraft: Math.min(7, goalDraft + 1) }),
+      goalReset: () => this.setState({ goalDraft: null }),
+      goalSave: () => { this.setState({ nextGoal: goalDraft === s.me.goal ? null : goalDraft, goalDraft: null }); this.toast(goalDraft === s.me.goal ? 'Meta mantida.' : `Meta salva: ${goalDraft} treinos a partir de 20 de out.`); },
+      streaks, ruleRows, rulesStatus,
+      rulesStBg: s.rulesPending ? 'rgba(255,225,74,.12)' : '#1C1F26', rulesStFg: s.rulesPending ? '#FFE14A' : rDirty ? '#F3F4F6' : '#8D93A1',
+      exPts: this.calc({ dur: 45, int: 'Moderada', photo: true }, rdft),
+      rulesDirty: rDirty && !s.rulesPending, rulesPending: s.rulesPending,
+      rulesDiscard: () => this.setState({ rulesDraft: { ...ru }, rulesPending: false }),
+      rulesPropose: () => { this.setState({ rulesPending: true }); this.toast('Proposta enviada para a Ana.'); },
+      rulesApprove: () => { this.setState(st => ({ rules: { ...st.rulesDraft }, rulesPending: false })); this.toast('Regras aprovadas pelos dois. Pontos recalculados.'); },
+
+      sheetChal: s.sheet === 'chal', sheetReward: s.sheet === 'reward', sheetRedeem: s.sheet === 'redeem', sheetPhoto: s.sheet === 'photo',
+      sheetBackdrop: e => { if (e.target === e.currentTarget) this.closeSheet(); }, closeSheet: () => this.closeSheet(),
+      lbHasUrl: !!(s.lb && s.lb.photo && s.lb.photo.url), lbBg: s.lb && s.lb.photo && s.lb.photo.url ? `url("${s.lb.photo.url}")` : 'none', lbPh: !!(s.lb && s.lb.photo && !s.lb.photo.url),
+      lbColor: s.lb ? this.person(s.lb.who).color : '#2A2E37', lbInk: s.lb ? this.person(s.lb.who).ink : '#fff', lbInitial: s.lb ? this.person(s.lb.who).initial : '',
+      lbTitle: s.lb ? `${s.lb.type} · ${s.lb.dur} min · ${s.lb.int}` : '', lbSub: s.lb ? `${this.person(s.lb.who).name} · ${this.dayLabel(s.lb.day, today, true)} · treino verificado` : '',
+      lbIsAna: !!(s.lb && s.lb.who === 'A'), lbCheer: () => { this.closeSheet(); this.toast('Parabéns enviado para a Ana.'); }
+    };
+  }
+}
+</script>
+</body>
+</html>

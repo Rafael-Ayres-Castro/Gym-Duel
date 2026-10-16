@@ -3,7 +3,7 @@
 import { html } from '../core/dom.js';
 import { icon } from '../core/icons.js';
 import { addDays, parseDate, shortDate } from '../domain/format.js';
-import { DURATION_PRESETS, INTENSITIES, NOTE_MAX, WORKOUT_TYPES } from '../domain/rules.js';
+import { DURATION_PRESETS, intensityOptions, NOTE_MAX, WORKOUT_TYPES } from '../domain/rules.js';
 
 const group = (label, content, extra = '') => html`
   <section class="checkin__group">
@@ -11,7 +11,7 @@ const group = (label, content, extra = '') => html`
     ${content}
   </section>`;
 
-export function checkinFormView(todayIso) {
+export function checkinFormView(todayIso, rules) {
   const today = parseDate(todayIso);
   const days = [
     { value: 'today', label: 'Hoje', sub: shortDate(today) },
@@ -53,7 +53,7 @@ export function checkinFormView(todayIso) {
         <div class="checkin__pair">
           ${group('Intensidade', html`
             <div class="checkin__options checkin__options--3">
-              ${INTENSITIES.map((option) => html`
+              ${intensityOptions(rules).map((option) => html`
                 <button class="choice" type="button" data-set="intensity" data-value="${option.value}">
                   <span>${option.value}</span><span class="choice__sub">${option.sub}</span>
                 </button>`)}

@@ -140,3 +140,47 @@
   box-shadow: 0 20px 40px -12px rgba(0, 0, 0, .5); animation: gdIn .2s ease-out;
 }
 @media (min-width: 960px) { .toast { bottom: 28px; } }
+
+/* ---- Phase 2 shared pieces ---- */
+
+/* Screen header: kicker + Anton title (+ optional action on the right). */
+.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.page-head__titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.page-head__kicker { font-size: 13px; font-weight: 700; color: var(--text-2); }
+.page-head__title { font-size: 34px; line-height: 1.1; }
+@media (min-width: 960px) {
+  .page-head__kicker { font-size: 14px; }
+  .page-head__title { font-size: 48px; line-height: 1.05; }
+}
+
+/* Smaller buttons used inside cards (46–48px). */
+.btn--sm { height: 46px; padding: 0 16px; border-radius: 14px; font-size: 15px; box-shadow: none; }
+.btn--ghost { background: transparent; color: var(--text-2); border: 0; }
+.btn--ghost:hover { color: var(--text); }
+.btn:disabled { cursor: not-allowed; }
+
+/* Big card used by the phase 2 screens. */
+.panel-card { background: var(--surface); border: 1px solid var(--line-card); border-radius: var(--radius-board); padding: 20px; }
+.panel-card__head { display: flex; justify-content: space-between; align-items: baseline; gap: 6px 16px; flex-wrap: wrap; }
+.panel-card__head h2 { font-size: 17px; font-weight: 800; }
+.panel-card__head p { font-size: 13px; font-weight: 600; color: var(--text-2); line-height: 1.45; }
+@media (min-width: 960px) { .panel-card { padding: 24px 26px; } }
+
+/* Segmented control on a darker track (rules screen). */
+.segmented--dark { display: flex; gap: 2px; background: var(--bg); }
+.segmented--dark .segmented__btn { min-width: 64px; height: 36px; padding: 0 12px; font-size: 14px; font-weight: 800; }
+.segmented__btn:disabled:not(.is-on) { opacity: .45; }
+.segmented__btn:disabled.is-on { cursor: default; }
+
+.status-chip { font-size: 12px; font-weight: 800; padding: 6px 10px; border-radius: 9px; white-space: nowrap; }
+.status-chip--muted { background: var(--surface-2); color: var(--text-2); }
+.status-chip--strong { background: var(--surface-2); color: var(--text); }
+.status-chip--accent { background: var(--accent-soft); color: var(--accent); }
+
+.tag-changed { font-size: 10.5px; font-weight: 800; letter-spacing: .6px; padding: 2px 7px; border-radius: 6px; background: rgba(255, 225, 74, .14); color: var(--accent); }
+
+/* Pink counter on navigation items (pending challenges / rewards to fulfil). */
+.count-badge {
+  min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--pink); color: var(--pink-ink);
+  font-size: 12px; font-weight: 800; display: inline-grid; place-items: center;
+}

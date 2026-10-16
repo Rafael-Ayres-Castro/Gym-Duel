@@ -21,8 +21,8 @@ from ..services import players
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-def _auth_response(db: Session, user: User, settings: Settings) -> dict:
-    return {"access_token": create_access_token(user.id, settings), "user": players.user_out(db, user)}
+def _auth_response(db: Session, user: User, settings: Settings, today: dt.date) -> dict:
+    return {"access_token": create_access_token(user.id, settings), "user": players.user_out(db, user, today)}
 
 
 @router.post("/register", response_model=AuthOut, status_code=status.HTTP_201_CREATED)
@@ -43,14 +43,19 @@ def register(
     db.flush()
     players.set_goal(db, user.id, data.weekly_goal, week_bounds(today)[0])
     db.commit()
-    return _auth_response(db, user, settings)
+    return _auth_response(db, user, settings, today)
 
 
 @router.post("/login", response_model=AuthOut)
-def login(data: LoginIn, db: Session = Depends(get_db), settings: Settings = Depends(app_settings)):
+def login(
+    data: LoginIn,
+    db: Session = Depends(get_db),
+    settings: Settings = Depends(app_settings),
+    today: dt.date = Depends(get_today),
+):
     user = db.scalar(select(User).where(User.email == data.email.strip().lower()))
     if user is None:
         raise api_error(401, "unknown_email", "Não encontramos uma conta com este e-mail.")
     if not verify_password(data.password, user.password_hash):
         raise api_error(401, "wrong_password", "Senha incorreta. Confira e tente de novo.")
-    return _auth_response(db, user, settings)
+    return _auth_response(db, user, settings, today)

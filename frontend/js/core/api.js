@@ -50,5 +50,13 @@ export const api = {
   workouts: ({ person = 'all', period = 'week', limit } = {}) => request('GET', '/workouts', { query: { person, period, limit } }),
   checkin: (workout) => request('POST', '/workouts', { body: workout }),
   deleteWorkout: (id) => request('DELETE', `/workouts/${id}`),
+  updateMe: (data) => request('PATCH', '/me', { body: data }),
   rules: () => request('GET', '/rules'),
+  proposeRules: (values) => request('POST', '/rules/proposals', { body: values }),
+  approveRules: (id) => request('POST', `/rules/proposals/${id}/approve`),
+  rejectRules: (id) => request('POST', `/rules/proposals/${id}/reject`),
+  cancelRules: (id) => request('DELETE', `/rules/proposals/${id}`),
+  streaks: () => request('GET', '/streaks'),
+  notifications: () => request('GET', '/notifications'),
+  markNotificationsRead: () => request('POST', '/notifications/read'),
 };

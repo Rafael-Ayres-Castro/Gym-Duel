@@ -1,0 +1,104 @@
+/* Metas e regras (prototype v2). Mobile stacks the cards; desktop uses the prototype's grid. */
+.goals { padding: 26px 20px 8px; display: flex; flex-direction: column; gap: 16px; }
+.goals__cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px; }
+
+/* ---- Goal cards ---- */
+.goal-card {
+  background: var(--surface); border: 1px solid var(--line-card); border-radius: var(--radius-board);
+  padding: 20px; display: flex; flex-direction: column; gap: 16px;
+}
+.goal-card--mine { border-color: var(--line-strong); }
+.goal-card__label { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 800; letter-spacing: 1.4px; color: var(--text-2); }
+.goal-card__label .avatar__circle { font-size: 12px; }
+.goal-card__note { font-size: 13.5px; font-weight: 600; color: var(--text-3); line-height: 1.5; text-wrap: pretty; }
+.goal-card__actions { display: flex; gap: 10px; }
+.goal-card__actions .btn--primary { flex: 1; }
+
+.goal-stepper { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.goal-stepper__btn {
+  width: 52px; height: 52px; flex: none; border-radius: 16px; border: 1.5px solid var(--line); background: var(--surface-2);
+  color: var(--text); display: grid; place-items: center;
+}
+.goal-stepper__btn:hover:not(:disabled) { background: var(--line-strong); }
+.goal-stepper__btn:disabled { opacity: .35; }
+.goal-stepper__value, .goal-readonly { display: flex; align-items: baseline; gap: 10px; justify-content: center; }
+.goal-stepper__value { min-width: 150px; }
+.goal-readonly { justify-content: flex-start; }
+.goal-number { font-family: var(--font-display); font-size: 64px; line-height: 1; }
+.goal-number.is-changed { color: var(--accent); }
+.goal-unit { font-size: 15px; font-weight: 700; color: var(--text-2); line-height: 1.25; }
+
+/* ---- Streaks ---- */
+.streaks-card { padding-bottom: 6px; }
+.streak-row { display: flex; flex-direction: column; gap: 16px; padding: 18px 0; }
+.streak-row + .streak-row { border-top: 1px solid var(--line-soft); }
+.streaks-card .panel-card__head + .streak-row { padding-top: 16px; }
+.streak-row__who { display: flex; align-items: center; gap: 14px; }
+.streak-row__who .avatar__circle { font-size: 19px; }
+.streak-row__numbers { display: flex; flex-direction: column; }
+.streak-row__name { font-size: 15px; font-weight: 800; }
+.streak-row__streak { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--text-2); }
+.streak-row__streak svg { color: var(--fire); }
+.streak-row__streak .display { font-size: 34px; line-height: 1.1; color: var(--text); }
+.streak-row__record { font-size: 12.5px; font-weight: 600; color: var(--text-2); }
+.streak-row__detail { min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+
+.streak-weeks { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 5px; }
+.streak-week { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+.streak-week__cell {
+  width: 100%; height: 34px; border-radius: 10px; background: var(--surface-2); border: 1.5px solid transparent;
+  display: grid; place-items: center; font-size: 11px; font-weight: 800; color: var(--text);
+}
+.streak-week--met .streak-week__cell { background: var(--pc); }
+.streak-week--none .streak-week__cell { opacity: .45; }
+.streak-week.is-current .streak-week__cell { border: 1.5px dashed var(--accent); }
+.streak-week--met.is-current .streak-week__cell { border-style: solid; }
+.streak-week__label { font-size: 9.5px; font-weight: 700; color: var(--text-dim); white-space: nowrap; }
+.streak-week.is-current .streak-week__label { color: var(--accent); }
+
+.streak-badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.streak-badge {
+  display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 10px 0 7px; border-radius: 14px;
+  background: var(--surface-2); color: var(--text-dim); font-size: 12px; font-weight: 800;
+}
+.streak-badge svg { color: var(--text-muted-num); }
+.streak-badge.is-earned { background: var(--fire-bg); color: var(--fire-text); }
+.streak-badge.is-earned svg { color: var(--fire); }
+.streak-badges__next { font-size: 12.5px; font-weight: 600; color: var(--text-2); margin-left: 4px; }
+
+/* ---- Scoring rules ---- */
+.rules-panel__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px 16px; flex-wrap: wrap; }
+.rules-panel__head h2 { font-size: 17px; font-weight: 800; }
+.rules-panel__head p { margin-top: 3px; font-size: 13px; font-weight: 600; color: var(--text-2); line-height: 1.45; }
+.rules-panel__rows { margin-top: 12px; }
+.rule-row { display: flex; flex-direction: column; gap: 12px; padding: 16px 0; border-top: 1px solid var(--line-soft); }
+.rule-row__label { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; }
+.rule-row__desc { margin-top: 2px; font-size: 13px; font-weight: 600; color: var(--text-2); }
+.rule-row__options .segmented__btn { flex: 1; min-width: 0; }
+.rules-panel__example {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; margin-top: 6px;
+  border-radius: 18px; background: var(--bg); border: 1px solid var(--line-soft); font-size: 14px; font-weight: 600; color: var(--msg-text);
+}
+.rules-panel__example-pts { font-family: var(--font-display); font-size: 28px; color: var(--accent); white-space: nowrap; }
+.rules-panel__actions { display: flex; gap: 10px; justify-content: flex-end; align-items: center; flex-wrap: wrap; margin-top: 16px; }
+.rules-panel__actions .btn--primary { flex: 1 1 auto; }
+.rules-panel__message { flex: 1 1 260px; font-size: 14px; font-weight: 700; color: var(--accent); line-height: 1.45; }
+.rules-panel__note { margin-top: 14px; font-size: 13.5px; font-weight: 600; color: var(--text-2); }
+
+@media (min-width: 960px) {
+  .goals { padding: 0; gap: 22px; }
+  .goal-card { padding: 24px; }
+  .goal-number { font-size: 72px; }
+  .goal-stepper { justify-content: flex-start; gap: 18px; }
+  .streaks-card { padding: 24px 26px 10px; }
+  .streak-row { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 24px; padding: 20px 0; }
+  .streak-row__who { flex: 0 0 210px; }
+  .streak-row__detail { flex: 1 1 420px; }
+  .streak-weeks { gap: 6px; }
+  .streak-week__label { font-size: 10.5px; }
+  .rule-row { flex-direction: row; align-items: center; justify-content: space-between; gap: 20px; }
+  .rule-row__text { flex: 1 1 240px; min-width: 0; }
+  .rule-row__options .segmented__btn { flex: none; min-width: 64px; }
+  .rules-panel__actions .btn--sm { height: 48px; padding: 0 18px; border-radius: 15px; }
+  .rules-panel__actions .btn--primary { flex: none; padding: 0 22px; }
+}

@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     jwt_expire_days: int = 30
     max_users: int = 2
     max_workouts_per_day: int = 1
+    # Run Alembic migrations on start up. Tests turn it off and create tables directly (faster).
+    auto_migrate: bool = True
     # Development only: pretend "today" is this date (YYYY-MM-DD). Never set it in production.
     app_today: date | None = None
 

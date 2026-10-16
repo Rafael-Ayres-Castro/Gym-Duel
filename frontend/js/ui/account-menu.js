@@ -25,7 +25,7 @@ export function toggleAccountMenu(anchor, user, onLogout) {
     <div class="account-menu" role="menu">
       <div class="account-menu__who">
         <strong>${user.name}</strong>
-        <span>Meta: ${user.weekly_goal} treinos/semana</span>
+        <span>Saldo: ${user.balance} pts · Meta: ${user.weekly_goal} treinos</span>
       </div>
       <button class="account-menu__item" role="menuitem" type="button">${icon('logout', 18)} Sair</button>
     </div>`);

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import datetime as dt
 
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import JSON, Boolean, Date, DateTime, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .db import Base
@@ -39,6 +39,8 @@ class Workout(Base):
     # Stored at check-in time so later rule changes never rewrite past scores.
     points: Mapped[int] = mapped_column(Integer)
     note: Mapped[str] = mapped_column(String(140), default="")
+    # Storage key of the proof photo (never a public URL); None = no photo.
+    photo_key: Mapped[str | None] = mapped_column(String(200))
     created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     user: Mapped[User] = relationship(back_populates="workouts")
@@ -60,3 +62,102 @@ class WeeklyGoal(Base):
     goal: Mapped[int] = mapped_column(Integer)
 
     user: Mapped[User] = relationship(back_populates="goals")
+
+
+class ScoringRules(Base):
+    """One version of the scoring rules, in force from `effective_from` (a Monday) on.
+
+    Versions are append-only: the latest version starting on or before a week is
+    the one used for that week, so closed weeks keep the rules they were played with.
+    """
+
+    __tablename__ = "scoring_rules"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    minutes_per_point: Mapped[int] = mapped_column(Integer)
+    intensity_adjust: Mapped[int] = mapped_column(Integer)
+    photo_bonus: Mapped[int] = mapped_column(Integer)
+    week_winner_bonus: Mapped[int] = mapped_column(Integer)
+    effective_from: Mapped[dt.date] = mapped_column(Date, index=True)
+    proposal_id: Mapped[int | None] = mapped_column(ForeignKey("rule_proposals.id"))
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class RuleProposal(Base):
+    """A change of rules waiting for the other member: pending → approved | rejected | cancelled."""
+
+    __tablename__ = "rule_proposals"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    proposed_by: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    minutes_per_point: Mapped[int] = mapped_column(Integer)
+    intensity_adjust: Mapped[int] = mapped_column(Integer)
+    photo_bonus: Mapped[int] = mapped_column(Integer)
+    week_winner_bonus: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(10), default="pending", index=True)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    decided_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
+    decided_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class WeekResult(Base):
+    """Frozen outcome of a closed week for one player (written once, when the week closes)."""
+
+    __tablename__ = "week_results"
+    __table_args__ = (UniqueConstraint("user_id", "week_start"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    week_start: Mapped[dt.date] = mapped_column(Date, index=True)
+    goal: Mapped[int] = mapped_column(Integer)
+    done: Mapped[int] = mapped_column(Integer)
+    pct: Mapped[int] = mapped_column(Integer)
+    points: Mapped[int] = mapped_column(Integer)
+    won_week: Mapped[bool] = mapped_column(Boolean, default=False)
+    streak_after: Mapped[int] = mapped_column(Integer)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class StreakBadge(Base):
+    """A streak milestone (2, 4, 8, 12 weeks) earned once per player."""
+
+    __tablename__ = "streak_badges"
+    __table_args__ = (UniqueConstraint("user_id", "milestone"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    milestone: Mapped[int] = mapped_column(Integer)
+    bonus: Mapped[int] = mapped_column(Integer)
+    week_start: Mapped[dt.date] = mapped_column(Date)
+    awarded_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class PointLedger(Base):
+    """Balance movements other than workouts: bonuses (positive) and redemptions (negative).
+
+    balance = sum of the user's workout points + sum of their ledger amounts.
+    Workout points stay only on `workouts`, because approving new rules recalculates them.
+    """
+
+    __tablename__ = "point_ledger"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    source: Mapped[str] = mapped_column(String(20))  # badge | week_win | challenge | redemption
+    ref_id: Mapped[int | None] = mapped_column(Integer)
+    amount: Mapped[int] = mapped_column(Integer)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class Notification(Base):
+    """Short message for one user, shown as a toast the next time they open the app."""
+
+    __tablename__ = "notifications"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    kind: Mapped[str] = mapped_column(String(30))
+    message: Mapped[str] = mapped_column(String(200))
+    payload: Mapped[dict | None] = mapped_column(JSON)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    read_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))

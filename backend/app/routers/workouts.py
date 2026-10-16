@@ -44,7 +44,12 @@ def list_workouts(
 
 
 @router.delete("/{workout_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_workout(workout_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Delete one of your own workouts (its points are removed with it)."""
-    workouts.delete_workout(db, user, workout_id)
+def delete_workout(
+    workout_id: int,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    today: dt.date = Depends(get_today),
+):
+    """Delete one of your own workouts from today or yesterday (its points are removed with it)."""
+    workouts.delete_workout(db, user, workout_id, today)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

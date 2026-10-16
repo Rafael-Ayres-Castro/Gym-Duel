@@ -10,6 +10,7 @@ def test_checkin_stores_backend_points_and_returns_feedback(rafael, ana):
     assert body["workout"]["points"] == 20
     assert body["workout"]["note"] == "Recorde no agachamento"
     assert body["workout"]["user_name"] == "Rafael"
+    assert body["workout"]["has_photo"] is False
     assert body["feedback"]["message"] == "Você passou na frente!"
     assert body["feedback"]["pill"] == "Faltam 3 treinos para sua meta"
     assert body["scoreboard"]["leader_id"] == rafael.id
@@ -68,6 +69,14 @@ def test_delete_own_workout_removes_points(rafael, ana):
     assert response.status_code == 204
     assert rafael.scoreboard()["players"][0]["points"] == 0
     assert rafael.client.delete(f"/api/workouts/{workout_id}", headers=rafael.headers).status_code == 404
+
+
+def test_only_recent_workouts_can_be_deleted(rafael, clock):
+    workout_id = rafael.checkin().json()["workout"]["id"]
+    clock.advance(2)
+    response = rafael.client.delete(f"/api/workouts/{workout_id}", headers=rafael.headers)
+    assert response.status_code == 409
+    assert response.json()["detail"]["code"] == "too_old"
 
 
 def test_cannot_delete_someone_elses_workout(rafael, ana):

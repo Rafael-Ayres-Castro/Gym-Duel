@@ -7,7 +7,7 @@ import { initShortcuts } from './core/shortcuts.js';
 import { logout, showInShell } from './layout/app-shell.js';
 import * as history from './screens/history/history.js';
 import * as home from './screens/home/home.js';
-import * as rules from './screens/rules/rules.js';
+import * as goals from './screens/goals/goals.js';
 import * as login from './screens/auth/login.js';
 import * as signup from './screens/auth/signup.js';
 
@@ -22,7 +22,7 @@ defineRoutes(
     signup: { guard: guestsOnly, mount: () => signup.mount(root) },
     home: { guard: requireLogin, mount: () => showInShell(root, 'home', home.mount) },
     history: { guard: requireLogin, mount: () => showInShell(root, 'history', history.mount) },
-    rules: { guard: requireLogin, mount: () => showInShell(root, 'rules', rules.mount) },
+    goals: { guard: requireLogin, mount: () => showInShell(root, 'goals', goals.mount) },
   },
   () => (session.isLoggedIn ? 'home' : 'login'),
 );

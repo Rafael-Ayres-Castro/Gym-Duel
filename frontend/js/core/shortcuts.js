@@ -2,7 +2,7 @@
 import { emit, EVENTS } from './events.js';
 import { currentRouteName } from './router.js';
 
-const SCREENS_WITH_CHECKIN = new Set(['home', 'history']);
+const SCREENS_WITH_CHECKIN = new Set(['home', 'history', 'challenges', 'rewards', 'goals']);
 
 function onKeydown(event) {
   if (event.key !== 'c' && event.key !== 'C') return;

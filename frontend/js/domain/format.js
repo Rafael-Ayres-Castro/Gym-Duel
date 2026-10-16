@@ -50,6 +50,12 @@ export function weekRange(startIso, endIso) {
   return `${start.getUTCDate()} de ${MONTHS_SHORT[start.getUTCMonth()]} a ${endText}`;
 }
 
+/** "20 de out", or "20 out" with { short: true } (labels of the streak grid). */
+export function dayMonth(date, { short = false } = {}) {
+  const month = MONTHS_SHORT[date.getUTCMonth()];
+  return short ? `${date.getUTCDate()} ${month}` : `${date.getUTCDate()} de ${month}`;
+}
+
 /** "Outubro até agora" */
 export const monthSoFar = (todayIso) => `${MONTHS_FULL[parseDate(todayIso).getUTCMonth()]} até agora`;
 

@@ -46,6 +46,7 @@ def client(tmp_path, clock):
         jwt_secret="test-secret-" + "x" * 32,
         max_users=2,
         max_workouts_per_day=1,
+        auto_migrate=False,
     )
     app = create_app(settings)
     app.dependency_overrides[get_today] = lambda: clock.today
@@ -65,6 +66,21 @@ class Player:
 
     def get(self, path: str, **params):
         return self.client.get(f"/api{path}", headers=self.headers, params=params)
+
+    def post(self, path: str, json: dict | None = None):
+        return self.client.post(f"/api{path}", headers=self.headers, json=json)
+
+    def patch(self, path: str, json: dict):
+        return self.client.patch(f"/api{path}", headers=self.headers, json=json)
+
+    def delete(self, path: str):
+        return self.client.delete(f"/api{path}", headers=self.headers)
+
+    def balance(self) -> int:
+        return self.get("/me").json()["balance"]
+
+    def notifications(self) -> list[str]:
+        return [n["message"] for n in self.get("/notifications").json()]
 
     def checkin(self, minutes: int = 30, intensity: str = "Moderada", days_ago: int = 0, **extra):
         body = {

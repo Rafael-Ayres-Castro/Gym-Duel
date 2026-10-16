@@ -67,25 +67,34 @@ def test_routes_require_token(client):
 
 
 def test_get_and_patch_me(rafael):
-    assert rafael.get("/me").json()["name"] == "Rafael Castro"
+    me = rafael.get("/me").json()
+    assert (me["name"], me["weekly_goal"], me["next_weekly_goal"], me["balance"]) == ("Rafael Castro", 4, None, 0)
     response = rafael.client.patch("/api/me", headers=rafael.headers, json={"weekly_goal": 5, "name": "Rafa"})
     assert response.status_code == 200
-    assert response.json()["weekly_goal"] == 5
+    assert response.json()["weekly_goal"] == 4  # this week keeps its goal
+    assert response.json()["next_weekly_goal"] == 5
     assert response.json()["first_name"] == "Rafa"
 
 
-def test_goal_change_applies_from_this_week_and_keeps_the_past(rafael, clock):
-    # Last week Rafael met his goal of 4 with exactly 4 workouts...
+def test_choosing_the_current_goal_drops_the_scheduled_change(rafael):
+    rafael.client.patch("/api/me", headers=rafael.headers, json={"weekly_goal": 6})
+    response = rafael.client.patch("/api/me", headers=rafael.headers, json={"weekly_goal": 4})
+    assert response.json()["next_weekly_goal"] is None
+
+
+def test_goal_change_applies_from_next_week_and_keeps_the_past(rafael, clock):
+    # Rafael meets his goal of 4 this week...
     for days_ago in (0, 1):
         assert rafael.checkin(days_ago=days_ago).status_code == 201  # Thu and Wed
     clock.advance(2)  # Saturday
     for days_ago in (0, 1):
         assert rafael.checkin(days_ago=days_ago).status_code == 201  # Sat and Fri
-    clock.advance(5)  # Thursday of the next week
-    assert rafael.scoreboard()["players"][0]["streak"] == 1
 
-    # ...raising the goal now must not turn last week into a failed week.
+    # ...and raises it to 6: the scoreboard of the week in course does not move.
     rafael.client.patch("/api/me", headers=rafael.headers, json={"weekly_goal": 6})
     me = rafael.scoreboard()["players"][0]
-    assert me["goal"] == 6
-    assert me["streak"] == 1
+    assert (me["goal"], me["pct"], me["streak"]) == (4, 100, 1)
+
+    clock.advance(5)  # Thursday of the next week: the new goal is in force
+    me = rafael.scoreboard()["players"][0]
+    assert (me["goal"], me["streak"]) == (6, 1)  # last week stays met with its goal of 4

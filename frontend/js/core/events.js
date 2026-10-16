@@ -3,6 +3,8 @@
 export const EVENTS = {
   openCheckin: 'gymduel:open-checkin',
   workoutSaved: 'gymduel:workout-saved',
+  // Something changed the balance, goals or rules: the shell refreshes the user card.
+  accountChanged: 'gymduel:account-changed',
 };
 
 export const emit = (name, detail) => window.dispatchEvent(new CustomEvent(name, { detail }));
