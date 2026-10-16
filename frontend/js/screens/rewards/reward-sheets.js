@@ -2,16 +2,7 @@
 import { api, ApiError } from '../../core/api.js';
 import { html } from '../../core/dom.js';
 import { icon } from '../../core/icons.js';
-import { openSheet } from '../../ui/sheet.js';
-
-const sheetHead = (title, subtitle) => html`
-  <header class="sheet__head">
-    <div>
-      <h2>${title}</h2>
-      <p>${subtitle}</p>
-    </div>
-    <button class="icon-btn" type="button" data-action="close-sheet" aria-label="Fechar">${icon('close', 18, { stroke: 2.4 })}</button>
-  </header>`;
+import { openSheet, sheetHead } from '../../ui/sheet.js';
 
 // ---- Criar prêmio ----
 

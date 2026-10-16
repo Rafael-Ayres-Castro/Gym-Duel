@@ -247,3 +247,17 @@
 .bar--thin { height: 6px; border-radius: 3px; }
 .count-badge--sm { min-width: 20px; height: 20px; font-size: 11.5px; border-radius: 10px; margin-left: 8px; }
 .empty-box { padding: 32px 24px; border-radius: 24px; border: 1.5px dashed var(--line); text-align: center; font-size: 15px; font-weight: 600; color: var(--text-2); line-height: 1.5; }
+
+/* ---- Accounts saved on this device (login and "Minha conta") ---- */
+.saved-accounts { display: flex; flex-direction: column; gap: 8px; }
+.saved-account {
+  width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px; text-align: left;
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-field); color: var(--text);
+}
+.saved-account:hover { border-color: var(--accent); }
+.saved-account .avatar__circle { font-size: 16px; }
+.saved-account__text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.saved-account__name { font-size: 15px; font-weight: 800; }
+.saved-account__email { font-size: 12.5px; font-weight: 600; color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.saved-account__chevron { color: var(--text-2); flex: none; }
+.saved-accounts__or { margin-top: 6px; text-align: center; font-size: 13px; font-weight: 700; color: var(--text-2); }

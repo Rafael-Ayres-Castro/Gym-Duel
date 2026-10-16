@@ -30,22 +30,6 @@
   font-size: 7.5px; letter-spacing: .4px; padding: 1px 4px; border-radius: 4px; background: var(--panel);
 }
 
-/* ---- Account menu (mobile avatar) ---- */
-.account-menu {
-  position: absolute; z-index: 40; min-width: 220px; padding: 6px;
-  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 16px;
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, .6); animation: gdIn .15s ease-out;
-}
-.account-menu__who { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px 12px; border-bottom: 1px solid var(--line-soft); }
-.account-menu__who strong { font-size: 15px; font-weight: 800; }
-.account-menu__who span { font-size: 12px; font-weight: 600; color: var(--text-2); }
-.account-menu__item {
-  width: 100%; margin-top: 6px; height: 44px; padding: 0 12px; border: 0; border-radius: 12px;
-  background: transparent; color: var(--text); font-size: 15px; font-weight: 700;
-  display: flex; align-items: center; gap: 10px;
-}
-.account-menu__item:hover { background: var(--surface-2); }
-
 /* ---- Load error (network or server down) ---- */
 .load-error { min-height: 50vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 24px; text-align: center; color: var(--text-2); font-weight: 600; }
 .load-error .btn { padding: 0 24px; height: 50px; font-size: 15px; }
@@ -69,10 +53,18 @@
 .sidebar__item.is-soon { color: var(--text-2); font-weight: 700; }
 .sidebar__item.is-soon:hover { filter: none; background: #16181D; }
 .sidebar__item .soon-badge { margin-left: auto; }
-.sidebar__user { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line-card); }
+/* User card: the whole left part opens "Minha conta"; the logout icon stays apart on the right. */
+.sidebar__user { display: flex; align-items: flex-start; gap: 2px; padding: 6px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line-card); }
 .sidebar__user .avatar__circle { font-size: 15px; }
+.sidebar__profile {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 6px; border: 0; border-radius: 12px;
+  background: transparent; color: inherit; text-align: left;
+}
+.sidebar__profile:hover { background: var(--surface-2); }
+.sidebar__profile.is-active { background: var(--accent-soft); }
+.sidebar__profile.is-active .sidebar__name { color: var(--accent); }
+.sidebar__profile [data-bind="avatar"] { display: flex; }
 .sidebar__who { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.sidebar__name-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -6px -6px -2px 0; }
 .sidebar__name { font-size: 14px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sidebar__goal { font-size: 12px; font-weight: 600; color: var(--text-2); white-space: nowrap; }
 .sidebar__logout { width: 30px; height: 30px; flex: none; border: 0; border-radius: 10px; background: transparent; color: var(--text-2); display: grid; place-items: center; }

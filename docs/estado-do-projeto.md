@@ -8,6 +8,7 @@ Web app mobile-first em que Rafael e a namorada competem na academia: cada trein
 
 - **Fase 1 (MVP):** login/cadastro, home com placar, check-in, histórico.
 - **Fase 2:** regras de pontos configuráveis (proposta e aprovação), metas e sequências com selos, foto como prova, loja de prêmios com resgates, desafios entre o casal.
+- **Minha conta** (`#/account`, 16/10/2026, ainda sem commit): abre pelo avatar da Home (celular) ou pelo card do usuário no menu lateral (desktop). Mostra perfil, pontos (saldo, ganhos, gastos) e conquistas de todo o período (`GET /me/stats`), troca nome, e-mail (`PUT /me/email`) e senha (`PUT /me/password`), as duas últimas pedindo a senha atual, e troca rápida entre contas salvas no aparelho. Substituiu o antigo menu suspenso do avatar (`ui/account-menu.js`, removido).
 
 Fontes de verdade: o design em `design/` (`Gym Duel Web.dc.html` é o MVP, `Gym Duel Web v2.dc.html` é a fase 2; `support.js` é só o runtime do Claude Design e **não** vai para o app) e o [README.md](../README.md), que descreve as regras e a API reais. O `docs/requisitos.md` é a visão inicial e **diverge** da pontuação real (ver Pendências).
 
@@ -15,7 +16,7 @@ Fontes de verdade: o design em `design/` (`Gym Duel Web.dc.html` é o MVP, `Gym 
 
 ```bash
 source .venv/bin/activate
-pytest                                   # 133 testes, ~15 s
+pytest                                   # 142 testes, ~15 s
 python scripts/seed_demo.py --reset      # demo completa (Rafael/Ana, senha gymduel)
 uvicorn app.main:create_app --factory --app-dir backend --reload   # http://localhost:8000 , /docs
 python scripts/screenshots.py            # screenshots 390×844 e 1440×900 em screenshots/
@@ -41,6 +42,9 @@ python scripts/screenshots.py            # screenshots 390×844 e 1440×900 em s
 - O app é para 2 pessoas (`MAX_USERS=2`); primeiro cadastrado = azul, segundo = rosa; "oponente" = o outro.
 - Sem `couple_id`: a instalação inteira é o casal.
 - Custos de prêmio permitidos: 50, 100, 150, 200, 300. Os valores do protótipo (60/120/180) foram ajustados no seed.
+- Conta: senha errada ao confirmar troca de e-mail/senha devolve **403** `wrong_password` (não 401, que o frontend trata como sessão expirada e desloga). Trocar a senha **não** invalida tokens de outros aparelhos (JWT sem estado; exigiria uma coluna de versão do token).
+- Contas salvas no aparelho: `localStorage` `gymduel.accounts` guarda `{id, firstName, email, color, token}` de cada conta que entrou. "Trocar de conta" troca o token ativo sem senha; "Entrar com outra conta" (`session.park`) mantém a atual salva; "Sair" (`session.clear`) remove a atual da lista. Token vencido ao trocar cai no fluxo normal de sessão expirada.
+- Helpers de formulário (`fieldError`, `setFieldError`, `withBusyButton`, `EMAIL_PATTERN`, olho da senha) ficam em `frontend/js/ui/form.js`, e `sheetHead` em `ui/sheet.js`: compartilhados por login, cadastro, prêmios e conta.
 
 ## Convenções
 
@@ -54,5 +58,5 @@ python scripts/screenshots.py            # screenshots 390×844 e 1440×900 em s
 1. **Publicar** no Render (`render.yaml` pronto). Para fotos em produção é preciso criar um bucket **privado** (Cloudflare R2 ou Supabase Storage) e definir `PHOTO_STORAGE=s3` e `S3_*`. O envio para S3 só foi testado com cliente simulado. Para o banco, usar PostgreSQL em `DATABASE_URL` (as migrações não foram rodadas contra Postgres ainda).
 2. **Sincronizar `docs/requisitos.md`** com as regras reais de pontuação (o README já está certo): a fórmula, o desempate, as sequências, os prêmios e os desafios mudaram em relação ao documento inicial.
 3. Revisar as regras com a namorada depois de 2 a 3 semanas de uso.
-4. Falta: tela de perfil, recuperação de senha, editar/remover prêmios, trocar o nome do app (é provisório).
+4. Falta: recuperação de senha, foto de perfil, desconectar outros aparelhos ao trocar a senha, editar/remover prêmios, trocar o nome do app (é provisório).
 5. Fases futuras: badges gerais, gráficos de evolução, feed com reações, notificações push e PWA instalável.

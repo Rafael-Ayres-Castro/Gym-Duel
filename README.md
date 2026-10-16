@@ -11,6 +11,7 @@ O app já tem:
   - foto como prova do treino;
   - loja de prêmios com resgates;
   - desafios entre o casal.
+- **Minha conta:** perfil com pontos e conquistas de todo o período, troca de nome, e-mail e senha (com a senha atual), e troca rápida entre as contas conectadas no aparelho. Abre pelo avatar da Home (celular) ou pelo card do usuário no menu lateral (desktop).
 
 Tudo funciona no celular e no computador. O documento de requisitos está em [docs/requisitos.md](docs/requisitos.md), e o design de referência (Claude Design) está em [design/](design/). O protótipo da fase 2 é o `Gym Duel Web v2.dc.html`.
 
@@ -116,9 +117,9 @@ frontend/
   js/
     core/            fetch da API, sessão, roteador por hash, eventos, template seguro
     domain/          regras de exibição: fórmula da prévia, rótulos de data, textos
-    ui/              componentes: avatar, linha de treino, janela (sheet), foto, toast, confete
-    layout/          casca do app: barra inferior (mobile) e menu lateral (desktop), contadores
-    screens/         login, cadastro, home, histórico, desafios, prêmios, metas e regras
+    ui/              componentes: avatar, linha de treino, janela (sheet), formulário, conta salva, foto, toast, confete
+    layout/          casca do app: barra inferior (mobile) e menu lateral (desktop), contadores, sair/trocar de conta
+    screens/         login, cadastro, home, histórico, desafios, prêmios, metas e regras, minha conta
     checkin/         check-in em tela cheia/modal e tela de sucesso
 scripts/
   seed_demo.py       dados de demonstração
@@ -157,6 +158,9 @@ Todas as rotas ficam em `/api` e exigem `Authorization: Bearer <token>`, exceto 
 | POST | `/auth/register` | Cria a conta (nome, e-mail, senha, meta 1–7) e devolve o token |
 | POST | `/auth/login` | Entra e devolve o token |
 | GET / PATCH | `/me` | Lê o usuário (meta atual, próxima meta, saldo) ou atualiza nome e meta (vale na próxima semana) |
+| PUT | `/me/email` | Troca o e-mail de login. Pede a senha atual (403 `wrong_password`, 409 `email_taken`) |
+| PUT | `/me/password` | Troca a senha. Pede a atual (403 `wrong_password`, 422 `same_password`). A sessão em uso continua válida |
+| GET | `/me/stats` | Números de todo o período para a tela de conta: treinos, minutos, modalidade favorita, pontos ganhos e gastos, semanas vencidas, metas batidas, sequência, recorde, selos, desafios vencidos, prêmios resgatados |
 | POST | `/workouts` | Registra o treino e devolve o treino, o placar novo e a mensagem da tela de sucesso |
 | GET | `/workouts` | Lista treinos, com filtros `person=all\|me\|opponent`, `period=week\|month\|all` e `limit` |
 | DELETE | `/workouts/{id}` | Apaga um treino próprio de hoje ou ontem (os pontos e a foto vão junto) |
@@ -217,4 +221,4 @@ Os planos gratuitos mudam com frequência. Confira os limites atuais: o serviço
 
 ## Ainda fora (próximas fases)
 
-Badges gerais (primeiro treino, 10 treinos...), gráficos de evolução, feed com reações e comentários, lembretes e notificações push, e PWA instalável. Os avisos atuais aparecem como toasts quando o app é aberto. O app também ainda não tem recuperação de senha nem tela de perfil.
+Badges gerais (primeiro treino, 10 treinos...), gráficos de evolução, feed com reações e comentários, lembretes e notificações push, e PWA instalável. Os avisos atuais aparecem como toasts quando o app é aberto. O app também ainda não tem recuperação de senha nem foto de perfil, e trocar a senha não desconecta os outros aparelhos (os tokens JWT valem até expirar).

@@ -7,7 +7,6 @@ import { EVENTS, listen } from '../core/events.js';
 import { icon } from '../core/icons.js';
 import { go, reload } from '../core/router.js';
 import { session } from '../core/session.js';
-import { closeAccountMenu } from '../ui/account-menu.js';
 import { avatar } from '../ui/avatar.js';
 import { queueToasts, showToast } from '../ui/toast.js';
 import { NAV_ITEMS } from './nav-items.js';
@@ -41,14 +40,14 @@ const sidebar = (user) => html`
         </button>`)}
     </nav>
     <div class="sidebar__user">
-      ${avatar({ name: user.first_name, color: user.color, size: 38 })}
-      <div class="sidebar__who">
-        <div class="sidebar__name-row">
-          <span class="sidebar__name">${user.first_name}</span>
-          <button class="sidebar__logout" type="button" data-action="logout" aria-label="Sair" title="Sair">${icon('logout', 18)}</button>
-        </div>
-        <span class="sidebar__goal" data-bind="balance">Saldo: ${user.balance} pts</span>
-      </div>
+      <button class="sidebar__profile" type="button" data-nav="account" aria-label="Minha conta" title="Minha conta">
+        <span data-bind="avatar">${avatar({ name: user.first_name, color: user.color, size: 38 })}</span>
+        <span class="sidebar__who">
+          <span class="sidebar__name" data-bind="name">${user.first_name}</span>
+          <span class="sidebar__goal" data-bind="balance">Saldo: ${user.balance} pts</span>
+        </span>
+      </button>
+      <button class="sidebar__logout" type="button" data-action="logout" aria-label="Sair" title="Sair">${icon('logout', 18)}</button>
     </div>
   </aside>`;
 
@@ -65,21 +64,41 @@ const loadErrorView = (message) => html`
     <button class="btn btn--secondary" type="button" data-action="retry">Tentar de novo</button>
   </div>`;
 
-export function logout() {
-  closeAccountMenu();
-  session.clear();
+/** Drop the shell and cached data, so the next screen is built for whoever is logged in. */
+function leaveShell() {
   resetAppState();
   shell?.cleanup();
   shell = null;
+}
+
+export function logout() {
+  session.clear();
+  leaveShell();
   go('login');
 }
 
-/** Reload the user (balance, goals) after something changed them. */
+/** Switch to another account saved on this device (no password needed). */
+export function switchAccount(accountId) {
+  if (!session.switchTo(accountId)) return;
+  leaveShell();
+  go('home');
+}
+
+/** Keep the current account saved and open the login to enter another one. */
+export function addAccount() {
+  session.park();
+  leaveShell();
+  go('login');
+}
+
+/** Reload the user (name, balance, goals) after something changed them. */
 async function refreshUser() {
   const user = await api.me();
   session.setUser(user);
-  const balance = shell?.element.querySelector('[data-bind="balance"]');
-  if (balance) balance.textContent = `Saldo: ${user.balance} pts`;
+  const bind = (name) => shell?.element.querySelector(`[data-bind="${name}"]`);
+  if (bind('balance')) bind('balance').textContent = `Saldo: ${user.balance} pts`;
+  if (bind('name')) bind('name').textContent = user.first_name;
+  if (bind('avatar')) renderInto(bind('avatar'), avatar({ name: user.first_name, color: user.color, size: 38 }));
 }
 
 /** Pink counters on the navigation (challenges waiting for an answer, rewards to fulfil). */
@@ -105,8 +124,8 @@ function build(root, user) {
   root.replaceChildren(element);
   on(element, 'click', '[data-nav]', (_, button) => {
     const item = NAV_ITEMS.find((entry) => entry.id === button.dataset.nav);
-    if (item.soon) showToast(item.soon);
-    else go(item.id);
+    if (item?.soon) showToast(item.soon);
+    else go(button.dataset.nav); // nav items and the sidebar profile card ("account")
   });
   on(element, 'click', '[data-action="logout"]', logout);
   on(element, 'click', '[data-action="retry"]', reload);
@@ -145,7 +164,6 @@ export async function showInShell(root, screenId, mountScreen) {
     shell?.cleanup();
     shell = build(root, user);
   }
-  closeAccountMenu();
   setActive(screenId);
   refreshBadges().catch(() => {});
   window.scrollTo(0, 0);

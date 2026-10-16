@@ -5,7 +5,7 @@ from __future__ import annotations
 import datetime as dt
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints, field_validator, model_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, EmailStr, Field, StringConstraints, field_validator, model_validator
 
 from .scoring import MAX_DURATION_MIN, MAX_WEEKLY_GOAL, MIN_DURATION_MIN, MIN_WEEKLY_GOAL, validate_rules
 
@@ -20,22 +20,24 @@ WeeklyGoal = Annotated[int, Field(ge=MIN_WEEKLY_GOAL, le=MAX_WEEKLY_GOAL, descri
 Note = Annotated[str, StringConstraints(strip_whitespace=True, max_length=140)]
 
 
+def _fits_bcrypt(value: str) -> str:
+    # bcrypt only looks at the first 72 bytes; refuse longer instead of silently truncating.
+    if len(value.encode()) > 72:
+        raise ValueError("A senha pode ter no máximo 72 bytes.")
+    return value
+
+
+Password = Annotated[str, Field(min_length=6, max_length=72), AfterValidator(_fits_bcrypt)]
+
+
 # ---- Auth and profile ----
 
 
 class RegisterIn(BaseModel):
     name: Name
     email: EmailStr
-    password: str = Field(min_length=6, max_length=72)
+    password: Password
     weekly_goal: WeeklyGoal
-
-    @field_validator("password")
-    @classmethod
-    def fits_bcrypt(cls, value: str) -> str:
-        # bcrypt only looks at the first 72 bytes; refuse longer instead of silently truncating.
-        if len(value.encode()) > 72:
-            raise ValueError("A senha pode ter no máximo 72 bytes.")
-        return value
 
 
 class LoginIn(BaseModel):
@@ -64,6 +66,34 @@ class AuthOut(BaseModel):
 class MeUpdate(BaseModel):
     name: Name | None = None
     weekly_goal: WeeklyGoal | None = Field(default=None, description="Vale a partir da próxima semana")
+
+
+class EmailChangeIn(BaseModel):
+    email: EmailStr
+    current_password: str = Field(description="Senha atual, para confirmar que é você")
+
+
+class PasswordChangeIn(BaseModel):
+    current_password: str
+    new_password: Password
+
+
+class ProfileStatsOut(BaseModel):
+    """All-time numbers of the logged user, for the account screen."""
+
+    workouts: int
+    minutes: int
+    favorite_type: str | None = Field(description="Modalidade mais registrada; None sem treinos")
+    points_earned: int = Field(description="Tudo o que já entrou no saldo: treinos e bônus")
+    points_spent: int = Field(description="Gasto em prêmios resgatados")
+    weeks_closed: int = Field(description="Semanas encerradas desde o cadastro")
+    weeks_won: int
+    weeks_goal_met: int
+    streak: int
+    record: int
+    badges: int
+    challenges_won: int
+    rewards_redeemed: int
 
 
 # ---- Workouts ----

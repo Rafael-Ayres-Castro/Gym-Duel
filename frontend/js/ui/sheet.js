@@ -1,6 +1,17 @@
 // Generic dialog: a sheet that slides up on mobile, a centered modal on desktop.
 // Esc and a click on the dimmed backdrop close it; focus returns to where it was.
 import { createElement, html, on, renderInto } from '../core/dom.js';
+import { icon } from '../core/icons.js';
+
+/** Standard sheet header: title, subtitle and the close button. */
+export const sheetHead = (title, subtitle) => html`
+  <header class="sheet__head">
+    <div>
+      <h2>${title}</h2>
+      <p>${subtitle}</p>
+    </div>
+    <button class="icon-btn" type="button" data-action="close-sheet" aria-label="Fechar">${icon('close', 18, { stroke: 2.4 })}</button>
+  </header>`;
 
 /**
  * @param {SafeHtml} view          content

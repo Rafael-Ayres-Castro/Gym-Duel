@@ -6,6 +6,7 @@ import { session } from './core/session.js';
 import { initShortcuts } from './core/shortcuts.js';
 import { logout, showInShell } from './layout/app-shell.js';
 import { initPhotoViewer } from './ui/photo-viewer.js';
+import * as account from './screens/account/account.js';
 import * as history from './screens/history/history.js';
 import * as home from './screens/home/home.js';
 import * as challenges from './screens/challenges/challenges.js';
@@ -28,6 +29,7 @@ defineRoutes(
     challenges: { guard: requireLogin, mount: () => showInShell(root, 'challenges', challenges.mount) },
     rewards: { guard: requireLogin, mount: () => showInShell(root, 'rewards', rewards.mount) },
     goals: { guard: requireLogin, mount: () => showInShell(root, 'goals', goals.mount) },
+    account: { guard: requireLogin, mount: () => showInShell(root, 'account', account.mount) },
   },
   () => (session.isLoggedIn ? 'home' : 'login'),
 );

@@ -12,6 +12,7 @@ data/
 
 # Local tooling
 .claude/settings.local.json
+CLAUDE.md
 screenshots/
 
 # Windows download markers

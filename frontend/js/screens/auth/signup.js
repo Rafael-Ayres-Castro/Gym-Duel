@@ -6,8 +6,9 @@ import { go } from '../../core/router.js';
 import { session } from '../../core/session.js';
 import { firstName } from '../../domain/format.js';
 import { GOAL_OPTIONS } from '../../domain/rules.js';
+import { EMAIL_PATTERN, fieldError, setFieldError, withBusyButton } from '../../ui/form.js';
 import { showToast } from '../../ui/toast.js';
-import { authLayout, brandRow, EMAIL_PATTERN, fieldError, setFieldError, withBusyButton } from './auth-layout.js';
+import { authLayout, brandRow } from './auth-layout.js';
 
 const DEFAULT_GOAL = 3;
 

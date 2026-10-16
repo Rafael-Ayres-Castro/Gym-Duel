@@ -20,6 +20,8 @@ const STROKE = {
   camera: '<path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.8l1.4-2h4.6l1.4 2h1.8A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.5" r="3.5"/>',
   minus: '<path d="M5 12h14"/>',
   arrowRight: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  swap: '<path d="M4 8h15l-4-4M20 16H5l4 4"/>',
+  chevronRight: '<path d="M9.5 5.5 16 12l-6.5 6.5"/>',
 };
 
 const FILL = {

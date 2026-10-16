@@ -53,6 +53,10 @@ export const api = {
   checkin: (workout) => request('POST', '/workouts', { body: workout }),
   deleteWorkout: (id) => request('DELETE', `/workouts/${id}`),
   updateMe: (data) => request('PATCH', '/me', { body: data }),
+  changeEmail: (email, currentPassword) => request('PUT', '/me/email', { body: { email, current_password: currentPassword } }),
+  changePassword: (currentPassword, newPassword) =>
+    request('PUT', '/me/password', { body: { current_password: currentPassword, new_password: newPassword } }),
+  profileStats: () => request('GET', '/me/stats'),
   uploadPhoto: (workoutId, blob) => {
     const form = new FormData();
     form.append('photo', blob, 'treino.jpg');

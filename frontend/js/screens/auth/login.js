@@ -5,16 +5,27 @@ import { icon } from '../../core/icons.js';
 import { isDesktop } from '../../core/media.js';
 import { go } from '../../core/router.js';
 import { session } from '../../core/session.js';
+import { EMAIL_PATTERN, fieldError, passwordToggle, setFieldError, togglePassword, withBusyButton } from '../../ui/form.js';
+import { savedAccountButton } from '../../ui/saved-account.js';
 import { showToast } from '../../ui/toast.js';
-import { authLayout, EMAIL_PATTERN, fieldError, mobileBrand, setFieldError, withBusyButton } from './auth-layout.js';
+import { authLayout, mobileBrand } from './auth-layout.js';
 
-const view = (email) => authLayout(html`
+// Accounts still logged in on this device (after "Entrar com outra conta"): one tap to go back.
+const savedAccounts = (accounts) => accounts.length > 0 && html`
+  <div class="saved-accounts">
+    <span class="label-caps">Continuar como</span>
+    ${accounts.map((account) => savedAccountButton(account, 'use-account'))}
+    <span class="saved-accounts__or">ou entre com outra conta</span>
+  </div>`;
+
+const view = (email, accounts) => authLayout(html`
   <form class="auth-form auth-form--login" novalidate>
     ${mobileBrand()}
     <div class="auth-form__head only-desktop">
       <h2>Entrar</h2>
       <p>Bom te ver de volta.</p>
     </div>
+    ${savedAccounts(accounts)}
     <div class="auth-form__fields">
       <label class="field" data-field="email">
         <span class="field__label">E-mail</span>
@@ -31,9 +42,7 @@ const view = (email) => authLayout(html`
           <span class="field__icon">${icon('lock', 20)}</span>
           <input class="input input--with-icon input--with-action input--tinted" name="password" type="password"
             autocomplete="current-password" placeholder="Sua senha">
-          <button class="field__action" type="button" data-action="toggle-password" aria-label="Mostrar senha" aria-pressed="false">
-            ${icon('eye', 20)}
-          </button>
+          ${passwordToggle()}
         </span>
       </label>
       ${fieldError('password-error')}
@@ -59,7 +68,9 @@ function validate(email, password) {
 const SERVER_ERROR_FIELD = { unknown_email: 'email', wrong_password: 'password' };
 
 export function mount(root) {
-  renderInto(root, view(session.lastEmail));
+  const accounts = session.otherAccounts;
+  // With saved accounts, the e-mail starts empty: the user came here to enter a different one.
+  renderInto(root, view(accounts.length ? '' : session.lastEmail, accounts));
   const form = root.querySelector('form');
 
   const clearErrors = () => ['email', 'password', 'form'].forEach((name) => setFieldError(form, name, null));
@@ -94,12 +105,8 @@ export function mount(root) {
     const action = button.dataset.action;
     if (action === 'signup') go('signup');
     if (action === 'forgot') showToast('Recuperação de senha chega na próxima fase.');
-    if (action === 'toggle-password') {
-      const visible = form.password.type === 'password';
-      form.password.type = visible ? 'text' : 'password';
-      button.setAttribute('aria-pressed', String(visible));
-      button.setAttribute('aria-label', visible ? 'Esconder senha' : 'Mostrar senha');
-    }
+    if (action === 'toggle-password') togglePassword(button);
+    if (action === 'use-account' && session.switchTo(Number(button.dataset.accountId))) go('home');
   });
 
   // Autofocus only with a real keyboard; on phones it would pop the keyboard over the screen.

@@ -59,6 +59,14 @@ export function dayMonth(date, { short = false } = {}) {
 /** "Outubro até agora" */
 export const monthSoFar = (todayIso) => `${MONTHS_FULL[parseDate(todayIso).getUTCMonth()]} até agora`;
 
+/** "outubro de 2026", from a full timestamp (e.g. created_at), on the São Paulo calendar. */
+export const monthYear = (timestampIso) =>
+  new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric', timeZone: 'America/Sao_Paulo' }).format(new Date(timestampIso));
+
+/** Time trained as a big number and a unit: 45 → { value: 45, unit: 'min' }, 200 → { value: 3, unit: 'h' }. */
+export const durationParts = (minutes) =>
+  (minutes < 60 ? { value: minutes, unit: 'min' } : { value: Math.floor(minutes / 60), unit: 'h' });
+
 // ---- Scoreboard texts ----
 
 /** Days left in the week: { weekday: "Quinta-feira", left: "3 dias pela frente" }. */

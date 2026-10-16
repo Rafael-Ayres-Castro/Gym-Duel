@@ -8,8 +8,6 @@ import { go } from '../../core/router.js';
 import { session } from '../../core/session.js';
 import { greeting, weekRange } from '../../domain/format.js';
 import { splitPlayers, weekIsEmpty } from '../../domain/players.js';
-import { logout } from '../../layout/app-shell.js';
-import { toggleAccountMenu } from '../../ui/account-menu.js';
 import { avatar } from '../../ui/avatar.js';
 import { recentWorkouts } from './recent-workouts.js';
 import { scoreboardCard } from './scoreboard-card.js';
@@ -29,7 +27,7 @@ function homeView(board, recents, user) {
           <div class="home__week">${icon('calendar', 16, { stroke: 2.2 })}Semana de ${weekRange(board.week_start, board.week_end)}</div>
           <h1 class="home__greeting">${greeting(user.first_name, weekIsEmpty(board))}</h1>
         </div>
-        <button class="home__me only-mobile" type="button" data-action="account" aria-label="Conta de ${user.first_name}">
+        <button class="home__me only-mobile" type="button" data-action="go-account" aria-label="Minha conta">
           ${avatar({ name: user.first_name, color: user.color, size: 42 })}
         </button>
         ${checkinButton({ withKey: true, cls: 'only-desktop' })}
@@ -55,7 +53,7 @@ export async function mount(container) {
     const action = target.dataset.action;
     if (action === 'open-checkin') emit(EVENTS.openCheckin);
     if (action === 'go-history') go('history');
-    if (action === 'account') toggleAccountMenu(target, session.user, logout);
+    if (action === 'go-account') go('account');
   });
   // A check-in from the modal changes the board: fetch and render again.
   const offSaved = listen(EVENTS.workoutSaved, refresh);
